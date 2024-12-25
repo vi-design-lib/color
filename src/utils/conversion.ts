@@ -128,40 +128,62 @@ export function hexToHsl(hex: string): HSLColor {
 }
 
 /**
- * HSL 转 HEX
+ * HSL 转 RGB
  *
  * @param { HSLColor } hsl - HSL对象
- * @returns { HexColor } - 十六进制颜色值
+ * @returns { RGBColor } - RGB颜色值
  */
 export function hslToRgb(hsl: HSLColor): RGBColor {
-  const { h, s, l } = hsl
+  // 输入验证
+  if (typeof hsl !== 'object' || hsl === null || !('h' in hsl) || !('s' in hsl) || !('l' in hsl)) {
+    throw new Error('Invalid HSL object')
+  }
+
+  let { h, s, l } = hsl
+
+  // 确保色相在 [0, 360) 范围内，处理负数
+  h = ((h % 360) + 360) % 360
+
+  // 饱和度和亮度限制在 [0, 1] 范围内
+  s = Math.min(1, Math.max(0, s))
+  l = Math.min(1, Math.max(0, l))
+
+  const c = (1 - Math.abs(2 * l - 1)) * s // 计算色彩的强度
+  const x = c * (1 - Math.abs(((h / 60) % 2) - 1)) // 中间色
+  const m = l - c / 2 // 明度的偏移量
 
   let r, g, b
 
-  if (s === 0) {
-    r = g = b = l // 消色差
-  } else {
-    const q = l < 0.5 ? l * (1 + s) : l + s - l * s
-    const p = 2 * l - q
-    /** 计算 RGB 分量 */
-    const hue2rgb = (p: number, q: number, t: number): number => {
-      if (t < 0) t += 1
-      if (t > 1) t -= 1
-      if (t < 1 / 6) return p + (q - p) * 6 * t
-      if (t < 1 / 2) return q
-      if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6
-      return p
-    }
-    r = hue2rgb(p, q, h + 1 / 3)
-    g = hue2rgb(p, q, h)
-    b = hue2rgb(p, q, h - 1 / 3)
+  // 使用数组和索引简化区间判断逻辑
+  const hueSector = Math.floor(h / 60)
+  const colorValues = [c, x, 0]
+  switch (hueSector) {
+    case 0:
+      ;[r, g, b] = [colorValues[0], colorValues[1], colorValues[2]]
+      break
+    case 1:
+      ;[r, g, b] = [colorValues[1], colorValues[0], colorValues[2]]
+      break
+    case 2:
+      ;[r, g, b] = [colorValues[2], colorValues[0], colorValues[1]]
+      break
+    case 3:
+      ;[r, g, b] = [colorValues[2], colorValues[1], colorValues[0]]
+      break
+    case 4:
+      ;[r, g, b] = [colorValues[1], colorValues[2], colorValues[0]]
+      break
+    default:
+      ;[r, g, b] = [colorValues[0], colorValues[2], colorValues[1]]
+      break
   }
 
-  return {
-    r: Math.round(r * 255),
-    g: Math.round(g * 255),
-    b: Math.round(b * 255)
-  }
+  // 加上亮度偏移并转换为整数
+  r = Math.round((r + m) * 255)
+  g = Math.round((g + m) * 255)
+  b = Math.round((b + m) * 255)
+
+  return { r, g, b }
 }
 
 /**
