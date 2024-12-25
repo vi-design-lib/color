@@ -80,10 +80,11 @@ export function rgbaToString(rgba: RGBAColor): RgbaColor {
 /**
  *  RGB转HSL辅助函数
  *
- * @param { RGBColor } rgb - RGB对象
+ * @param { RGBColor | RgbColor } rgb - RGB对象
  * @returns { HSLColor } - HSL对象
  */
-export function rgbToHsl(rgb: RGBColor): HSLColor {
+export function rgbToHsl(rgb: RGBColor | RgbColor): HSLColor {
+  if (typeof rgb === 'string') rgb = rgbStringToObj(rgb)
   let { r, g, b } = rgb
   r /= 255
   g /= 255
