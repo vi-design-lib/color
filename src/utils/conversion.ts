@@ -217,9 +217,13 @@ export function rgbStringToObj(rgbString: string): RGBColor {
  * @returns {RGBColor} rgb对象
  */
 export function colorToRgbObj(color: RgbColor | HexColor): RGBColor {
-  if (color.startsWith('rgb')) {
-    return rgbStringToObj(color)
-  } else {
-    return hexToRgb(color)
+  try {
+    if (color.startsWith('rgb')) {
+      return rgbStringToObj(color)
+    } else {
+      return hexToRgb(color)
+    }
+  } catch (e) {
+    throw new TypeError('Invalid color format')
   }
 }
