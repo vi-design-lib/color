@@ -14,29 +14,47 @@ export class Palette<S extends RgbColor | HexColor, OUT extends OutType = 'hex'>
   readonly #sourceRgb: RGBColor
   // 缓存色阶颜色
   readonly #cacheColors: Array<Out<OUT>> = []
+  // 色阶数量
+  readonly #size: number
+  // 色阶颜色类型
+  readonly #outType: OUT
+  // 源色
+  readonly #sourceColor: S
   /**
    * @param {RgbColor | HexColor} sourceColor - 源色
-   * @param {number} steps - 色阶数量，建议单数
+   * @param {number} size - 色阶数量，建议单数，不能小于9
    * @param {OutType} outType - 色阶颜色类型，可以是`hex`|`rgb`|`RGB`
    */
-  constructor(
-    protected readonly sourceColor: S,
-    protected readonly steps: number,
-    protected readonly outType: OUT = 'hex' as OUT
-  ) {
-    const stepsType = typeof steps
-    if (stepsType !== 'number' || steps < 10) {
-      throw new Error('steps must be a number and greater than 10')
+  constructor(sourceColor: S, size: number, outType: OUT = 'hex' as OUT) {
+    if (typeof size !== 'number' || size < 9) {
+      throw new Error('steps must be a number and greater than 9')
     }
+    this.#sourceColor = sourceColor
+    this.#size = size
+    this.#outType = outType
     this.#sourceRgb = colorToRgbObj(sourceColor)
-    this.#cacheColors.length = steps
+    this.#cacheColors.length = size
   }
 
   /**
    * 源色
    */
   get source(): S {
-    return this.sourceColor
+    return this.#sourceColor
+  }
+
+  /**
+   * 调色板色阶数量
+   */
+  get size(): number {
+    return this.#size
+  }
+
+  /**
+   * 输出色彩类型
+   */
+  get outType(): OUT {
+    return this.#outType
   }
 
   /**
@@ -49,13 +67,12 @@ export class Palette<S extends RgbColor | HexColor, OUT extends OutType = 'hex'>
       this.#cacheColors[i] = getPaletteColor(
         i,
         this.#sourceRgb,
-        this.steps,
+        this.size,
         this.outType
       ) as Out<OUT>
     }
     return this.#cacheColors[i]
   }
-
   /**
    * 获取所有色阶颜色
    */
@@ -68,7 +85,7 @@ export class Palette<S extends RgbColor | HexColor, OUT extends OutType = 'hex'>
    */
   [Symbol.iterator](): { next(): IteratorResult<Out<OUT>> } {
     let index = 0
-    const length = this.steps
+    const length = this.size
     // 返回一个迭代器对象
     return {
       next: (): IteratorResult<Out<OUT>> => {
