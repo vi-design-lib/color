@@ -217,7 +217,7 @@ export function rgbStringToObj(rgbString: string): RGBColor {
  * @param { RgbColor | HexColor } color
  * @returns {RGBColor} rgb对象
  */
-export function colorToRgbObj(color: RgbColor | HexColor): RGBColor {
+export function colorToRgbObj(color: RgbColor | HexColor | string): RGBColor {
   try {
     if (color.startsWith('rgb')) {
       return rgbStringToObj(color)
