@@ -9,7 +9,10 @@ import { colorToRgbObj, rgbToHex, rgbToString } from './conversion.js'
  * @param {number} percent - 亮度百分比 (0-100)
  * @returns {T} - 调整后的颜色
  */
-export function lighten<T extends RgbColor | HexColor | RGBColor>(color: T, percent: number): T {
+export function lighten<T extends RgbColor | HexColor | RGBColor | string>(
+  color: T,
+  percent: number
+): T {
   if (percent < 0 || percent > 100) {
     throw new Error('Percent must be between 0 and 100')
   }
@@ -38,7 +41,10 @@ export function lighten<T extends RgbColor | HexColor | RGBColor>(color: T, perc
  * @param {number} percent - 亮度百分比 (0-100)
  * @returns {T} - 调整后的颜色
  */
-export function darken<T extends RgbColor | HexColor | RGBColor>(color: T, percent: number): T {
+export function darken<T extends RgbColor | HexColor | RGBColor | string>(
+  color: T,
+  percent: number
+): T {
   if (percent < 0 || percent > 100) {
     throw new Error('Percent must be between 0 and 100')
   }
