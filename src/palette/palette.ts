@@ -26,7 +26,7 @@ export class Palette<T extends AnyColor = AnyColor> {
    */
   constructor(sourceColor: T, size: number) {
     if (typeof size !== 'number' || size < 9) {
-      throw new Error('steps must be a number and greater than 9')
+      throw new Error('size must be a number and greater than 9')
     }
     this.#sourceColor = sourceColor
     this.#size = size
@@ -60,6 +60,7 @@ export class Palette<T extends AnyColor = AnyColor> {
     }
     return this.#cacheColors[i]
   }
+
   /**
    * 获取所有色阶颜色
    */
