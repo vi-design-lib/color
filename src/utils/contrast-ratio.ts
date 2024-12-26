@@ -1,4 +1,4 @@
-import type { HexColor, RgbColor, RGBColor } from '../types.js'
+import type { HexColor, RgbColor, RGBObject } from '../types.js'
 import { colorToRgbObj } from './conversion.js'
 
 /**
@@ -6,9 +6,9 @@ import { colorToRgbObj } from './conversion.js'
  * @param r 红色分量
  * @param g 绿色分量
  * @param b 蓝色分量
- * @returns {RGBColor} 返回包含标准化后的RGB颜色值的对象
+ * @returns {RGBObject} 返回包含标准化后的RGB颜色值的对象
  */
-function rgbToNormalized(r: number, g: number, b: number): RGBColor {
+function rgbToNormalized(r: number, g: number, b: number): RGBObject {
   // 将颜色分量转换为标准化值的内部函数
   const normalize = (c: number) => {
     const normalized = c / 255
@@ -37,13 +37,13 @@ function relativeLuminance(r: number, g: number, b: number): number {
 /**
  * 计算两种RGB颜色之间的对比度比率
  *
- * @param {RGBColor | HexColor | RgbColor} rgb1 第一种颜色的RGB值
- * @param {RGBColor | HexColor | RgbColor} rgb2 第二种颜色的RGB值
+ * @param {RGBObject | HexColor | RgbColor} rgb1 第一种颜色的RGB值
+ * @param {RGBObject | HexColor | RgbColor} rgb2 第二种颜色的RGB值
  * @returns {number} 返回对比度比率，结果四舍五入到小数点后两位
  */
 export function contrastRatio(
-  rgb1: RGBColor | HexColor | RgbColor,
-  rgb2: RGBColor | HexColor | RgbColor
+  rgb1: RGBObject | HexColor | RgbColor,
+  rgb2: RGBObject | HexColor | RgbColor
 ): number {
   if (typeof rgb1 === 'string') rgb1 = colorToRgbObj(rgb1)
   if (typeof rgb2 === 'string') rgb2 = colorToRgbObj(rgb2)
