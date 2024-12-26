@@ -71,7 +71,7 @@ export function hexToRgba(hex: string): RGBAObject {
  * @param { RGBObject } rgb - RGB对象
  * @returns { RgbColor } - RGB字符串
  */
-export function rgbToString(rgb: RGBObject): RgbColor {
+export function rgbObjectToColor(rgb: RGBObject): RgbColor {
   return `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`
 }
 
@@ -81,7 +81,7 @@ export function rgbToString(rgb: RGBObject): RgbColor {
  * @param { RGBAObject } rgba
  * @returns { RgbaColor } - RGBA字符串
  */
-export function rgbaToString(rgba: RGBAObject): RgbaColor {
+export function rgbaObjectToColor(rgba: RGBAObject): RgbaColor {
   return `rgba(${rgba.r}, ${rgba.g}, ${rgba.b}, ${rgba.a})`
 }
 
@@ -92,7 +92,7 @@ export function rgbaToString(rgba: RGBAObject): RgbaColor {
  * @returns { HSLObject } - HSL对象
  */
 export function rgbToHsl(rgb: RGBObject | RgbColor): HSLObject {
-  if (typeof rgb === 'string') rgb = rgbStringToObj(rgb)
+  if (typeof rgb === 'string') rgb = rgbColorToObj(rgb)
   let { r, g, b } = rgb
   r /= 255
   g /= 255
@@ -138,11 +138,18 @@ export function hexToHsl(hex: string): HSLObject {
  * HSL 转 RGB
  *
  * @param { HSLObject } hsl - HSL对象
- * @returns { RGBObject } - RGB颜色值
+ * @returns { RGBObject } - RGB颜色对象
  */
-export function hslToRgb(hsl: HSLObject): RGBObject {
-  // 输入验证
-  if (typeof hsl !== 'object' || hsl === null || !('h' in hsl) || !('s' in hsl) || !('l' in hsl)) {
+export function hslToRgb(hsl: HSLObject | HslColor): RGBObject {
+  if (typeof hsl === 'string') {
+    hsl = hslColorToObj(hsl)
+  } else if (
+    typeof hsl !== 'object' ||
+    hsl === null ||
+    !('h' in hsl) ||
+    !('s' in hsl) ||
+    !('l' in hsl)
+  ) {
     throw new Error('Invalid HSL object')
   }
 
@@ -224,7 +231,7 @@ export function rgbToHex(rgb: RGBObject): HexColor {
  * @param { RgbColor } rgbString
  * @returns { RGBObject } - RGB对象
  */
-export function rgbStringToObj(rgbString: string): RGBObject {
+export function rgbColorToObj(rgbString: string): RGBObject {
   // 正则表达式匹配 rgb(r, g, b) 格式的字符串
   const match = rgbString.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/)
 
@@ -243,13 +250,15 @@ export function rgbStringToObj(rgbString: string): RGBObject {
 /**
  * 字符串颜色转rgb对象
  *
- * @param { RgbColor | HexColor } color
+ * @param { RgbColor | HexColor | HslColor } color - 颜色字符串，支持rgb、hex、hsl格式
  * @returns {RGBObject} rgb对象
  */
-export function colorToRgbObj(color: RgbColor | HexColor | string): RGBObject {
+export function colorToRgbObj(color: RgbColor | HexColor | HslColor | string): RGBObject {
   try {
     if (color.startsWith('rgb')) {
-      return rgbStringToObj(color)
+      return rgbColorToObj(color)
+    } else if (color.startsWith('hsl')) {
+      return hslToRgb(color as HslColor)
     } else {
       return hexToRgb(color)
     }
@@ -259,12 +268,30 @@ export function colorToRgbObj(color: RgbColor | HexColor | string): RGBObject {
 }
 
 /**
+ * hsl颜色转对象
+ *
+ * @param {HslColor} color - HSL颜色字符串
+ * @returns {HSLObject} - HSL对象
+ */
+export function hslColorToObj(color: HslColor): HSLObject {
+  const match = color.match(/^hsl\((\d+),\s*(\d+)%,\s*(\d+)%\)$/)
+  if (!match) {
+    throw new Error('Invalid HSL string format')
+  }
+  return {
+    h: parseInt(match[1], 10),
+    s: parseInt(match[2], 10) / 100,
+    l: parseInt(match[3], 10) / 100
+  }
+}
+
+/**
  * HSL对象转字符串
  *
  * @param { HSLObject } hsl
  * @returns {HslColor}
  */
-export function hslToString(hsl: HSLObject): HslColor {
+export function hslObjectToColor(hsl: HSLObject): HslColor {
   return `hsl(${hsl.h}, ${hsl.s * 100}%, ${hsl.l * 100}%)`
 }
 
