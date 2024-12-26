@@ -1,6 +1,6 @@
 import { colorToRgbObj } from '../utils/index.js'
 import { getPaletteColor } from './helper.js'
-import type { HexColor, Out, OutType, RgbColor, RGBObject } from '../types.js'
+import type { HexColor, Out, OutType, RgbColor, RGBObject, StrColors } from '../types.js'
 
 /**
  * 调色板类
@@ -9,7 +9,7 @@ import type { HexColor, Out, OutType, RgbColor, RGBObject } from '../types.js'
  *
  * @template S - 源色类型，可以是RGB字符串或者HEX字符串
  */
-export class Palette<S extends RgbColor | HexColor, OUT extends OutType = 'hex'> {
+export class Palette<S extends StrColors, OUT extends OutType = 'hex'> {
   // 源色RGB对象
   readonly #sourceRgb: RGBObject
   // 缓存色阶颜色
