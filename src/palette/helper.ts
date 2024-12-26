@@ -1,11 +1,11 @@
 // noinspection JSUnusedGlobalSymbols
 
-import { anyColorToRgbObject, anyColorToTargetColor, getColorType } from '../utils/index.js'
+import { anyColorToHslObject, anyColorToTargetColor, getColorType } from '../utils/index.js'
 import { Palette } from './palette.js'
 import type { AnyColor, ColorTag, ColorTagToColorType, RGBObject } from '../types.js'
 
 /**
- * 获取基于 RGB 模型的调色板颜色
+ * 获取调色板颜色
  *
  * @template T - 输出颜色的类型标记
  * @param {number} i - 色阶索引，必须小于色阶数量
@@ -21,7 +21,7 @@ export function getPaletteColor<T extends ColorTag>(
   type: T
 ): ColorTagToColorType<T>
 /**
- * 获取基于 RGB 模型的调色板颜色
+ * 获取调色板颜色
  *
  * @template T - 颜色类型
  * @param {number} i - 色阶索引，必须小于色阶数量
@@ -42,26 +42,24 @@ export function getPaletteColor<T extends AnyColor>(
 ): T {
   if (i > steps) throw new Error('i must be less than steps')
   type = type ?? getColorType(sourceColor)
-  const { r, g, b } = anyColorToRgbObject(sourceColor)
-  let newR, newG, newB
+
+  const { h, s, l } = anyColorToHslObject(sourceColor)
+  let newH = h,
+    newS = s,
+    newL: number
+
   const halfSteps = Math.floor(steps / 2)
   if (i < halfSteps) {
     // 从黑色到源色的过渡
     const factor = i / halfSteps
-    // 使黑色到源色的渐变更加平滑
-    newR = Math.round(r * factor)
-    newG = Math.round(g * factor)
-    newB = Math.round(b * factor)
+    newL = Math.round(l * factor * 100) / 100 // 调整亮度
   } else {
     // 从源色到白色的过渡
-    const reverseIndex = i - halfSteps // 从源色到白色的部分
+    const reverseIndex = i - halfSteps
     const factor = reverseIndex / halfSteps
-    newR = Math.round(r * (1 - factor) + 255 * factor)
-    newG = Math.round(g * (1 - factor) + 255 * factor)
-    newB = Math.round(b * (1 - factor) + 255 * factor)
+    newL = Math.round((l * (1 - factor) + factor) * 100) / 100 // 调整亮度，确保不超过1
   }
-  const newRgb: RGBObject = { r: newR, g: newG, b: newB }
-  return anyColorToTargetColor(newRgb, type, 'RGB') as T
+  return anyColorToTargetColor({ h: newH, s: newS, l: newL }, type, 'HSL') as T
 }
 
 /**
@@ -79,7 +77,7 @@ export function getPaletteColor<T extends AnyColor>(
 export function makePalette<T extends AnyColor>(sourceColor: T, steps: number = 11): Array<T> {
   const palette: Array<T> = []
   const type = getColorType(sourceColor)
-  const source = anyColorToRgbObject(sourceColor, type)
+  const source = anyColorToHslObject(sourceColor, type)
   for (let i = 0; i < steps; i++) {
     palette.push(getPaletteColor(i, source, steps, type) as T)
   }
