@@ -1,19 +1,22 @@
-import { colorToHexObj, HslFormula, hslObjectToColor, hslToHex, hslToRgb } from '../utils/index.js'
-import type { BaseColorScheme, HSLObject, Out, OutType, StrColors } from '../types.js'
+import {
+  anyColorToHslObject,
+  anyColorToTargetColor,
+  getColorType,
+  HslFormula
+} from '../utils/index.js'
+import type { BaseColorScheme, HSLObject, ObjectColors, StringColors } from '../types.js'
 
 /**
  * 创建主题配色方案
  *
  * @param {string} primary - 主色，支持RGB、HEX、HSL格式
- *
- * @param {OutType} outType - 输出颜色类型，可以是`hex`|`rgb`|`RGB`|`HSL`
  */
-export function createBaseColorSchemeFromColor<OUT extends OutType = 'HSL'>(
-  primary: StrColors,
-  outType: OUT = 'HSL' as OUT
-): BaseColorScheme<Out<OUT>> {
+export function createBaseColorScheme<T extends StringColors | ObjectColors>(
+  primary: T
+): BaseColorScheme<T> {
+  const outType = getColorType(primary)
   // 获取主色的 HSL 对象
-  const primaryHsl = colorToHexObj(primary)
+  const primaryHsl = anyColorToHslObject(primary, outType)
   // 获取主色的 HSL 值
   const { h, s, l } = primaryHsl
 
@@ -52,22 +55,10 @@ export function createBaseColorSchemeFromColor<OUT extends OutType = 'HSL'>(
   if (outType !== 'HSL') {
     // 将 HSL 配色方案转换为 RGB 或 HEX
     for (const hslSchemeKey in hslScheme) {
-      const hsl = hslScheme[hslSchemeKey as keyof BaseColorScheme<HSLObject>]
-      const newScheme: Record<string, any> = hslScheme
-      switch (outType) {
-        case 'hex':
-          newScheme[hslSchemeKey] = hslToHex(hsl)
-          break
-        case 'rgb':
-          newScheme[hslSchemeKey] = hslToRgb(hsl)
-          break
-        case 'hsl':
-          newScheme[hslSchemeKey] = hslObjectToColor(hsl)
-          break
-        default:
-          newScheme[hslSchemeKey] = hslToRgb(hsl)
-      }
+      const key = hslSchemeKey as keyof BaseColorScheme<T>
+      const hsl = hslScheme[key]
+      hslScheme[key] = anyColorToTargetColor(hsl, outType, 'HSL') as any
     }
   }
-  return hslScheme as BaseColorScheme<Out<OUT>>
+  return hslScheme as unknown as BaseColorScheme<T>
 }
