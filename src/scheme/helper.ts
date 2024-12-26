@@ -1,45 +1,5 @@
 import { colorToHexObj, HslFormula, hslToHex, hslToRgb } from '../utils/index.js'
-import type { HexColor, HslColor, HSLObject, Out, OutType, RgbColor } from '../types.js'
-
-/**
- * 基准配色方案
- */
-export interface BaseColorScheme<T> {
-  /**
-   * 主色
-   */
-  primary: T
-  /**
-   * 次要辅色
-   *
-   * 主色相邻的颜色，通过调整饱和度和亮度来形成对比度
-   */
-  secondary: T
-  /**
-   * 三级辅色
-   *
-   * 主色相邻的颜色，通过调整饱和度和亮度来形成对比度
-   */
-  tertiary: T
-  /**
-   * 警告色
-   *
-   * 默认是主色的互补色，形成强烈的对比度
-   */
-  warning: T
-  /**
-   * 危险色
-   *
-   * 默认是红色，根据主色调整了饱和度和亮度
-   */
-  danger: T
-  /**
-   * 中性色
-   *
-   * 根据主色计算出来的中性色，它接近于灰色，但它和主色之间存在一定的色相关联
-   */
-  neutral: T
-}
+import type { BaseColorScheme, HSLObject, Out, OutType, StrColors } from '../types.js'
 
 /**
  * 创建主题配色方案
@@ -49,7 +9,7 @@ export interface BaseColorScheme<T> {
  * @param {OutType} outType - 输出颜色类型，可以是`hex`|`rgb`|`RGB`|`HSL`
  */
 export function createBaseColorSchemeFromColor<OUT extends OutType = 'HSL'>(
-  primary: HexColor | HslColor | RgbColor | string,
+  primary: StrColors,
   outType: OUT = 'HSL' as OUT
 ): BaseColorScheme<Out<OUT>> {
   // 获取主色的 HSL 对象
