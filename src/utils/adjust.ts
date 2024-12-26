@@ -1,5 +1,5 @@
 import type { HexColor, RgbColor, RGBObject } from '../types.js'
-import { colorToRgbObj, hslToHex, hslToRgb, rgbToHsl, rgbToString } from './conversion.js'
+import { colorToRgbObj, hslToHex, hslToRgb, rgbObjectToColor, rgbToHsl } from './conversion.js'
 
 /**
  * 调整颜色属性（亮度、饱和度或色相）
@@ -37,7 +37,7 @@ function adjustColorProperty<T extends RgbColor | HexColor | RGBObject | string>
   if (typeof color === 'object') {
     return hslToRgb(hsl) as T
   }
-  return (color.startsWith('#') ? hslToHex(hsl) : rgbToString(hslToRgb(hsl))) as T
+  return (color.startsWith('#') ? hslToHex(hsl) : rgbObjectToColor(hslToRgb(hsl))) as T
 }
 
 /**
