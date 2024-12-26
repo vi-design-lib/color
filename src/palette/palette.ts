@@ -1,6 +1,6 @@
 import { colorToRgbObj } from '../utils/index.js'
 import { getPaletteColor } from './helper.js'
-import type { HexColor, Out, OutType, RGBColor, RgbColor } from '../types.js'
+import type { HexColor, Out, OutType, RgbColor, RGBObject } from '../types.js'
 
 /**
  * 调色板类
@@ -11,7 +11,7 @@ import type { HexColor, Out, OutType, RGBColor, RgbColor } from '../types.js'
  */
 export class Palette<S extends RgbColor | HexColor, OUT extends OutType = 'hex'> {
   // 源色RGB对象
-  readonly #sourceRgb: RGBColor
+  readonly #sourceRgb: RGBObject
   // 缓存色阶颜色
   readonly #cacheColors: Array<Out<OUT>> = []
   // 色阶数量
