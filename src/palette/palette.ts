@@ -1,6 +1,6 @@
-import { anyColorToRgbObject, getColorType } from '../utils/index.js'
+import { anyColorToHslObject, getColorType } from '../utils/index.js'
 import { getPaletteColor } from './helper.js'
-import type { AnyColor, ColorTag, HexColor, RgbColor, RGBObject } from '../types.js'
+import type { AnyColor, ColorTag, HexColor, HSLObject, RgbColor } from '../types.js'
 
 /**
  * 调色板类
@@ -11,7 +11,7 @@ import type { AnyColor, ColorTag, HexColor, RgbColor, RGBObject } from '../types
  */
 export class Palette<T extends AnyColor = AnyColor> {
   // 源色RGB对象
-  readonly #sourceRgb: RGBObject
+  readonly #sourceHsl: HSLObject
   // 缓存色阶颜色
   readonly #cacheColors: Array<T> = []
   // 色阶数量
@@ -30,7 +30,7 @@ export class Palette<T extends AnyColor = AnyColor> {
     }
     this.#sourceColor = sourceColor
     this.#size = size
-    this.#sourceRgb = anyColorToRgbObject(sourceColor)
+    this.#sourceHsl = anyColorToHslObject(sourceColor)
     this.#cacheColors.length = size
     this.#outType = getColorType(sourceColor)
   }
@@ -56,7 +56,7 @@ export class Palette<T extends AnyColor = AnyColor> {
    */
   get(i: number): T {
     if (!this.#cacheColors[i]) {
-      this.#cacheColors[i] = getPaletteColor(i, this.#sourceRgb, this.size, this.#outType) as T
+      this.#cacheColors[i] = getPaletteColor(i, this.#sourceHsl, this.size, this.#outType) as T
     }
     return this.#cacheColors[i]
   }
@@ -89,13 +89,12 @@ export class Palette<T extends AnyColor = AnyColor> {
   /**
    * 创建调色板
    *
-   * @template T - 源色类型，可以是RGB字符串或者HEX字符串
-   * @template O - 色阶颜色类型，可以是`hex`|`rgb`|`RGB`
-   * @param {RgbColor | HexColor} sourceColor - 源色
-   * @param {number} [steps=11] - 色阶数量
+   * @template T - 源色类型
+   * @param {AnyColor} sourceColor - 源色
+   * @param {number} [size=11] - 色阶数量
    * @returns {Palette<T>} - 调色板实例
    */
-  static create<T extends RgbColor | HexColor>(sourceColor: T, steps: number = 11): Palette<T> {
-    return new Palette(sourceColor, steps)
+  static create<T extends AnyColor>(sourceColor: T, size: number): Palette<T> {
+    return new Palette(sourceColor, size)
   }
 }
