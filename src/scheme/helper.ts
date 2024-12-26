@@ -1,4 +1,4 @@
-import { colorToHexObj, HslFormula, hslToHex, hslToRgb } from '../utils/index.js'
+import { colorToHexObj, HslFormula, hslObjectToColor, hslToHex, hslToRgb } from '../utils/index.js'
 import type { BaseColorScheme, HSLObject, Out, OutType, StrColors } from '../types.js'
 
 /**
@@ -60,6 +60,9 @@ export function createBaseColorSchemeFromColor<OUT extends OutType = 'HSL'>(
           break
         case 'rgb':
           newScheme[hslSchemeKey] = hslToRgb(hsl)
+          break
+        case 'hsl':
+          newScheme[hslSchemeKey] = hslObjectToColor(hsl)
           break
         default:
           newScheme[hslSchemeKey] = hslToRgb(hsl)
