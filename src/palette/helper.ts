@@ -1,6 +1,6 @@
 // noinspection JSUnusedGlobalSymbols
 
-import { colorToRgbObj, rgbToHex, rgbToString } from '../utils/index.js'
+import { colorToRgbObj, rgbObjectToColor, rgbToHex, rgbToHsl } from '../utils/index.js'
 import { Palette } from './palette.js'
 import type { HexColor, Out, OutType, RgbColor, RGBObject } from '../types.js'
 
@@ -40,7 +40,8 @@ export function getPaletteColor<OUT extends OutType = 'hex'>(
   }
   const newRgb: RGBObject = { r: newR, g: newG, b: newB }
   if (type === 'RGB') return newRgb as Out<OUT>
-  return (type === 'rgb' ? rgbToString(newRgb) : rgbToHex(newRgb)) as Out<OUT>
+  if (type === 'HSL') return rgbToHsl(newRgb) as Out<OUT>
+  return (type === 'rgb' ? rgbObjectToColor(newRgb) : rgbToHex(newRgb)) as Out<OUT>
 }
 
 /**
