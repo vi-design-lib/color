@@ -42,9 +42,11 @@ export type HSLObject = { h: number; s: number; l: number }
 /**
  * 小写代表字符串颜色类型，大写代表颜色对象类型
  */
-export type OutType = 'hex' | 'rgb' | 'RGB'
+export type OutType = 'hex' | 'rgb' | 'RGB' | 'HSL'
 export type Out<T extends OutType> = T extends 'hex'
   ? HexColor
   : T extends 'rgb'
     ? RgbColor
-    : RGBObject
+    : T extends 'RGB'
+      ? RGBObject
+      : HSLObject
