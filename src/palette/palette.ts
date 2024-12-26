@@ -1,6 +1,6 @@
 import { anyColorToHslObject, getColorType } from '../utils/index.js'
 import { getPaletteColor } from './helper.js'
-import type { AnyColor, ColorTag, HexColor, HSLObject, RgbColor } from '../types.js'
+import type { AnyColor, ColorTag, HSLObject } from '../types.js'
 
 /**
  * 调色板类
@@ -21,7 +21,7 @@ export class Palette<T extends AnyColor = AnyColor> {
   // 输出类型
   readonly #outType: ColorTag
   /**
-   * @param {RgbColor | HexColor} sourceColor - 源色
+   * @param {T} sourceColor - 源色
    * @param {number} size - 色阶数量，建议单数，不能小于9
    */
   constructor(sourceColor: T, size: number) {
