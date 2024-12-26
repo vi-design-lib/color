@@ -1,3 +1,5 @@
+import type { ColorTag } from '../types.js'
+
 /**
  * 输出带有颜色的键值对对象到控制台
  *
@@ -40,4 +42,25 @@ export function logColorsWithLabels(colorObj: Record<string, string>): void {
     })
     console.groupEnd()
   }
+}
+
+/**
+ * 获取色彩类型
+ *
+ * @param {string | object} color - 颜色值，可以是字符串或对象
+ * @returns {string} - 颜色类型，可以是 `hex`、`rgb` 、`hsl` 、`HSL`、`RGB`，大写为对象类型
+ * @throws {Error} - 如果颜色格式无效，则抛出错误
+ */
+export function getColorType(color: any): ColorTag {
+  if (typeof color === 'string') {
+    if (color.startsWith('#')) return 'hex'
+    if (color.startsWith('rgb')) return 'rgb'
+    if (color.startsWith('hsl')) return 'hsl'
+    throw new Error('Invalid color string format')
+  } else if (typeof color === 'object' && color !== null) {
+    if ('h' in color && 's' in color && 'l' in color) return 'HSL'
+    if ('r' in color && 'g' in color && 'b' in color) return 'RGB'
+    throw new Error('Invalid color object format')
+  }
+  throw new Error('Invalid color format')
 }
