@@ -1,4 +1,14 @@
-import type { HexColor, HslColor, HSLObject, RgbColor, RGBObject, StrColors } from '../types.js'
+import type {
+  AnyColor,
+  ColorTag,
+  ColorTagToColorType,
+  HexColor,
+  HslColor,
+  HSLObject,
+  RgbColor,
+  RGBObject,
+  StringColors
+} from '../types.js'
 import { getColorType } from './tools.js'
 
 /**
@@ -93,7 +103,7 @@ export function rgbToHslObject(rgb: RGBObject | RgbColor): HSLObject {
  * @param { RGBObject } rgb - RGB对象
  * @returns { HexColor } - 十六进制颜色值
  */
-export function rgbObjectToHex(rgb: RGBObject): HexColor {
+export function rgbObjectToHexColor(rgb: RGBObject): HexColor {
   let { r, g, b } = rgb
   r = r < 0 ? 0 : r > 255 ? 255 : r
   g = g < 0 ? 0 : g > 255 ? 255 : g
@@ -173,9 +183,20 @@ export function hslToRgbObject(hsl: HSLObject | HslColor): RGBObject {
  * @param { HSLObject } hsl - HSL对象
  * @returns { HexColor } - 十六进制颜色值
  */
-export function hslObjectToHex(hsl: HSLObject): HexColor {
+export function hslObjectToHexColor(hsl: HSLObject): HexColor {
   const rgb = hslToRgbObject(hsl)
-  return rgbObjectToHex(rgb)
+  return rgbObjectToHexColor(rgb)
+}
+
+/**
+ * hsl对象 转 rgb字符串颜色
+ *
+ * @param { HSLObject } hsl - HSL对象
+ * @returns { RgbColor } - RGB字符串
+ */
+export function hslObjectToRgbColor(hsl: HSLObject): RgbColor {
+  const rgb = hslToRgbObject(hsl)
+  return rgbObjectToColor(rgb)
 }
 
 /**
@@ -206,7 +227,7 @@ export function rgbColorToObj(rgbString: string): RGBObject {
  * @param { RgbColor | HexColor | HslColor } color - 颜色字符串，支持rgb、hex、hsl格式
  * @returns {RGBObject} rgb对象
  */
-export function colorToRgbObj(color: StrColors): RGBObject {
+export function colorToRgbObj(color: StringColors): RGBObject {
   try {
     if (color.startsWith('rgb')) {
       return rgbColorToObj(color)
@@ -251,13 +272,15 @@ export function hslObjectToColor(hsl: HSLObject): HslColor {
 /**
  * 任意颜色类型转HSL对象
  *
- * @param { any } color - 颜色字符串，支持rgb、hex、hsl格式
+ * @param { any } color - 任意颜色，可以是对象类型也可以是字符串类型
+ * @param { ColorTag } [type] - 颜色类型，如果没有传入则会自动识别颜色类型
+ * @returns { HSLObject } - HSL对象
  */
-export function toHslObject(color: any): HSLObject {
-  const colorType = getColorType(color)
+export function anyColorToHslObject(color: any, type?: ColorTag): HSLObject {
+  const colorType = type ?? getColorType(color)
   switch (colorType) {
     case 'hex':
-      return rgbToHslObject(hexToRgbObject(color))
+      return hexToHslObject(color)
     case 'RGB':
     case 'rgb':
       return rgbToHslObject(color)
@@ -266,6 +289,136 @@ export function toHslObject(color: any): HSLObject {
     case 'HSL':
       return color
     default:
-      throw new Error('Invalid color type')
+      throw new Error(`Invalid color type: ${type}`)
+  }
+}
+
+/**
+ * 任意颜色类型转RGB对象
+ *
+ * @param { any } color - 任意颜色，可以是对象类型也可以是字符串类型
+ * @param { ColorTag } [type] - 颜色类型，如果没有传入则会自动识别颜色类型
+ * @returns { RGBObject } - RGB对象
+ */
+export function anyColorToRgbObject(color: any, type?: ColorTag): RGBObject {
+  const colorType = type ?? getColorType(color)
+  switch (colorType) {
+    case 'hex':
+      return hexToRgbObject(color)
+    case 'rgb':
+      return rgbColorToObj(color)
+    case 'RGB':
+      return color
+    case 'HSL':
+    case 'hsl':
+      return hslToRgbObject(color)
+    default:
+      throw new Error(`Invalid color type: ${type}`)
+  }
+}
+
+/**
+ * 任意颜色类型转Hex颜色
+ *
+ * @param { any } color - 任意颜色，可以是对象类型也可以是字符串类型
+ * @param { ColorTag } [type] - 颜色类型，如果没有传入则会自动识别颜色类型
+ * @returns { HexColor } - 十六进制颜色值
+ */
+export function anyColorToHexColor(color: any, type?: ColorTag): HexColor {
+  const colorType = type ?? getColorType(color)
+  switch (colorType) {
+    case 'hex':
+      return color
+    case 'rgb':
+      return rgbObjectToHexColor(rgbColorToObj(color))
+    case 'RGB':
+      return rgbObjectToHexColor(color)
+    case 'hsl':
+      return hslObjectToHexColor(hslColorToObj(color))
+    case 'HSL':
+      return hslObjectToHexColor(color)
+    default:
+      throw new Error(`Invalid color type: ${type}`)
+  }
+}
+
+/**
+ * 任意颜色类型转Hex颜色
+ *
+ * @param { any } color - 任意颜色，可以是对象类型也可以是字符串类型
+ * @param { ColorTag } [type] - 颜色类型，如果没有传入则会自动识别颜色类型
+ * @returns { HexColor } - 十六进制颜色值
+ */
+export function anyColorToRgbColor(color: any, type?: ColorTag): RgbColor {
+  const colorType = type ?? getColorType(color)
+  switch (colorType) {
+    case 'hex':
+      return rgbObjectToColor(hexToRgbObject(color))
+    case 'rgb':
+      return color
+    case 'RGB':
+      return rgbObjectToColor(color)
+    case 'hsl':
+      return hslObjectToRgbColor(hslColorToObj(color))
+    case 'HSL':
+      return hslObjectToRgbColor(color)
+    default:
+      throw new Error(`Invalid color type: ${type}`)
+  }
+}
+
+/**
+ * 任意颜色类型转Hsl字符串颜色
+ *
+ *
+ * @param { any } color - 任意颜色，可以是对象类型也可以是字符串类型
+ * @param { ColorTag } [type] - 颜色类型，如果没有传入则会自动识别颜色类型
+ * @returns { HslColor } - HSL字符串颜色
+ */
+export function anyColorToHslColor(color: any, type?: ColorTag): HslColor {
+  const colorType = type ?? getColorType(color)
+  switch (colorType) {
+    case 'hex':
+      return hslObjectToColor(hexToHslObject(color))
+    case 'rgb':
+      return hslObjectToColor(rgbToHslObject(rgbColorToObj(color)))
+    case 'RGB':
+      return hslObjectToColor(rgbToHslObject(color))
+    case 'hsl':
+      return color
+    case 'HSL':
+      return hslObjectToColor(color)
+    default:
+      throw new Error(`Invalid color type: ${type}`)
+  }
+}
+
+/**
+ * 任意颜色类型转目标颜色
+ *
+ * @template T 目标颜色类型标签
+ * @param {AnyColor} source - 源颜色
+ * @param {T} target - 目标颜色
+ * @param {ColorTag} [sourceType] - 源颜色类型，不传入会自动获取
+ */
+export function anyColorToTargetColor<T extends ColorTag>(
+  source: AnyColor,
+  target: T,
+  sourceType?: ColorTag
+): ColorTagToColorType<T> {
+  sourceType = sourceType ?? getColorType(source)
+  switch (target) {
+    case 'hex':
+      return anyColorToHexColor(source, sourceType) as any
+    case 'rgb':
+      return anyColorToRgbColor(source, sourceType) as any
+    case 'hsl':
+      return anyColorToHslColor(source, sourceType) as any
+    case 'RGB':
+      return anyColorToRgbObject(source, sourceType) as any
+    case 'HSL':
+      return anyColorToHslObject(source, sourceType) as any
+    default:
+      throw new Error(`Invalid target type , ${target}`)
   }
 }
