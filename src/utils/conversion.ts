@@ -1,15 +1,27 @@
 // noinspection JSUnusedGlobalSymbols
 
-import type { HexColor, HSLColor, RgbaColor, RGBAColor, RgbColor, RGBColor } from '../types.js'
+import type {
+  HexColor,
+  HslColor,
+  HSLObject,
+  RgbaColor,
+  RGBAObject,
+  RgbColor,
+  RGBObject
+} from '../types.js'
 
 /**
  * HSL转RGB辅助函数
  *
  * @param { HexColor } hex - 十六进制颜色值，不支持 透明度，`#`可选
- * @returns {RGBColor} - RGB对象
+ * @returns {RGBObject} - RGB对象
  * @throws {TypeError} - 如果输入不是合法的HEX颜色值
  */
-export function hexToRgb(hex: string): RGBColor {
+export function hexToRgb(hex: string): RGBObject {
+  // 验证输入颜色值是否有效
+  if (!/^#[0-9A-Fa-f]{6}$/.test(hex)) {
+    throw new Error('Invalid primary color format')
+  }
   // 去掉前导的 #
   let hexBody = hex.replace(/^#/, '')
   // 如果是简写的形式（如 #000 或 #abc），将其扩展为6位
@@ -18,10 +30,6 @@ export function hexToRgb(hex: string): RGBColor {
       .split('')
       .map((x) => x + x)
       .join('')
-  }
-  // 确保hex长度为6位
-  if (hexBody.length !== 6) {
-    throw new TypeError('Invalid hex color')
   }
   // 解析为 RGB
   const r = parseInt(hexBody.slice(0, 2), 16)
@@ -34,10 +42,10 @@ export function hexToRgb(hex: string): RGBColor {
  * HEX转RGBA辅助函数
  *
  * @param {string} hex - 十六进制颜色值，支持透明度，`#`可选
- * @returns { RGBAColor } - RGBA对象
+ * @returns { RGBAObject } - RGBA对象
  * @throws {TypeError} - 如果输入不是合法的HEX颜色值
  */
-export function hexToRgba(hex: string): RGBAColor {
+export function hexToRgba(hex: string): RGBAObject {
   let r: number, g: number, b: number, a: number
   if (hex.length !== 9) {
     const rgb = hexToRgb(hex)
@@ -60,30 +68,30 @@ export function hexToRgba(hex: string): RGBAColor {
 /**
  * Rgb对象转为字符串
  *
- * @param { RGBColor } rgb - RGB对象
+ * @param { RGBObject } rgb - RGB对象
  * @returns { RgbColor } - RGB字符串
  */
-export function rgbToString(rgb: RGBColor): RgbColor {
+export function rgbToString(rgb: RGBObject): RgbColor {
   return `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`
 }
 
 /**
  * Rgba对象转为字符串
  *
- * @param { RGBAColor } rgba
+ * @param { RGBAObject } rgba
  * @returns { RgbaColor } - RGBA字符串
  */
-export function rgbaToString(rgba: RGBAColor): RgbaColor {
+export function rgbaToString(rgba: RGBAObject): RgbaColor {
   return `rgba(${rgba.r}, ${rgba.g}, ${rgba.b}, ${rgba.a})`
 }
 
 /**
  *  RGB转HSL辅助函数
  *
- * @param { RGBColor | RgbColor } rgb - RGB对象
- * @returns { HSLColor } - HSL对象
+ * @param { RGBObject | RgbColor } rgb - RGB对象
+ * @returns { HSLObject } - HSL对象
  */
-export function rgbToHsl(rgb: RGBColor | RgbColor): HSLColor {
+export function rgbToHsl(rgb: RGBObject | RgbColor): HSLObject {
   if (typeof rgb === 'string') rgb = rgbStringToObj(rgb)
   let { r, g, b } = rgb
   r /= 255
@@ -120,20 +128,19 @@ export function rgbToHsl(rgb: RGBColor | RgbColor): HSLColor {
  * HEX 转 HSL
  *
  * @param { HexColor } hex - 十六进制颜色值
- * @returns { HSLColor } - HSL对象
+ * @returns { HSLObject } - HSL对象
  */
-export function hexToHsl(hex: string): HSLColor {
-  const rgb = hexToRgb(hex)
-  return rgbToHsl(rgb)
+export function hexToHsl(hex: string): HSLObject {
+  return rgbToHsl(hexToRgb(hex))
 }
 
 /**
  * HSL 转 RGB
  *
- * @param { HSLColor } hsl - HSL对象
- * @returns { RGBColor } - RGB颜色值
+ * @param { HSLObject } hsl - HSL对象
+ * @returns { RGBObject } - RGB颜色值
  */
-export function hslToRgb(hsl: HSLColor): RGBColor {
+export function hslToRgb(hsl: HSLObject): RGBObject {
   // 输入验证
   if (typeof hsl !== 'object' || hsl === null || !('h' in hsl) || !('s' in hsl) || !('l' in hsl)) {
     throw new Error('Invalid HSL object')
@@ -189,10 +196,10 @@ export function hslToRgb(hsl: HSLColor): RGBColor {
 /**
  * hsl 转 hex
  *
- * @param { HSLColor } hsl - HSL对象
+ * @param { HSLObject } hsl - HSL对象
  * @returns { HexColor } - 十六进制颜色值
  */
-export function hslToHex(hsl: HSLColor): HexColor {
+export function hslToHex(hsl: HSLObject): HexColor {
   const rgb = hslToRgb(hsl)
   return rgbToHex(rgb)
 }
@@ -200,10 +207,10 @@ export function hslToHex(hsl: HSLColor): HexColor {
 /**
  * rgb 转 hex
  *
- * @param { RGBColor } rgb - RGB对象
+ * @param { RGBObject } rgb - RGB对象
  * @returns { HexColor } - 十六进制颜色值
  */
-export function rgbToHex(rgb: RGBColor): HexColor {
+export function rgbToHex(rgb: RGBObject): HexColor {
   let { r, g, b } = rgb
   r = r < 0 ? 0 : r > 255 ? 255 : r
   g = g < 0 ? 0 : g > 255 ? 255 : g
@@ -215,9 +222,9 @@ export function rgbToHex(rgb: RGBColor): HexColor {
  * rgb字符串转为rgb对象
  *
  * @param { RgbColor } rgbString
- * @returns { RGBColor } - RGB对象
+ * @returns { RGBObject } - RGB对象
  */
-export function rgbStringToObj(rgbString: string): RGBColor {
+export function rgbStringToObj(rgbString: string): RGBObject {
   // 正则表达式匹配 rgb(r, g, b) 格式的字符串
   const match = rgbString.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/)
 
@@ -237,9 +244,9 @@ export function rgbStringToObj(rgbString: string): RGBColor {
  * 字符串颜色转rgb对象
  *
  * @param { RgbColor | HexColor } color
- * @returns {RGBColor} rgb对象
+ * @returns {RGBObject} rgb对象
  */
-export function colorToRgbObj(color: RgbColor | HexColor | string): RGBColor {
+export function colorToRgbObj(color: RgbColor | HexColor | string): RGBObject {
   try {
     if (color.startsWith('rgb')) {
       return rgbStringToObj(color)
@@ -249,4 +256,24 @@ export function colorToRgbObj(color: RgbColor | HexColor | string): RGBColor {
   } catch (e) {
     throw new TypeError('Invalid color format')
   }
+}
+
+/**
+ * HSL对象转字符串
+ *
+ * @param { HSLObject } hsl
+ * @returns {HslColor}
+ */
+export function hslToString(hsl: HSLObject): HslColor {
+  return `hsl(${hsl.h}, ${hsl.s * 100}%, ${hsl.l * 100}%)`
+}
+
+/**
+ * 颜色转HSL对象
+ *
+ * @param { RgbColor | HexColor } color - 颜色字符串，支持rgb和hex格式
+ * @returns { HSLObject } - HSL对象
+ */
+export function colorToHexObj(color: string): HSLObject {
+  return rgbToHsl(colorToRgbObj(color))
 }
