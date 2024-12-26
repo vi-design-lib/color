@@ -4,6 +4,11 @@
 export type HexColor = `#${string}`
 
 /**
+ * hsl颜色类型
+ */
+export type HslColor = `hsl(${number}, ${number}%, ${number}%)`
+
+/**
  * rgba颜色类型
  */
 export type RgbaColor = `rgba(${number}, ${number}, ${number}, ${number})`
@@ -16,7 +21,7 @@ export type RgbColor = `rgb(${number}, ${number}, ${number})`
 /**
  * RGB颜色对象类型
  */
-export interface RGBColor {
+export interface RGBObject {
   r: number
   g: number
   b: number
@@ -25,14 +30,14 @@ export interface RGBColor {
 /**
  * RGBA颜色对象类型
  */
-export interface RGBAColor extends RGBColor {
+export interface RGBAObject extends RGBObject {
   a: number
 }
 
 /**
  * HSL颜色对象类型
  */
-export type HSLColor = { h: number; s: number; l: number }
+export type HSLObject = { h: number; s: number; l: number }
 
 /**
  * 小写代表字符串颜色类型，大写代表颜色对象类型
@@ -42,4 +47,4 @@ export type Out<T extends OutType> = T extends 'hex'
   ? HexColor
   : T extends 'rgb'
     ? RgbColor
-    : RGBColor
+    : RGBObject
