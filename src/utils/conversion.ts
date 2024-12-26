@@ -7,7 +7,8 @@ import type {
   RgbaColor,
   RGBAObject,
   RgbColor,
-  RGBObject
+  RGBObject,
+  StrColors
 } from '../types.js'
 
 /**
@@ -253,7 +254,7 @@ export function rgbColorToObj(rgbString: string): RGBObject {
  * @param { RgbColor | HexColor | HslColor } color - 颜色字符串，支持rgb、hex、hsl格式
  * @returns {RGBObject} rgb对象
  */
-export function colorToRgbObj(color: RgbColor | HexColor | HslColor | string): RGBObject {
+export function colorToRgbObj(color: StrColors): RGBObject {
   try {
     if (color.startsWith('rgb')) {
       return rgbColorToObj(color)
