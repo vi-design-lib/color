@@ -1,4 +1,4 @@
-import type { HexColor, RGBColor, RgbColor } from '../types.js'
+import type { HexColor, RgbColor, RGBObject } from '../types.js'
 import { colorToRgbObj, hslToHex, hslToRgb, rgbToHsl, rgbToString } from './conversion.js'
 
 /**
@@ -10,7 +10,7 @@ import { colorToRgbObj, hslToHex, hslToRgb, rgbToHsl, rgbToString } from './conv
  * @param {string} property - 要调整的属性 ('l' 或 's' 或 'h')
  * @returns {T} - 调整后的颜色
  */
-function adjustColorProperty<T extends RgbColor | HexColor | RGBColor | string>(
+function adjustColorProperty<T extends RgbColor | HexColor | RGBObject | string>(
   color: T,
   value: number,
   property: 'l' | 's' | 'h'
@@ -48,7 +48,7 @@ function adjustColorProperty<T extends RgbColor | HexColor | RGBColor | string>(
  * @param {number} ratio - 亮度调整比率 (-1到1)
  * @returns {T} - 调整后的颜色
  */
-export function adjustBrightness<T extends RgbColor | HexColor | RGBColor | string>(
+export function adjustBrightness<T extends RgbColor | HexColor | RGBObject | string>(
   color: T,
   ratio: number
 ): T {
@@ -63,7 +63,7 @@ export function adjustBrightness<T extends RgbColor | HexColor | RGBColor | stri
  * @param {number} ratio - 饱和度调整比率 (-1到1)
  * @returns {T} - 调整后的颜色
  */
-export function adjustSaturation<T extends RgbColor | HexColor | RGBColor | string>(
+export function adjustSaturation<T extends RgbColor | HexColor | RGBObject | string>(
   color: T,
   ratio: number
 ): T {
@@ -78,7 +78,7 @@ export function adjustSaturation<T extends RgbColor | HexColor | RGBColor | stri
  * @param {number} degrees - 色相调整角度 (-360 到 360)，负值表示顺时针旋转，正值表示逆时针旋转
  * @returns {T} - 调整后的颜色
  */
-export function adjustHue<T extends RgbColor | HexColor | RGBColor | string>(
+export function adjustHue<T extends RgbColor | HexColor | RGBObject | string>(
   color: T,
   degrees: number
 ): T {
