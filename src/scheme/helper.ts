@@ -4,7 +4,7 @@ import {
   getColorType,
   HslFormula
 } from '../utils/index.js'
-import type { BaseColorScheme, HSLObject, ObjectColors, StringColors } from '../types.js'
+import type { ColorScheme, HSLObject, ObjectColors, StringColors } from '../types.js'
 
 /**
  * 创建主题配色方案
@@ -13,7 +13,7 @@ import type { BaseColorScheme, HSLObject, ObjectColors, StringColors } from '../
  */
 export function createBaseColorScheme<T extends StringColors | ObjectColors>(
   primary: T
-): BaseColorScheme<T> {
+): ColorScheme<T> {
   const outType = getColorType(primary)
   // 获取主色的 HSL 对象
   const primaryHsl = anyColorToHslObject(primary, outType)
@@ -44,7 +44,7 @@ export function createBaseColorScheme<T extends StringColors | ObjectColors>(
   // 生成中性色：灰色调带有主色调
   const neutralHsl = { h, s: 0.1, l: l * 0.9 } // 灰色带有主色调的HSL
   // 创建 HSL 配色方案
-  const hslScheme: BaseColorScheme<HSLObject> = {
+  const hslScheme: ColorScheme<HSLObject> = {
     primary: primaryHsl,
     secondary: secondaryHsl,
     tertiary: tertiaryHsl,
@@ -55,10 +55,10 @@ export function createBaseColorScheme<T extends StringColors | ObjectColors>(
   if (outType !== 'HSL') {
     // 将 HSL 配色方案转换为 RGB 或 HEX
     for (const hslSchemeKey in hslScheme) {
-      const key = hslSchemeKey as keyof BaseColorScheme<T>
+      const key = hslSchemeKey as keyof ColorScheme<T>
       const hsl = hslScheme[key]
       hslScheme[key] = anyColorToTargetColor(hsl, outType, 'HSL') as any
     }
   }
-  return hslScheme as unknown as BaseColorScheme<T>
+  return hslScheme as unknown as ColorScheme<T>
 }
