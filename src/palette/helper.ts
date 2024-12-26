@@ -1,11 +1,11 @@
 // noinspection JSUnusedGlobalSymbols
 
-import { colorToRgbObj, hslToRgb, rgbToHex, rgbToHsl, rgbToString } from '../utils/index.js'
+import { colorToRgbObj, rgbToHex, rgbToString } from '../utils/index.js'
 import { Palette } from './palette.js'
 import type { HexColor, Out, OutType, RgbColor, RGBColor } from '../types.js'
 
 /**
- * 获取基于 HSL 模型的调色板颜色
+ * 获取基于 RGB 模型的调色板颜色
  *
  * @param {number} i - 色阶索引，必须小于色阶数量
  * @param {RGBColor} sourceColor - 源色
@@ -20,34 +20,29 @@ export function getPaletteColor<OUT extends OutType = 'hex'>(
   type: OUT = 'hex' as OUT
 ): Out<OUT> {
   if (i > steps) throw new Error('i must be less than steps')
-
-  // 将源色转换为 HSL
-  const { h, s, l } = rgbToHsl(sourceColor)
-  let newH = h
-  let newS = s
-  let newL
-
+  const { r, g, b } = sourceColor
+  let newR, newG, newB
   const halfSteps = Math.floor(steps / 2)
-
   if (i < halfSteps) {
     // 从黑色到源色的过渡
     const factor = i / halfSteps
-    newL = Math.round(factor * 100) // 从黑色到源色的亮度过渡
+    // 使黑色到源色的渐变更加平滑
+    newR = Math.round(r * factor)
+    newG = Math.round(g * factor)
+    newB = Math.round(b * factor)
   } else {
     // 从源色到白色的过渡
-    const reverseIndex = i - halfSteps
+    const reverseIndex = i - halfSteps // 从源色到白色的部分
     const factor = reverseIndex / halfSteps
-    newL = Math.round((1 - factor) * l + factor * 100) // 从源色到白色的亮度过渡
+    newR = Math.round(r * (1 - factor) + 255 * factor)
+    newG = Math.round(g * (1 - factor) + 255 * factor)
+    newB = Math.round(b * (1 - factor) + 255 * factor)
   }
-
-  const newHsl = { h: newH, s: newS, l: newL }
-
-  // 将 HSL 转回 RGB 并返回
-  const newRgb = hslToRgb(newHsl)
-
-  if (type === 'rgb') return newRgb as Out<OUT>
+  const newRgb: RGBColor = { r: newR, g: newG, b: newB }
+  if (type === 'RGB') return newRgb as Out<OUT>
   return (type === 'rgb' ? rgbToString(newRgb) : rgbToHex(newRgb)) as Out<OUT>
 }
+
 /**
  * 生成调色板
  *
