@@ -1,15 +1,5 @@
-// noinspection JSUnusedGlobalSymbols
-
-import type {
-  HexColor,
-  HslColor,
-  HSLObject,
-  RgbaColor,
-  RGBAObject,
-  RgbColor,
-  RGBObject,
-  StrColors
-} from '../types.js'
+import type { HexColor, HslColor, HSLObject, RgbColor, RGBObject, StrColors } from '../types.js'
+import { getColorType } from './tools.js'
 
 /**
  * HSL转RGB辅助函数
@@ -18,7 +8,7 @@ import type {
  * @returns {RGBObject} - RGB对象
  * @throws {TypeError} - 如果输入不是合法的HEX颜色值
  */
-export function hexToRgb(hex: string): RGBObject {
+export function hexToRgbObject(hex: string): RGBObject {
   // 验证输入颜色值是否有效
   if (!/^#[0-9A-Fa-f]{6}$/.test(hex)) {
     throw new Error('Invalid primary color format')
@@ -38,32 +28,14 @@ export function hexToRgb(hex: string): RGBObject {
   const b = parseInt(hexBody.slice(4, 6), 16)
   return { r, g, b }
 }
-
 /**
- * HEX转RGBA辅助函数
+ * HEX 转 HSL
  *
- * @param {string} hex - 十六进制颜色值，支持透明度，`#`可选
- * @returns { RGBAObject } - RGBA对象
- * @throws {TypeError} - 如果输入不是合法的HEX颜色值
+ * @param { HexColor } hex - 十六进制颜色值
+ * @returns { HSLObject } - HSL对象
  */
-export function hexToRgba(hex: string): RGBAObject {
-  let r: number, g: number, b: number, a: number
-  if (hex.length !== 9) {
-    const rgb = hexToRgb(hex)
-    r = rgb.r
-    g = rgb.g
-    b = rgb.b
-    a = 1
-  } else {
-    // 去掉前导的 #
-    let hexBody = hex.replace(/^#/, '')
-    // 处理8位颜色（包括透明度）
-    r = parseInt(hexBody.slice(0, 2), 16)
-    g = parseInt(hexBody.slice(2, 4), 16)
-    b = parseInt(hexBody.slice(4, 6), 16)
-    a = parseInt(hexBody.slice(6, 8), 16) / 255 // 透明度转换为 0 到 1 的范围
-  }
-  return { r, g, b, a }
+export function hexToHslObject(hex: string): HSLObject {
+  return rgbToHslObject(hexToRgbObject(hex))
 }
 
 /**
@@ -77,22 +49,12 @@ export function rgbObjectToColor(rgb: RGBObject): RgbColor {
 }
 
 /**
- * Rgba对象转为字符串
- *
- * @param { RGBAObject } rgba
- * @returns { RgbaColor } - RGBA字符串
- */
-export function rgbaObjectToColor(rgba: RGBAObject): RgbaColor {
-  return `rgba(${rgba.r}, ${rgba.g}, ${rgba.b}, ${rgba.a})`
-}
-
-/**
  *  RGB转HSL辅助函数
  *
- * @param { RGBObject | RgbColor } rgb - RGB对象
+ * @param { RGBObject | RgbColor } rgb - RGB对象或rgb字符串
  * @returns { HSLObject } - HSL对象
  */
-export function rgbToHsl(rgb: RGBObject | RgbColor): HSLObject {
+export function rgbToHslObject(rgb: RGBObject | RgbColor): HSLObject {
   if (typeof rgb === 'string') rgb = rgbColorToObj(rgb)
   let { r, g, b } = rgb
   r /= 255
@@ -126,13 +88,17 @@ export function rgbToHsl(rgb: RGBObject | RgbColor): HSLObject {
 }
 
 /**
- * HEX 转 HSL
+ * rgb 转 hex
  *
- * @param { HexColor } hex - 十六进制颜色值
- * @returns { HSLObject } - HSL对象
+ * @param { RGBObject } rgb - RGB对象
+ * @returns { HexColor } - 十六进制颜色值
  */
-export function hexToHsl(hex: string): HSLObject {
-  return rgbToHsl(hexToRgb(hex))
+export function rgbObjectToHex(rgb: RGBObject): HexColor {
+  let { r, g, b } = rgb
+  r = r < 0 ? 0 : r > 255 ? 255 : r
+  g = g < 0 ? 0 : g > 255 ? 255 : g
+  b = b < 0 ? 0 : b > 255 ? 255 : b
+  return `#${((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1).toUpperCase()}`
 }
 
 /**
@@ -141,7 +107,7 @@ export function hexToHsl(hex: string): HSLObject {
  * @param { HSLObject } hsl - HSL对象
  * @returns { RGBObject } - RGB颜色对象
  */
-export function hslToRgb(hsl: HSLObject | HslColor): RGBObject {
+export function hslToRgbObject(hsl: HSLObject | HslColor): RGBObject {
   if (typeof hsl === 'string') {
     hsl = hslColorToObj(hsl)
   } else if (
@@ -207,23 +173,9 @@ export function hslToRgb(hsl: HSLObject | HslColor): RGBObject {
  * @param { HSLObject } hsl - HSL对象
  * @returns { HexColor } - 十六进制颜色值
  */
-export function hslToHex(hsl: HSLObject): HexColor {
-  const rgb = hslToRgb(hsl)
-  return rgbToHex(rgb)
-}
-
-/**
- * rgb 转 hex
- *
- * @param { RGBObject } rgb - RGB对象
- * @returns { HexColor } - 十六进制颜色值
- */
-export function rgbToHex(rgb: RGBObject): HexColor {
-  let { r, g, b } = rgb
-  r = r < 0 ? 0 : r > 255 ? 255 : r
-  g = g < 0 ? 0 : g > 255 ? 255 : g
-  b = b < 0 ? 0 : b > 255 ? 255 : b
-  return `#${((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1).toUpperCase()}`
+export function hslObjectToHex(hsl: HSLObject): HexColor {
+  const rgb = hslToRgbObject(hsl)
+  return rgbObjectToHex(rgb)
 }
 
 /**
@@ -259,9 +211,9 @@ export function colorToRgbObj(color: StrColors): RGBObject {
     if (color.startsWith('rgb')) {
       return rgbColorToObj(color)
     } else if (color.startsWith('hsl')) {
-      return hslToRgb(color as HslColor)
+      return hslToRgbObject(color as HslColor)
     } else {
-      return hexToRgb(color)
+      return hexToRgbObject(color)
     }
   } catch (e) {
     throw new TypeError('Invalid color format')
@@ -297,11 +249,23 @@ export function hslObjectToColor(hsl: HSLObject): HslColor {
 }
 
 /**
- * 颜色转HSL对象
+ * 任意颜色类型转HSL对象
  *
- * @param { RgbColor | HexColor } color - 颜色字符串，支持rgb和hex格式
- * @returns { HSLObject } - HSL对象
+ * @param { any } color - 颜色字符串，支持rgb、hex、hsl格式
  */
-export function colorToHexObj(color: string): HSLObject {
-  return rgbToHsl(colorToRgbObj(color))
+export function toHslObject(color: any): HSLObject {
+  const colorType = getColorType(color)
+  switch (colorType) {
+    case 'hex':
+      return rgbToHslObject(hexToRgbObject(color))
+    case 'RGB':
+    case 'rgb':
+      return rgbToHslObject(color)
+    case 'hsl':
+      return hslColorToObj(color)
+    case 'HSL':
+      return color
+    default:
+      throw new Error('Invalid color type')
+  }
 }
