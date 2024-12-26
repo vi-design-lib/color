@@ -11,11 +11,6 @@ export type HexColor = `#${string}`
 export type HslColor = `hsl(${number}, ${number}%, ${number}%)`
 
 /**
- * rgba颜色类型
- */
-export type RgbaColor = `rgba(${number}, ${number}, ${number}, ${number})`
-
-/**
  * rgb颜色类型
  */
 export type RgbColor = `rgb(${number}, ${number}, ${number})`
@@ -23,7 +18,17 @@ export type RgbColor = `rgb(${number}, ${number}, ${number})`
 /**
  * 字符串颜色类型
  */
-export type StrColors = HexColor | HslColor | RgbColor | string
+export type StringColors = HexColor | HslColor | RgbColor | string
+
+/**
+ * 颜色对象类型
+ */
+export type ObjectColors = RGBObject | HSLObject
+
+/**
+ * 任意颜色类型
+ */
+export type AnyColor = StringColors | ObjectColors
 
 /**
  * RGB颜色对象类型
@@ -35,13 +40,6 @@ export interface RGBObject {
 }
 
 /**
- * RGBA颜色对象类型
- */
-export interface RGBAObject extends RGBObject {
-  a: number
-}
-
-/**
  * HSL颜色对象类型
  */
 export type HSLObject = { h: number; s: number; l: number }
@@ -49,15 +47,22 @@ export type HSLObject = { h: number; s: number; l: number }
 /**
  * 小写代表字符串颜色类型，大写代表颜色对象类型
  */
-export type OutType = 'hex' | 'rgb' | 'hsl' | 'RGB' | 'HSL'
-export type Out<T extends OutType> = T extends 'hex'
+export type ColorTag = 'hex' | 'rgb' | 'hsl' | 'RGB' | 'HSL'
+
+/**
+ * 颜色类型转换
+ */
+export type ColorTagToColorType<T extends ColorTag> = T extends 'hex'
   ? HexColor
   : T extends 'rgb'
     ? RgbColor
-    : T extends 'RGB'
-      ? RGBObject
-      : HSLObject
-
+    : T extends 'hsl'
+      ? HslColor
+      : T extends 'RGB'
+        ? RGBObject
+        : T extends 'HSL'
+          ? HSLObject
+          : never
 /**
  * 基准配色方案
  */
