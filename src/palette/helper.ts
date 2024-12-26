@@ -1,32 +1,48 @@
 // noinspection JSUnusedGlobalSymbols
 
-import {
-  colorToRgbObj,
-  hslObjectToColor,
-  rgbObjectToColor,
-  rgbToHex,
-  rgbToHsl
-} from '../utils/index.js'
+import { anyColorToRgbObject, anyColorToTargetColor, getColorType } from '../utils/index.js'
 import { Palette } from './palette.js'
-import type { HexColor, Out, OutType, RgbColor, RGBObject } from '../types.js'
+import type { AnyColor, ColorTag, ColorTagToColorType, RGBObject } from '../types.js'
 
 /**
  * 获取基于 RGB 模型的调色板颜色
  *
+ * @template T - 输出颜色的类型标记
  * @param {number} i - 色阶索引，必须小于色阶数量
  * @param {RGBObject} sourceColor - 源色
  * @param {number} steps - 色阶数量，建议单数，颜色过渡更平滑(中间值则是源色)
- * @param {'hex' | 'rgb' | 'hsl'} type - 返回的颜色类型，默认为 HEX
- * @returns {HexColor | RgbColor | RGBObject} - 调色板颜色
+ * @param {ColorTag} type - 输出颜色类型
+ * @returns {T} - 调色板颜色
  */
-export function getPaletteColor<OUT extends OutType = 'hex'>(
+export function getPaletteColor<T extends ColorTag>(
   i: number,
-  sourceColor: RGBObject,
+  sourceColor: AnyColor,
   steps: number,
-  type: OUT = 'hex' as OUT
-): Out<OUT> {
+  type: T
+): ColorTagToColorType<T>
+/**
+ * 获取基于 RGB 模型的调色板颜色
+ *
+ * @template T - 颜色类型
+ * @param {number} i - 色阶索引，必须小于色阶数量
+ * @param {T} sourceColor - 源色
+ * @param {number} steps - 色阶数量，建议单数，颜色过渡更平滑(中间值则是源色)
+ * @returns {T} - 调色板颜色，和源色类型一致
+ */
+export function getPaletteColor<T extends ColorTag>(
+  i: number,
+  sourceColor: AnyColor,
+  steps: number
+): ColorTagToColorType<T>
+export function getPaletteColor<T extends AnyColor>(
+  i: number,
+  sourceColor: T,
+  steps: number,
+  type?: ColorTag
+): T {
   if (i > steps) throw new Error('i must be less than steps')
-  const { r, g, b } = sourceColor
+  type = type ?? getColorType(sourceColor)
+  const { r, g, b } = anyColorToRgbObject(sourceColor)
   let newR, newG, newB
   const halfSteps = Math.floor(steps / 2)
   if (i < halfSteps) {
@@ -45,10 +61,7 @@ export function getPaletteColor<OUT extends OutType = 'hex'>(
     newB = Math.round(b * (1 - factor) + 255 * factor)
   }
   const newRgb: RGBObject = { r: newR, g: newG, b: newB }
-  if (type === 'hsl') return hslObjectToColor(rgbToHsl(newRgb)) as Out<OUT>
-  if (type === 'RGB') return newRgb as Out<OUT>
-  if (type === 'HSL') return rgbToHsl(newRgb) as Out<OUT>
-  return (type === 'rgb' ? rgbObjectToColor(newRgb) : rgbToHex(newRgb)) as Out<OUT>
+  return anyColorToTargetColor(newRgb, type, 'RGB') as T
 }
 
 /**
@@ -58,22 +71,17 @@ export function getPaletteColor<OUT extends OutType = 'hex'>(
  * 1. 只是获取某个色阶的颜色，请使用 `getPaletteColor` 函数。
  * 2. `new Palette(sourceColor, steps)` 实例化{@link Palette}对象，然后使用 Palette 对象提供的方法来获取颜色性能更佳。
  *
- * @param {RgbColor|HexColor|RGBObject} sourceColor - 源颜色
+ * @template T - 颜色类型
+ * @param {T} sourceColor - 源颜色
  * @param {number} steps - 色阶的数量
- * @param {'hex' | 'rgb'} [type=hex] - 返回的颜色类型，默认为 HEX
- * @returns {Array<HexColor | RgbColor | RGBObject>} - 调色板颜色数组(黑->源->白)
+ * @returns {Array<T>} - 调色板颜色数组(黑->源->白)
  */
-export function makePalette<OUT extends OutType = 'hex'>(
-  sourceColor: RgbColor | HexColor | RGBObject,
-  steps: number = 11,
-  type: OutType = 'hex'
-): Array<Out<OUT>> {
-  if (typeof sourceColor === 'string') {
-    sourceColor = colorToRgbObj(sourceColor)
-  }
-  const palette: Array<Out<OUT>> = []
+export function makePalette<T extends AnyColor>(sourceColor: T, steps: number = 11): Array<T> {
+  const palette: Array<T> = []
+  const type = getColorType(sourceColor)
+  const source = anyColorToRgbObject(sourceColor, type)
   for (let i = 0; i < steps; i++) {
-    palette.push(getPaletteColor(i, sourceColor, steps, type) as Out<OUT>)
+    palette.push(getPaletteColor(i, source, steps, type) as T)
   }
-  return palette as Array<Out<OUT>>
+  return palette
 }
