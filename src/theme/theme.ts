@@ -1,13 +1,21 @@
-import type { BaseColorScheme, ColorSchemePalettes, ColorSchemeRoles } from '../types.js'
+import type {
+  BaseColorScheme,
+  ColorSchemePalettes,
+  ColorSchemeRoles,
+  ThemeSchemes
+} from '../types.js'
 import { Scheme } from './scheme.js'
 
+/**
+ * 主题
+ *
+ * @template T - 基准配色方案
+ */
 export class Theme<T extends BaseColorScheme> {
   // 配色方案对应的调色板
   readonly #palettes: ColorSchemePalettes<T>
-  readonly #schemes: {
-    light: ColorSchemeRoles<T>
-    dark: ColorSchemeRoles<T>
-  }
+  // 主题配色方案
+  readonly #schemes: ThemeSchemes<T>
   constructor(scheme: T) {
     this.#palettes = Scheme.colorSchemeToPalettes(scheme)
     this.#schemes = {
