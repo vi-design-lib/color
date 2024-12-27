@@ -81,7 +81,7 @@ export function getPaletteColor<T extends AnyColor>(
  * @param {number} size - 色阶的数量
  * @returns {Array<T>} - 调色板色阶数组(黑->源->白)，色阶总数为奇数时最中间的色阶为源色
  */
-export function makePalette<T extends AnyColor>(sourceColor: T, size: number = 11): Array<T> {
+export function makePaletteArray<T extends AnyColor>(sourceColor: T, size: number): Array<T> {
   const palette: Array<T> = []
   const type = getColorType(sourceColor)
   const source = anyColorToHslObject(sourceColor, type)
