@@ -38,7 +38,7 @@ export function getPaletteColor<T extends AnyColor>(
   size: number,
   type?: ColorTag
 ): T {
-  if (i >= size) throw new Error('i must be less than steps')
+  if (i > size) throw new Error('i must be less than steps')
   type = type ?? getColorType(sourceColor)
 
   const { h, s, l } = anyColorToHslObject(sourceColor)
