@@ -135,7 +135,7 @@ export class Scheme {
       roles[`${key}Container`] = palette.get(this.lightRule.container)
       roles[`on${capitalize(key)}Container`] = palette.get(this.lightRule.onContainer)
     }
-    const neutral = palettes.neutrals
+    const neutral = palettes.neutral
     const neutralRoles: NeutralColorRoles<T['neutral']> = {
       // 默认的背景颜色
       surface: neutral.get(98),
@@ -192,7 +192,7 @@ export class Scheme {
       roles[`${key}Container`] = palette.get(this.darkRule.container)
       roles[`on${capitalize(key)}Container`] = palette.get(this.darkRule.onContainer)
     }
-    const neutral = palettes.neutrals
+    const neutral = palettes.neutral
     const neutralRoles: NeutralColorRoles<T['neutral']> = {
       // 默认的背景颜色
       surface: neutral.get(6),
