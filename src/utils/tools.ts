@@ -64,3 +64,13 @@ export function getColorType(color: any): ColorTag {
   }
   throw new Error('Invalid color format')
 }
+
+/**
+ * 字符串首字母转大写
+ *
+ * @param {string} str - 需要转大写的字符串
+ */
+export function capitalize(str: string): string {
+  if (str.length === 0) return str
+  return str.charAt(0).toUpperCase() + str.slice(1)
+}
