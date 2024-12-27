@@ -66,7 +66,7 @@ export type ColorTagToColorType<T extends ColorTag> = T extends 'hex'
 /**
  * 基准配色方案
  */
-export interface BaseColorScheme<T> {
+export interface ColorScheme<T extends AnyColor = AnyColor> {
   /**
    * 主色
    */
@@ -76,7 +76,7 @@ export interface BaseColorScheme<T> {
    *
    * 主色相邻的颜色，通过调整饱和度和亮度来形成对比度
    */
-  secondary: T
+  minor: T
   /**
    * 三级辅色
    *
@@ -101,9 +101,10 @@ export interface BaseColorScheme<T> {
    * 根据主色计算出来的中性色，它接近于灰色，但它和主色之间存在一定的色相关联
    */
   neutral: T
+  /**
+   * 自定义配色方案
+   */
+  [key: string]: T
 }
 
-/**
- * 配色方案
- */
-export type ColorSchemePalette<T extends RgbColor | HexColor> = BaseColorScheme<Palette<T>>
+export type ColorSchemePalettes<T extends ColorScheme> = Record<keyof T, Palette<T['primary']>>
