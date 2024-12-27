@@ -1,11 +1,12 @@
-import type { ColorTag } from '../types.js'
+import type { AnyColor, ColorTag } from '../types.js'
+import { anyColorToHexColor } from './conversion.js'
 
 /**
  * 输出带有颜色的键值对对象到控制台
  *
- * @param {Record<string, string>} colorObj - 键值对对象，键为颜色名称，值为颜色值（HEX颜色）
+ * @param {Record<string, string>} colors - 键值对对象，键为颜色名称，值为颜色值（HEX颜色）
  */
-export function logColorsWithLabels(colorObj: Record<string, string>): void {
+export function logColorsWithLabels(colors: Record<string, AnyColor>): void {
   // 判断当前环境是否是浏览器
   const isBrowser = typeof window !== 'undefined'
 
@@ -27,7 +28,8 @@ export function logColorsWithLabels(colorObj: Record<string, string>): void {
     }
 
     // 在终端中输出颜色
-    Object.entries(colorObj).forEach(([key, color]) => {
+    Object.entries(colors).forEach(([key, color]) => {
+      color = anyColorToHexColor(color)
       // 获取颜色对应的 ANSI 代码
       const ansiColor = hexToAnsi(color)
       // 输出带有颜色的键值对
@@ -36,7 +38,8 @@ export function logColorsWithLabels(colorObj: Record<string, string>): void {
   } else {
     // 浏览器环境，使用 console.log 和 CSS 样式
     console.group()
-    Object.entries(colorObj).forEach(([key, color]) => {
+    Object.entries(colors).forEach(([key, color]) => {
+      color = anyColorToHexColor(color)
       // 输出颜色标签和对应的颜色
       console.log(`%c${key}: ${color}`, `color: ${color}; font-weight: bold;`)
     })
