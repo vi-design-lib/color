@@ -33,7 +33,7 @@ export class HslFormula {
    * @returns { number } - 调整后的值
    */
   static ratioAdjust(value: number, ratio: number): number {
-    return Math.max(0, Math.min(1, value * ratio))
+    return parseFloat(Math.max(0, Math.min(1, value * ratio)).toFixed(2))
   }
 
   /**
