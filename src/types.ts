@@ -114,7 +114,10 @@ export interface BaseColorScheme<T extends AnyColor = AnyColor> {
 /**
  * 配色方案调色板
  */
-export type ColorSchemePalettes<T extends BaseColorScheme> = Record<keyof T, Palette<T['primary']>>
+export type ColorSchemePalettes<T extends BaseColorScheme = BaseColorScheme> = Record<
+  keyof T,
+  Palette<T['primary']>
+>
 
 /**
  * 调色板提取颜色规则
@@ -145,7 +148,7 @@ export type PaletteExtractionColorRules = {
  *
  * `neutral` 调色板转化的角色较多，单独处理，具体见 {@link NeutralColorRoles} 接口
  */
-export type ColorSchemeRoles<T extends BaseColorScheme> = Omit<T, 'neutral'> & {
+export type ColorSchemeRoles<T extends BaseColorScheme = BaseColorScheme> = Omit<T, 'neutral'> & {
   // 排除 neutral 字段，并生成 "on" 开头的字段
   [key in Exclude<keyof T, 'neutral'> as `on${Capitalize<key & string>}`]: T[key]
 } & {
@@ -234,4 +237,18 @@ export interface NeutralColorRoles<T extends AnyColor> {
    * 阴影颜色，通常需要降低透明度使用
    */
   shadow: T
+}
+
+/**
+ * 主题配色
+ */
+export interface ThemeSchemes<T extends BaseColorScheme = BaseColorScheme> {
+  /**
+   * 亮色主题配色方案
+   */
+  light: ColorSchemeRoles<T>
+  /**
+   * 暗色主题配色方案
+   */
+  dark: ColorSchemeRoles<T>
 }
