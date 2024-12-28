@@ -6,7 +6,7 @@ import { anyColorToHexColor } from './conversion.js'
  *
  * @param {Record<string, string>} colors - 键值对对象，键为颜色名称，值为颜色值（HEX颜色）
  */
-export function logColorsWithLabels(colors: Record<string, AnyColor>): void {
+export function logColorsWithLabels(colors: Record<string, any>): void {
   // 判断当前环境是否是浏览器
   const isBrowser = typeof window !== 'undefined'
 
