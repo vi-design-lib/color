@@ -33,7 +33,7 @@ export function logColorsWithLabels(colors: Record<string, any>): void {
       // 获取颜色对应的 ANSI 代码
       const ansiColor = hexToAnsi(color)
       // 输出带有颜色的键值对
-      console.log(`${ansiColor}${key}: ${color}\x1b[0m`) // \x1b[0m 用于重置颜色
+      console.log(`${ansiColor}${key}: '${color}',\x1b[0m`) // \x1b[0m 用于重置颜色
     })
   } else {
     // 浏览器环境，使用 console.log 和 CSS 样式
