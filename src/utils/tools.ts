@@ -77,3 +77,16 @@ export function capitalize(str: string): string {
   if (str.length === 0) return str
   return str.charAt(0).toUpperCase() + str.slice(1)
 }
+
+/**
+ * 小驼峰转中划线
+ *
+ * @example
+ * camelToKebab('helloWorld') // 'hello-world'
+ *
+ * @param {string} str - 需要转换的字符串
+ * @returns {string} - 转换后的字符串
+ */
+export function camelToKebab(str: string): string {
+  return str.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()
+}
