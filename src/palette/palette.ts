@@ -22,7 +22,7 @@ export class Palette<T extends AnyColor = AnyColor> {
   readonly #outType: ColorTag
   /**
    * @param {T} sourceColor - 源色
-   * @param {number} size - 色阶数量，建议单数，不能小于9
+   * @param {number} size - 色阶数量，不能小于9
    */
   constructor(sourceColor: T, size: number) {
     if (typeof size !== 'number' || size < 9) {
