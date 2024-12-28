@@ -6,9 +6,9 @@ import type { AnyColor, ColorTag, ColorTagToColorType } from '../types.js'
  * 获取调色板颜色
  *
  * @template T - 输出颜色的类型标记
- * @param {number} i - 色阶索引，必须小于色阶数量
+ * @param {number} i - 色阶索引，0~${size-1}
  * @param {RGBObject} sourceColor - 源色
- * @param {number} size - 色阶数量，建议单数，颜色过渡更平滑(中间值则是源色)
+ * @param {number} size - 色阶数量
  * @param {ColorTag} type - 输出颜色类型
  * @returns {T} - 调色板颜色
  */
@@ -22,9 +22,9 @@ export function getPaletteColor<T extends ColorTag>(
  * 获取调色板颜色
  *
  * @template T - 颜色类型
- * @param {number} i - 色阶索引，必须小于色阶数量
+ * @param {number} i - 色阶索引，0~${size-1}
  * @param {T} sourceColor - 源色
- * @param {number} size - 色阶数量，建议单数，颜色过渡更平滑(中间值则是源色)
+ * @param {number} size - 色阶数量
  * @returns {T} - 调色板颜色，和源色类型一致
  */
 export function getPaletteColor<T extends ColorTag>(
@@ -38,35 +38,14 @@ export function getPaletteColor<T extends AnyColor>(
   size: number,
   type?: ColorTag
 ): T {
-  if (i > size) throw new Error('i must be less than steps')
+  if (i >= size) i = size - 1
   type = type ?? getColorType(sourceColor)
 
-  const { h, s, l } = anyColorToHslObject(sourceColor)
-  let newH = h,
-    newS = s,
-    newL: number
-
-  const halfSteps = Math.floor(size / 2)
-
-  // 对于单数色阶，黑色到源色，再从源色到白色
-  if (size % 2 !== 0) {
-    if (i < halfSteps) {
-      // 从黑色到源色的过渡
-      const factor = i / halfSteps
-      newL = Math.round(l * factor * 100) / 100 // 调整亮度
-    } else {
-      // 从源色到白色的过渡
-      const reverseIndex = i - halfSteps
-      const factor = reverseIndex / halfSteps
-      newL = Math.round((l * (1 - factor) + factor) * 100) / 100 // 调整亮度
-    }
-  } else {
-    // 对于双数色阶，使用平滑过渡：黑色到白色的过渡
-    const factor = i / (size - 1)
-    newL = Math.round(factor * 100) / 100 // 亮度从 0 到 1 均匀变化
-  }
-
-  return anyColorToTargetColor({ h: newH, s: newS, l: newL }, type, 'HSL') as T
+  const { h, s } = anyColorToHslObject(sourceColor)
+  let newL: number
+  const factor = i / (size - 1)
+  newL = Math.round(factor * 100) / 100 // 亮度从 0 到 1 均匀变化
+  return anyColorToTargetColor({ h, s, l: newL }, type, 'HSL') as T
 }
 
 /**
