@@ -50,7 +50,7 @@ export type HSLObject = { h: number; s: number; l: number }
 export type ColorTag = 'hex' | 'rgb' | 'hsl' | 'RGB' | 'HSL'
 
 /**
- * 颜色类型转换
+ * 颜色标签转颜色类型
  */
 export type ColorTagToColorType<T extends ColorTag> = T extends 'hex'
   ? HexColor
@@ -65,11 +65,21 @@ export type ColorTagToColorType<T extends ColorTag> = T extends 'hex'
           : never
 
 /**
- * 基准配色方案
- *
- * 如有自定义配色方案，重写该接口，添加配色方案。
+ * 颜色值转换为颜色类型
  */
-export type ColorScheme<T extends AnyColor = AnyColor> = Record<ColorSchemeKeys, T>
+export type ColorToColorType<T> = T extends HexColor
+  ? HexColor
+  : T extends RgbColor
+    ? RgbColor
+    : T extends HSLObject
+      ? HSLObject
+      : T extends HslColor
+        ? HslColor
+        : T extends RGBObject
+          ? RGBObject
+          : T extends HSLObject
+            ? HSLObject
+            : never
 
 /**
  * 配色方案调色板
@@ -99,6 +109,11 @@ export type PaletteExtractionColorRules = {
 }
 
 /**
+ * 基准配色方案
+ */
+export type ColorScheme<T extends AnyColor = AnyColor> = Record<ColorSchemeKeys, T>
+
+/**
  * 配色方案键
  */
 export type ColorSchemeKeys =
@@ -110,6 +125,7 @@ export type ColorSchemeKeys =
   | 'neutral'
 
 type RoleKeys = Exclude<ColorSchemeKeys, 'neutral'>
+
 /**
  * 配色方案对应的颜色角色
  *
@@ -117,7 +133,7 @@ type RoleKeys = Exclude<ColorSchemeKeys, 'neutral'>
  *
  * `neutral` 调色板转化的角色较多，单独处理，具体见 {@link NeutralColorRoles} 接口
  */
-export type ColorSchemeRoles<T extends AnyColor = AnyColor> = {
+export type ColorSchemeRoles<T extends AnyColor> = {
   [K in Exclude<RoleKeys, 'neutral'>]: T
 } & {
   [K in `on${Capitalize<RoleKeys>}`]: T
@@ -130,7 +146,7 @@ export type ColorSchemeRoles<T extends AnyColor = AnyColor> = {
 /**
  * 中性调色板生成的角色
  */
-export interface NeutralColorRoles<T extends AnyColor = AnyColor> {
+export interface NeutralColorRoles<T extends AnyColor> {
   /**
    * 默认的背景颜色
    */

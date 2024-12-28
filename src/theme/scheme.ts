@@ -3,6 +3,7 @@ import type {
   ColorScheme,
   ColorSchemePalettes,
   ColorSchemeRoles,
+  ColorToColorType,
   HSLObject,
   NeutralColorRoles,
   PaletteExtractionColorRules
@@ -50,7 +51,7 @@ export class Scheme {
    * @param {AnyColor} primary - 主色
    * @returns {ColorScheme<T>} - 基准颜色配色方案
    */
-  static createBaseColorScheme<T extends AnyColor>(primary: T): ColorScheme<T> {
+  static createBaseColorScheme<T extends AnyColor>(primary: T): ColorScheme<ColorToColorType<T>> {
     const outType = getColorType(primary)
     // 获取主色的 HSL 对象
     const primaryHsl = anyColorToHslObject(primary, outType)
@@ -100,7 +101,7 @@ export class Scheme {
         hslScheme[key] = anyColorToTargetColor(hsl, outType, 'HSL') as any
       }
     }
-    return hslScheme as unknown as ColorScheme<T>
+    return hslScheme as ColorScheme<ColorToColorType<T>>
   }
 
   /**
@@ -113,7 +114,7 @@ export class Scheme {
   static colorSchemeToPalettes<T extends AnyColor>(scheme: ColorScheme<T>): ColorSchemePalettes<T> {
     return Object.fromEntries(
       Object.entries(scheme).map(([key, value]) => [key, Palette.create(value, 100)])
-    ) as ColorSchemePalettes<T>
+    ) as unknown as ColorSchemePalettes<T>
   }
 
   /**

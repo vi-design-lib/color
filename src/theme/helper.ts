@@ -1,4 +1,4 @@
-import type { AnyColor, ColorScheme } from '../types.js'
+import type { AnyColor, ColorScheme, ColorToColorType } from '../types.js'
 import { getColorType } from '../utils/index.js'
 import { Theme } from './theme.js'
 import { Scheme } from './scheme.js'
@@ -11,10 +11,10 @@ import { Scheme } from './scheme.js'
  * @param {Record<string,T>} customColorScheme - 自定义配色方案，如果和基本配色方案重名，会覆盖基本配色方案
  * @returns {Theme} - 主题实例
  */
-export function createTheme<T extends AnyColor, CustomColorScheme extends Record<string, T>>(
+export function createTheme<T extends AnyColor>(
   primary: T,
-  customColorScheme?: CustomColorScheme
-): Theme<T> {
+  customColorScheme?: Record<string, ColorToColorType<T>>
+): Theme<ColorToColorType<T>> {
   const primaryColorType = getColorType(primary)
   // 创建基本配色方案
   const colorsScheme = Scheme.createBaseColorScheme(primary)
@@ -36,5 +36,5 @@ export function createTheme<T extends AnyColor, CustomColorScheme extends Record
       colorsScheme[colorsKey as keyof ColorScheme<T>] = value
     }
   }
-  return new Theme(colorsScheme as ColorScheme<T> & CustomColorScheme)
+  return new Theme(colorsScheme)
 }
