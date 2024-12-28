@@ -6,8 +6,7 @@ import type {
   HslColor,
   HSLObject,
   RgbColor,
-  RGBObject,
-  StringColors
+  RGBObject
 } from '../types.js'
 import { getColorType } from './tools.js'
 
@@ -219,26 +218,6 @@ export function rgbColorToObj(rgbString: string): RGBObject {
   const b = parseInt(match[3], 10)
 
   return { r, g, b }
-}
-
-/**
- * 字符串颜色转rgb对象
- *
- * @param { RgbColor | HexColor | HslColor } color - 颜色字符串，支持rgb、hex、hsl格式
- * @returns {RGBObject} rgb对象
- */
-export function colorToRgbObj(color: StringColors): RGBObject {
-  try {
-    if (color.startsWith('rgb')) {
-      return rgbColorToObj(color)
-    } else if (color.startsWith('hsl')) {
-      return hslToRgbObject(color as HslColor)
-    } else {
-      return hexToRgbObject(color)
-    }
-  } catch (e) {
-    throw new TypeError('Invalid color format')
-  }
 }
 
 /**
