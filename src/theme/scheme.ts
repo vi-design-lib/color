@@ -113,7 +113,7 @@ export class Scheme {
    */
   static colorSchemeToPalettes<T extends AnyColor>(scheme: ColorScheme<T>): ColorSchemePalettes<T> {
     return Object.fromEntries(
-      Object.entries(scheme).map(([key, value]) => [key, Palette.create(value, 100)])
+      Object.entries(scheme).map(([key, value]) => [key, Palette.create(value, 101)])
     ) as unknown as ColorSchemePalettes<T>
   }
 
