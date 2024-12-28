@@ -1,6 +1,6 @@
 import type {
   AnyColor,
-  BaseColorScheme,
+  ColorScheme,
   ColorSchemePalettes,
   ColorSchemeRoles,
   HSLObject,
@@ -48,9 +48,9 @@ export class Scheme {
    *
    * @template T - 颜色类型
    * @param {AnyColor} primary - 主色
-   * @returns {BaseColorScheme<T>} - 基准颜色配色方案
+   * @returns {ColorScheme<T>} - 基准颜色配色方案
    */
-  static createBaseColorScheme<T extends AnyColor>(primary: T): BaseColorScheme<T> {
+  static createBaseColorScheme<T extends AnyColor>(primary: T): ColorScheme<T> {
     const outType = getColorType(primary)
     // 获取主色的 HSL 对象
     const primaryHsl = anyColorToHslObject(primary, outType)
@@ -84,7 +84,7 @@ export class Scheme {
     const neutralHsl = { h, s: 0.1, l: l * 0.9 } // 灰色带有主色调的HSL
 
     // 创建 HSL 配色方案
-    const hslScheme: BaseColorScheme<HSLObject> = {
+    const hslScheme: ColorScheme<HSLObject> = {
       primary: primaryHsl,
       secondary: secondaryHsl,
       tertiary: tertiaryHsl,
@@ -95,12 +95,12 @@ export class Scheme {
     if (outType !== 'HSL') {
       // 将 HSL 配色方案转换为 RGB 或 HEX
       for (const hslSchemeKey in hslScheme) {
-        const key = hslSchemeKey as keyof BaseColorScheme<T>
+        const key = hslSchemeKey as keyof ColorScheme<T>
         const hsl = hslScheme[key]
         hslScheme[key] = anyColorToTargetColor(hsl, outType, 'HSL') as any
       }
     }
-    return hslScheme as unknown as BaseColorScheme<T>
+    return hslScheme as unknown as ColorScheme<T>
   }
 
   /**
@@ -110,7 +110,7 @@ export class Scheme {
    * @param {T} scheme - 配色方案
    * @returns {ColorSchemePalettes<T>} 配色方案的调色板
    */
-  static colorSchemeToPalettes<T extends BaseColorScheme>(scheme: T): ColorSchemePalettes<T> {
+  static colorSchemeToPalettes<T extends AnyColor>(scheme: ColorScheme<T>): ColorSchemePalettes<T> {
     return Object.fromEntries(
       Object.entries(scheme).map(([key, value]) => [key, Palette.create(value, 100)])
     ) as ColorSchemePalettes<T>
@@ -123,7 +123,7 @@ export class Scheme {
    * @param {ColorSchemePalettes<T>} palettes - 基准配色调色板
    * @returns {ColorSchemeRoles<T>} 亮色主题配色方案的角色
    */
-  static lightFromPalettes<T extends BaseColorScheme>(
+  static lightFromPalettes<T extends AnyColor>(
     palettes: ColorSchemePalettes<T>
   ): ColorSchemeRoles<T> {
     const roles: Record<string, any> = {}
@@ -136,7 +136,7 @@ export class Scheme {
       roles[`on${capitalize(key)}Container`] = palette.get(this.lightRule.onContainer)
     }
     const neutral = palettes.neutral
-    const neutralRoles: NeutralColorRoles<T['neutral']> = {
+    const neutralRoles: NeutralColorRoles<T> = {
       // 默认的背景颜色
       surface: neutral.get(98),
       // 反色表面容器颜色
@@ -180,7 +180,7 @@ export class Scheme {
    * @param {ColorSchemePalettes<T>} palettes - 基准配色调色板
    * @returns {ColorSchemeRoles<T>} 暗色主题配色方案的角色
    */
-  static darkFromPalettes<T extends BaseColorScheme>(
+  static darkFromPalettes<T extends AnyColor>(
     palettes: ColorSchemePalettes<T>
   ): ColorSchemeRoles<T> {
     const roles: Record<string, any> = {}
@@ -193,7 +193,7 @@ export class Scheme {
       roles[`on${capitalize(key)}Container`] = palette.get(this.darkRule.onContainer)
     }
     const neutral = palettes.neutral
-    const neutralRoles: NeutralColorRoles<T['neutral']> = {
+    const neutralRoles: NeutralColorRoles<T> = {
       // 默认的背景颜色
       surface: neutral.get(6),
       // 反色表面容器颜色
