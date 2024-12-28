@@ -15,10 +15,13 @@ import { Scheme } from './scheme.js'
 export class Theme<T extends AnyColor> {
   // 配色方案对应的调色板
   readonly #palettes: ColorSchemePalettes<T>
-  // 主题配色方案
+  // 主题配色方案模式
   readonly #schemes: ThemeSchemes<T>
-  constructor(scheme: ColorScheme<T>) {
-    this.#palettes = Scheme.colorSchemeToPalettes(scheme)
+  // 主题配色方案
+  readonly #colors: ColorScheme<T>
+  constructor(colors: ColorScheme<T>) {
+    this.#colors = colors
+    this.#palettes = Scheme.colorSchemeToPalettes(colors)
     this.#schemes = {
       light: Scheme.lightFromPalettes(this.#palettes),
       dark: Scheme.darkFromPalettes(this.#palettes)
@@ -44,5 +47,30 @@ export class Theme<T extends AnyColor> {
    */
   get dark(): ColorSchemeRoles<T> {
     return this.#schemes.dark
+  }
+
+  /**
+   * 将主题方案转换为JSON字符串
+   *
+   * 包含亮色和暗色配色方案
+   *
+   * @returns {string} - JSON字符串
+   */
+  public toJson(): string {
+    return JSON.stringify(this.#schemes)
+  }
+
+  /**
+   * 主题配色方案
+   */
+  get schemes(): ThemeSchemes<T> {
+    return this.#schemes
+  }
+
+  /**
+   * 源配色方案
+   */
+  get colors(): ColorScheme<T> {
+    return this.#colors
   }
 }
