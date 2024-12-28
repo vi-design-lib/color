@@ -115,6 +115,13 @@ export type ColorScheme<T extends AnyColor = AnyColor> = Record<ColorSchemeKeys,
 
 /**
  * 配色方案键
+ *
+ * - `primary`: 主要颜色
+ * - `secondary`: 次要颜色
+ * - `tertiary`: 三级颜色
+ * - `warning`: 警告颜色
+ * - `danger`: 危险颜色
+ * - `neutral`: 中性颜色
  */
 export type ColorSchemeKeys =
   | 'primary'
