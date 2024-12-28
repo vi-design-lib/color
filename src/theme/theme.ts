@@ -1,5 +1,6 @@
 import type {
-  BaseColorScheme,
+  AnyColor,
+  ColorScheme,
   ColorSchemePalettes,
   ColorSchemeRoles,
   ThemeSchemes
@@ -11,12 +12,12 @@ import { Scheme } from './scheme.js'
  *
  * @template T - 基准配色方案
  */
-export class Theme<T extends BaseColorScheme> {
+export class Theme<T extends AnyColor> {
   // 配色方案对应的调色板
   readonly #palettes: ColorSchemePalettes<T>
   // 主题配色方案
   readonly #schemes: ThemeSchemes<T>
-  constructor(scheme: T) {
+  constructor(scheme: ColorScheme<T>) {
     this.#palettes = Scheme.colorSchemeToPalettes(scheme)
     this.#schemes = {
       light: Scheme.lightFromPalettes(this.#palettes),
