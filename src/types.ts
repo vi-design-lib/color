@@ -18,7 +18,7 @@ export type RgbColor = `rgb(${number}, ${number}, ${number})`
 /**
  * 字符串颜色类型
  */
-export type StringColors = HexColor | HslColor | RgbColor | string
+export type StringColors = HexColor | HslColor | RgbColor
 
 /**
  * 颜色对象类型
@@ -69,55 +69,12 @@ export type ColorTagToColorType<T extends ColorTag> = T extends 'hex'
  *
  * 如有自定义配色方案，重写该接口，添加配色方案。
  */
-export interface BaseColorScheme<T extends AnyColor = AnyColor> {
-  /**
-   * 主色
-   */
-  primary: T
-  /**
-   * 次要辅色
-   *
-   * 主色相邻的颜色，通过调整饱和度和亮度来形成对比度
-   */
-  secondary: T
-  /**
-   * 三级辅色
-   *
-   * 主色相邻的颜色，通过调整饱和度和亮度来形成对比度
-   */
-  tertiary: T
-  /**
-   * 警告色
-   *
-   * 默认是主色的互补色，形成强烈的对比度
-   */
-  warning: T
-  /**
-   * 危险色
-   *
-   * 默认是红色，根据主色调整了饱和度和亮度
-   */
-  danger: T
-  /**
-   * 中性色
-   *
-   * 根据主色计算出来的中性色，它接近于灰色，但它和主色之间存在一定的色相关联
-   */
-  neutral: T
-
-  /**
-   * 自定义颜色
-   */
-  [key: string]: T
-}
+export type ColorScheme<T extends AnyColor = AnyColor> = Record<ColorSchemeKeys, T>
 
 /**
  * 配色方案调色板
  */
-export type ColorSchemePalettes<T extends BaseColorScheme = BaseColorScheme> = Record<
-  keyof T,
-  Palette<T['primary']>
->
+export type ColorSchemePalettes<T extends AnyColor = AnyColor> = Record<ColorSchemeKeys, Palette<T>>
 
 /**
  * 调色板提取颜色规则
@@ -142,27 +99,38 @@ export type PaletteExtractionColorRules = {
 }
 
 /**
+ * 配色方案键
+ */
+export type ColorSchemeKeys =
+  | 'primary'
+  | 'secondary'
+  | 'tertiary'
+  | 'warning'
+  | 'danger'
+  | 'neutral'
+
+type RoleKeys = Exclude<ColorSchemeKeys, 'neutral'>
+/**
  * 配色方案对应的颜色角色
  *
  * 借鉴于{@link https://material.io/design/color/the-color-system.html#color-roles Material Design}。
  *
  * `neutral` 调色板转化的角色较多，单独处理，具体见 {@link NeutralColorRoles} 接口
  */
-export type ColorSchemeRoles<T extends BaseColorScheme = BaseColorScheme> = Omit<T, 'neutral'> & {
-  // 排除 neutral 字段，并生成 "on" 开头的字段
-  [key in Exclude<keyof T, 'neutral'> as `on${Capitalize<key & string>}`]: T[key]
+export type ColorSchemeRoles<T extends AnyColor = AnyColor> = {
+  [K in Exclude<RoleKeys, 'neutral'>]: T
 } & {
-  // 排除 neutral 字段，并生成 "keyContainer" 的字段
-  [key in Exclude<keyof T, 'neutral'> as `${key & string}Container`]: T[key]
+  [K in `on${Capitalize<RoleKeys>}`]: T
 } & {
-  // 排除 neutral 字段，并生成 "on{key}Container" 的字段
-  [key in Exclude<keyof T, 'neutral'> as `on${Capitalize<key & string>}Container`]: T[key]
-} & NeutralColorRoles<T['primary']>
+  [K in `${RoleKeys}Container`]: T
+} & {
+  [K in `on${Capitalize<RoleKeys>}Container`]: T
+} & NeutralColorRoles<T>
 
 /**
  * 中性调色板生成的角色
  */
-export interface NeutralColorRoles<T extends AnyColor> {
+export interface NeutralColorRoles<T extends AnyColor = AnyColor> {
   /**
    * 默认的背景颜色
    */
@@ -242,7 +210,7 @@ export interface NeutralColorRoles<T extends AnyColor> {
 /**
  * 主题配色
  */
-export interface ThemeSchemes<T extends BaseColorScheme = BaseColorScheme> {
+export interface ThemeSchemes<T extends AnyColor = AnyColor> {
   /**
    * 亮色主题配色方案
    */
