@@ -115,6 +115,10 @@ export type PaletteExtractionColorRules = {
   container: number
   // 容器上的文本颜色：深色
   onContainer: number
+  /**
+   * 中性色基准配色方案
+   */
+  base: BaseColorRoles<number>
 }
 
 /**
@@ -156,7 +160,7 @@ export type ColorSchemeRoles<T extends AnyColor> = {
 /**
  * 中性调色板生成的角色
  */
-export interface BaseColorRoles<T extends AnyColor> {
+export interface BaseColorRoles<T> {
   /**
    * 表面颜色，通常用于页面的默认背景颜色。
    */
