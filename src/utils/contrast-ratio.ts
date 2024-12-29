@@ -1,4 +1,4 @@
-import type { AnyColor, ColorSchemeKeys, ColorSchemeRoles, HexColor, RGBObject } from '../types.js'
+import type { AnyColor, ColorSchemeKeys, ColorSchemeRoles, RGBObject } from '../types.js'
 import { anyColorToRgbObject } from './conversion.js'
 import { capitalize } from './tools.js'
 
@@ -60,7 +60,7 @@ export function contrastRatio(color1: AnyColor, color2: AnyColor): number {
 export function schemeContrastRation<T extends ColorSchemeRoles<AnyColor>>(
   scheme: T
 ): Record<string, number> {
-  const roles: Array<ColorSchemeKeys> = ['primary', 'secondary', 'tertiary', 'warning', 'danger']
+  const roles: Array<ColorSchemeKeys> = ['main', 'aux', 'minor', 'warning', 'danger']
   const result: Record<string, number> = {}
   for (const role of roles) {
     const caseRole = capitalize(role)
