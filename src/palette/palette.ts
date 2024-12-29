@@ -43,6 +43,22 @@ export class Palette<T extends AnyColor = AnyColor> {
   }
 
   /**
+   * 源色HSL对象
+   *
+   * @returns {HSLObject} - 源色HSL对象的拷贝
+   */
+  get hsl(): HSLObject {
+    return { ...this.#sourceHsl }
+  }
+
+  /**
+   * 调色板色彩类型
+   */
+  get type(): ColorTag {
+    return this.#outType
+  }
+
+  /**
    * 调色板色阶数量
    */
   get size(): number {
