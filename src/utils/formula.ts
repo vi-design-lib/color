@@ -1,3 +1,5 @@
+import type { HSLObject } from '../types.js'
+
 /**
  * HSL颜色公式
  */
@@ -29,7 +31,7 @@ export class HslFormula {
    * 按比例调整饱和度或亮度
    *
    * @param { number } value - 原始值
-   * @param { number } ratio - 调整比例[-1, 1]
+   * @param { number } ratio - 调整比例[0, 1]
    * @returns { number } - 调整后的值
    */
   static ratioAdjust(value: number, ratio: number): number {
@@ -37,15 +39,27 @@ export class HslFormula {
   }
 
   /**
-   * 增加饱和度或亮度
+   * 调整HSL颜色的亮度和饱和度
    *
-   * @param { number } value - 原始值
-   * @param { number } inc - 增加量，负数表示减少
+   *
+   * @param { HSLObject } color - 需要调整的HSL颜色对象
+   * @param { number } saturationAdjust - 饱和度调整值，范围 -1 到 1，负值降低饱和度，正值增加饱和度
+   * @param { number } lightnessAdjust - 亮度调整值，范围 -1 到 1，负值降低亮度，正值增加亮度
+   * @returns { HSLObject } 新的HSL颜色对象
    */
-  static incAdjust(value: number, inc: number): number {
-    // 对于亮度和饱和度，直接根据比例增加或减少
-    const adjustedValue = value + inc
-    // 确保值在合法范围内
-    return Math.max(0, Math.min(1, adjustedValue))
+  static adjustHSL(color: HSLObject, saturationAdjust: number, lightnessAdjust: number): HSLObject {
+    // 饱和度调整：范围 [0, 1]
+    let newS = color.s + saturationAdjust
+    newS = Math.min(Math.max(newS, 0), 1) // 确保饱和度在 [0, 1] 范围内
+
+    // 亮度调整：范围 [0, 1]
+    let newL = color.l + lightnessAdjust
+    newL = Math.min(Math.max(newL, 0), 1) // 确保亮度在 [0, 1] 范围内
+    // 返回调整后的 HSL 对象
+    return {
+      h: color.h,
+      s: newS,
+      l: newL
+    }
   }
 }
