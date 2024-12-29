@@ -35,10 +35,27 @@ export class Scheme {
     onSourceHover: 24,
     sourceActive: 60,
     onSourceActive: 10,
-    sourceDisabled: 20,
-    onSourceDisabled: 60,
+    sourceDisabled: 30,
+    onSourceDisabled: 72,
     container: 30,
-    onContainer: 90
+    onContainer: 90,
+    base: {
+      surface: 6,
+      inverseSurface: 90,
+      inverseOnSurface: 20,
+      surfaceDim: 6,
+      surfaceBright: 24,
+      surfaceContainerLowest: 4,
+      surfaceContainer: 12,
+      surfaceContainerLow: 10,
+      surfaceContainerHigh: 17,
+      surfaceContainerHighest: 24,
+      onSurface: 90,
+      onSurfaceVariant: 90,
+      outline: 60,
+      outlineVariant: 30,
+      shadow: 0
+    }
   }
   /**
    * 亮色模式调色板取色规则
@@ -53,7 +70,24 @@ export class Scheme {
     sourceDisabled: 68,
     onSourceDisabled: 92,
     container: 90,
-    onContainer: 30
+    onContainer: 30,
+    base: {
+      surface: 98,
+      inverseSurface: 20,
+      inverseOnSurface: 95,
+      surfaceDim: 87,
+      surfaceBright: 98,
+      surfaceContainerLowest: 100,
+      surfaceContainer: 96,
+      surfaceContainerLow: 94,
+      surfaceContainerHigh: 92,
+      surfaceContainerHighest: 90,
+      onSurface: 10,
+      onSurfaceVariant: 30,
+      outline: 50,
+      outlineVariant: 80,
+      shadow: 0
+    }
   }
 
   /**
@@ -127,7 +161,7 @@ export class Scheme {
   }
 
   /**
-   * 亮色主题配色方案
+   * 亮色主题配色方案样式
    *
    * @template T - BaseColorScheme
    * @param {ColorSchemePalettes<T>} palettes - 基准配色调色板
@@ -136,50 +170,11 @@ export class Scheme {
   static lightFromPalettes<T extends AnyColor>(
     palettes: ColorSchemePalettes<T>
   ): ColorSchemeRoles<T> {
-    const roles: Record<string, any> = {}
-    for (const [key, palette] of Object.entries(palettes)) {
-      // 跳过中性色，中性色由surface代替
-      if (key === 'neutral') continue
-
-      roles[key] = palette.get(this.lightRule.source)
-      roles[`${key}Hover`] = palette.get(this.lightRule.sourceHover)
-      roles[`${key}Active`] = palette.get(this.lightRule.sourceActive)
-      roles[`${key}Disabled`] = palette.get(this.lightRule.sourceDisabled)
-
-      roles[`on${capitalize(key)}`] = palette.get(this.lightRule.onSource)
-      roles[`on${capitalize(key)}Hover`] = palette.get(this.lightRule.onSourceHover)
-      roles[`on${capitalize(key)}Active`] = palette.get(this.lightRule.onSourceActive)
-      roles[`on${capitalize(key)}Disabled`] = palette.get(this.lightRule.onSourceDisabled)
-
-      roles[`${key}Container`] = palette.get(this.lightRule.container)
-
-      roles[`on${capitalize(key)}Container`] = palette.get(this.lightRule.onContainer)
-    }
-    const neutral = palettes.neutral
-    const neutralRoles: BaseColorRoles<T> = {
-      surface: neutral.get(98),
-      inverseSurface: neutral.get(20),
-      inverseOnSurface: neutral.get(95),
-      surfaceDim: neutral.get(87),
-      surfaceBright: neutral.get(98),
-      surfaceContainerLowest: neutral.get(100),
-      surfaceContainer: neutral.get(96),
-      surfaceContainerLow: neutral.get(94),
-      surfaceContainerHigh: neutral.get(92),
-      surfaceContainerHighest: neutral.get(90),
-      onSurface: neutral.get(10),
-      onSurfaceVariant: neutral.get(30),
-      outline: neutral.get(50),
-      outlineVariant: neutral.get(80),
-      shadow: neutral.get(0)
-    }
-    Object.assign(roles, neutralRoles)
-    Object.assign(roles, neutralRoles)
-    return roles as ColorSchemeRoles<T>
+    return this.themeColorSchemeRoles(palettes, 'light')
   }
 
   /**
-   * 暗色主题配色方案
+   * 暗色主题配色方案样式
    *
    * @template T - BaseColorScheme
    * @param {ColorSchemePalettes<T>} palettes - 基准配色调色板
@@ -188,42 +183,62 @@ export class Scheme {
   static darkFromPalettes<T extends AnyColor>(
     palettes: ColorSchemePalettes<T>
   ): ColorSchemeRoles<T> {
+    return this.themeColorSchemeRoles(palettes, 'dark')
+  }
+
+  /**
+   * 主题配色方案样式
+   *
+   * @template T - BaseColorScheme
+   * @param {ColorSchemePalettes<T>} palettes - 基准配色调色板
+   * @param {'light' | 'dark'} mode - 主题模式
+   */
+  static themeColorSchemeRoles<T extends AnyColor>(
+    palettes: ColorSchemePalettes<T>,
+    mode: 'light' | 'dark'
+  ): ColorSchemeRoles<T> {
+    const rule = mode === 'dark' ? this.darkRule : this.lightRule
     const roles: Record<string, any> = {}
     for (const [key, palette] of Object.entries(palettes)) {
       // 跳过中性色，中性色由surface代替
       if (key === 'neutral') continue
 
-      roles[key] = palette.get(this.darkRule.source)
-      roles[`${key}Hover`] = palette.get(this.darkRule.sourceHover)
-      roles[`${key}Active`] = palette.get(this.darkRule.sourceActive)
-      roles[`${key}Disabled`] = palette.get(this.darkRule.sourceDisabled)
+      roles[key] = palette.get(rule.source)
+      roles[`${key}Hover`] = palette.get(rule.sourceHover)
+      roles[`${key}Active`] = palette.get(rule.sourceActive)
+      roles[`${key}Disabled`] = palette.get(rule.sourceDisabled)
 
-      roles[`on${capitalize(key)}`] = palette.get(this.darkRule.onSource)
-      roles[`on${capitalize(key)}Hover`] = palette.get(this.darkRule.onSourceHover)
-      roles[`on${capitalize(key)}Active`] = palette.get(this.darkRule.onSourceActive)
-      roles[`on${capitalize(key)}Disabled`] = palettes.neutral.get(this.darkRule.onSourceDisabled)
+      roles[`on${capitalize(key)}`] = palette.get(rule.onSource)
+      roles[`on${capitalize(key)}Hover`] = palette.get(rule.onSourceHover)
+      roles[`on${capitalize(key)}Active`] = palette.get(rule.onSourceActive)
 
-      roles[`${key}Container`] = palette.get(this.darkRule.container)
+      if (mode === 'dark') {
+        roles[`on${capitalize(key)}Disabled`] = palettes.neutral.get(rule.onSourceDisabled)
+      } else {
+        roles[`on${capitalize(key)}Disabled`] = palette.get(rule.onSourceDisabled)
+      }
 
-      roles[`on${capitalize(key)}Container`] = palette.get(this.darkRule.onContainer)
+      roles[`${key}Container`] = palette.get(rule.container)
+
+      roles[`on${capitalize(key)}Container`] = palette.get(rule.onContainer)
     }
-    const neutral = palettes.neutral
+    const palette = palettes.neutral
     const neutralRoles: BaseColorRoles<T> = {
-      surface: neutral.get(6),
-      inverseSurface: neutral.get(90),
-      inverseOnSurface: neutral.get(20),
-      surfaceDim: neutral.get(6),
-      surfaceBright: neutral.get(24),
-      surfaceContainerLowest: neutral.get(4),
-      surfaceContainer: neutral.get(12),
-      surfaceContainerLow: neutral.get(10),
-      surfaceContainerHigh: neutral.get(17),
-      surfaceContainerHighest: neutral.get(24),
-      onSurface: neutral.get(90),
-      onSurfaceVariant: neutral.get(90),
-      outline: neutral.get(60),
-      outlineVariant: neutral.get(30),
-      shadow: neutral.get(0)
+      surface: palette.get(rule.base.surface),
+      inverseSurface: palette.get(rule.base.inverseSurface),
+      inverseOnSurface: palette.get(rule.base.inverseOnSurface),
+      surfaceDim: palette.get(rule.base.surfaceDim),
+      surfaceBright: palette.get(rule.base.surfaceBright),
+      surfaceContainerLowest: palette.get(rule.base.surfaceContainerLowest),
+      surfaceContainer: palette.get(rule.base.surfaceContainer),
+      surfaceContainerLow: palette.get(rule.base.surfaceContainerLow),
+      surfaceContainerHigh: palette.get(rule.base.surfaceContainerHigh),
+      surfaceContainerHighest: palette.get(rule.base.surfaceContainerHighest),
+      onSurface: palette.get(rule.base.onSurface),
+      onSurfaceVariant: palette.get(rule.base.onSurfaceVariant),
+      outline: palette.get(rule.base.outline),
+      outlineVariant: palette.get(rule.base.outlineVariant),
+      shadow: palette.get(rule.base.shadow)
     }
     Object.assign(roles, neutralRoles)
     return roles as ColorSchemeRoles<T>
