@@ -266,7 +266,7 @@ export function anyColorToHslObject(color: any, type?: ColorTag): HSLObject {
     case 'hsl':
       return hslColorToObj(color)
     case 'HSL':
-      return color
+      return { ...color }
     default:
       throw new Error(`Invalid color type: ${type}`)
   }
@@ -287,7 +287,7 @@ export function anyColorToRgbObject(color: any, type?: ColorTag): RGBObject {
     case 'rgb':
       return rgbColorToObj(color)
     case 'RGB':
-      return color
+      return { ...color }
     case 'HSL':
     case 'hsl':
       return hslToRgbObject(color)
