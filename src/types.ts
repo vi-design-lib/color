@@ -41,6 +41,11 @@ export interface RGBObject {
 
 /**
  * HSL颜色对象类型
+ *
+ * 注意：
+ * - `h`: 色调，0-360
+ * - `s`: 饱和度，0-1
+ * - `l`: 亮度，0-1
  */
 export type HSLObject = { h: number; s: number; l: number }
 
@@ -90,22 +95,26 @@ export type ColorSchemePalettes<T extends AnyColor = AnyColor> = Record<ColorSch
  * 调色板提取颜色规则
  */
 export type PaletteExtractionColorRules = {
-  /**
-   * 源色容器颜色
-   */
-  container: number
-  /**
-   * 源色容器之上的文本颜色
-   */
-  onContainer: number
-  /**
-   * 源色
-   */
+  // 主色的亮度和饱和度调整
   source: number
-  /**
-   * 源色之上的文本颜色
-   */
+  // 悬停状态下的主色：增加亮度，稍微增强饱和度
+  sourceHover: number
+  // 激活状态下的主色：减少亮度，减少饱和度，模拟按下效果
+  sourceActive: number
+  // 禁用状态下的主色：大幅降低亮度和饱和度
+  sourceDisabled: number
+  // 主色背景上的文本颜色：白色
   onSource: number
+  // 主色悬停状态上的文本颜色：增加对比度
+  onSourceHover: number
+  // 主色激活状态上的文本颜色：更深的文本颜色
+  onSourceActive: number
+  // 主色禁用状态上的文本颜色：灰色
+  onSourceDisabled: number
+  // 主色容器背景
+  container: number
+  // 容器上的文本颜色：深色
+  onContainer: number
 }
 
 /**
@@ -123,13 +132,7 @@ export type ColorScheme<T extends AnyColor = AnyColor> = Record<ColorSchemeKeys,
  * - `danger`: 危险颜色
  * - `neutral`: 中性颜色
  */
-export type ColorSchemeKeys =
-  | 'primary'
-  | 'secondary'
-  | 'tertiary'
-  | 'warning'
-  | 'danger'
-  | 'neutral'
+export type ColorSchemeKeys = 'main' | 'aux' | 'minor' | 'warning' | 'danger' | 'neutral'
 
 type RoleKeys = Exclude<ColorSchemeKeys, 'neutral'>
 
@@ -138,29 +141,39 @@ type RoleKeys = Exclude<ColorSchemeKeys, 'neutral'>
  *
  * 借鉴于{@link https://material.io/design/color/the-color-system.html#color-roles Material Design}。
  *
- * `neutral` 调色板转化的角色较多，单独处理，具体见 {@link NeutralColorRoles} 接口
+ * `neutral` 调色板转化的角色较多，单独处理，具体见 {@link BaseColorRoles} 接口
  */
 export type ColorSchemeRoles<T extends AnyColor> = {
-  [K in Exclude<RoleKeys, 'neutral'>]: T
+  [K in RoleKeys]: T
 } & {
   [K in `on${Capitalize<RoleKeys>}`]: T
 } & {
   [K in `${RoleKeys}Container`]: T
 } & {
   [K in `on${Capitalize<RoleKeys>}Container`]: T
-} & NeutralColorRoles<T>
+} & BaseColorRoles<T>
 
 /**
  * 中性调色板生成的角色
  */
-export interface NeutralColorRoles<T extends AnyColor> {
+export interface BaseColorRoles<T extends AnyColor> {
   /**
-   * 默认的背景颜色
+   * 表面颜色，通常用于页面的默认背景颜色。
    */
   surface: T
 
   /**
-   * 反色表面容器颜色
+   * 针对任何表面颜色的文本和图标，通常做为页面的默认文本颜色。
+   */
+  onSurface: T
+
+  /**
+   * 在表面背景之上的文本和图标的低强调颜色
+   */
+  onSurfaceVariant: T
+
+  /**
+   * `surface`的反向互补色
    */
   inverseSurface: T
 
@@ -171,61 +184,58 @@ export interface NeutralColorRoles<T extends AnyColor> {
 
   /**
    * 表面最暗淡的颜色
+   *
+   * 在light模式下它会比其他表面颜色更暗淡，
+   * 在dark模式下它和`surface`的颜色相同。
    */
   surfaceDim: T
 
   /**
-   * 最亮表面颜色
+   * 最明亮表面颜色
    */
   surfaceBright: T
 
   /**
-   * 表面容器最低层的颜色
+   * 最低强调的容器颜色
    */
   surfaceContainerLowest: T
 
   /**
-   * 表面容器颜色
+   * 默认的容器颜色
+   *
+   * 通常用于页面之上的第一层大面积容器的背景颜色
+   *
+   * 例如：导航栏，菜单栏，侧边栏
    */
   surfaceContainer: T
 
   /**
-   * 低强调容器颜色
+   * 低强调的表面容器颜色
    */
   surfaceContainerLow: T
 
   /**
-   * 高强调容器颜色
+   * 高强调的表面容器颜色
    */
   surfaceContainerHigh: T
 
   /**
-   * 最高强调容器颜色
+   * 最高强调的表面容器颜色
    */
   surfaceContainerHighest: T
 
   /**
-   * 背景之上的文本颜色
-   */
-  onSurface: T
-
-  /**
-   * 背景之上的文本颜色，低强调浅灰色
-   */
-  onSurfaceVariant: T
-
-  /**
-   * 通常用于描边，中性色
+   * 带有强调性的中性色，通常用于轮廓描边。
    */
   outline: T
 
   /**
-   * 通常用于分割线，偏向于灰色
+   * 低强调性的中性色，通常用于分割线。
    */
   outlineVariant: T
 
   /**
-   * 阴影颜色，通常需要降低透明度使用
+   * 阴影颜色，非常暗淡的黑色，通常需要降低透明度使用。
    */
   shadow: T
 }
