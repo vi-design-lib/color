@@ -44,25 +44,15 @@ export class Scheme {
    * 亮色模式调色板取色规则
    */
   static readonly lightRule: PaletteExtractionColorRules = {
-    // 主色的亮度和饱和度调整
     source: 46,
-    // 主色背景上的文本颜色：偏向于白色
     onSource: 98,
-    // 悬停状态下的主色：增加亮度，让颜色稍微减淡
     sourceHover: 66,
-    // 主色悬停状态上的文本颜色：加深颜色对比度
     onSourceHover: 100,
-    // 激活状态下的主色：减少亮度，让颜色加深
     sourceActive: 52,
-    // 主色激活状态上的文本颜色：更深的文本颜色
     onSourceActive: 88,
-    // 禁用状态下的主色：大幅度增加亮度，让颜色变浅
     sourceDisabled: 68,
-    // 主色禁用状态上的文本颜色：灰色
     onSourceDisabled: 92,
-    // 主色容器背景，主色的浅色
     container: 90,
-    // 容器上的文本颜色：主色的深色
     onContainer: 30
   }
 
