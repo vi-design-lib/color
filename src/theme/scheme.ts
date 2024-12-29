@@ -1,11 +1,11 @@
 import type {
   AnyColor,
+  BaseColorRoles,
   ColorScheme,
   ColorSchemePalettes,
   ColorSchemeRoles,
   ColorToColorType,
   HSLObject,
-  NeutralColorRoles,
   PaletteExtractionColorRules
 } from '../types.js'
 import {
@@ -29,19 +29,41 @@ export class Scheme {
    * 暗色模式调色板取色规则
    */
   static readonly darkRule: PaletteExtractionColorRules = {
-    container: 30,
-    onContainer: 90,
     source: 80,
-    onSource: 20
+    onSource: 20,
+    sourceHover: 72,
+    onSourceHover: 24,
+    sourceActive: 60,
+    onSourceActive: 10,
+    sourceDisabled: 20,
+    onSourceDisabled: 60,
+    container: 30,
+    onContainer: 90
   }
   /**
    * 亮色模式调色板取色规则
    */
   static readonly lightRule: PaletteExtractionColorRules = {
+    // 主色的亮度和饱和度调整
+    source: 46,
+    // 主色背景上的文本颜色：偏向于白色
+    onSource: 98,
+    // 悬停状态下的主色：增加亮度，让颜色稍微减淡
+    sourceHover: 66,
+    // 主色悬停状态上的文本颜色：加深颜色对比度
+    onSourceHover: 100,
+    // 激活状态下的主色：减少亮度，让颜色加深
+    sourceActive: 52,
+    // 主色激活状态上的文本颜色：更深的文本颜色
+    onSourceActive: 88,
+    // 禁用状态下的主色：大幅度增加亮度，让颜色变浅
+    sourceDisabled: 68,
+    // 主色禁用状态上的文本颜色：灰色
+    onSourceDisabled: 92,
+    // 主色容器背景，主色的浅色
     container: 90,
-    onContainer: 10,
-    source: 40,
-    onSource: 100
+    // 容器上的文本颜色：主色的深色
+    onContainer: 30
   }
 
   /**
@@ -69,30 +91,27 @@ export class Scheme {
     // 固定红色范围的危险色
     const dangerHsl = { h: 0, ...sl } // 红色范围
 
-    // 生成辅色和三级辅色的色相
-    const secondaryHue = HslFormula.adjacentHue(h, -30) // 基于主色的相邻色 反向偏移
-    const tertiaryHue = HslFormula.adjacentHue(h, 30) // 基于主色的相邻色，正向偏移
+    // 生成辅色和次要辅色的色相
+    const auxHue = HslFormula.adjacentHue(h, -30) // 基于主色的相邻色 反向偏移
+    const minorHue = HslFormula.adjacentHue(h, 30) // 基于主色的相邻色，正向偏移
 
     // 确保辅色和三级辅色的饱和度低于主色
-    const secondaryHsl = {
-      h: secondaryHue,
-      s: HslFormula.ratioAdjust(s, 0.8),
-      l: adjustedLightness
-    }
-    const tertiaryHsl = { h: tertiaryHue, s: HslFormula.ratioAdjust(s, 0.7), l: adjustedLightness }
+    const auxHsl = { h: auxHue, s: HslFormula.ratioAdjust(s, 0.8), l: adjustedLightness }
+    const minorHsl = { h: minorHue, s: HslFormula.ratioAdjust(s, 0.7), l: adjustedLightness }
 
     // 生成中性色：灰色调带有主色调
     const neutralHsl = { h, s: 0.1, l: l * 0.9 } // 灰色带有主色调的HSL
 
     // 创建 HSL 配色方案
     const hslScheme: ColorScheme<HSLObject> = {
-      primary: primaryHsl,
-      secondary: secondaryHsl,
-      tertiary: tertiaryHsl,
+      main: primaryHsl,
+      aux: auxHsl,
+      minor: minorHsl,
       warning: warningHsl,
       danger: dangerHsl,
       neutral: neutralHsl
     }
+
     if (outType !== 'HSL') {
       // 将 HSL 配色方案转换为 RGB 或 HEX
       for (const hslSchemeKey in hslScheme) {
@@ -131,42 +150,37 @@ export class Scheme {
     for (const [key, palette] of Object.entries(palettes)) {
       // 跳过中性色，中性色由surface代替
       if (key === 'neutral') continue
+
       roles[key] = palette.get(this.lightRule.source)
+      roles[`${key}Hover`] = palette.get(this.lightRule.sourceHover)
+      roles[`${key}Active`] = palette.get(this.lightRule.sourceActive)
+      roles[`${key}Disabled`] = palette.get(this.lightRule.sourceDisabled)
+
       roles[`on${capitalize(key)}`] = palette.get(this.lightRule.onSource)
+      roles[`on${capitalize(key)}Hover`] = palette.get(this.lightRule.onSourceHover)
+      roles[`on${capitalize(key)}Active`] = palette.get(this.lightRule.onSourceActive)
+      roles[`on${capitalize(key)}Disabled`] = palette.get(this.lightRule.onSourceDisabled)
+
       roles[`${key}Container`] = palette.get(this.lightRule.container)
+
       roles[`on${capitalize(key)}Container`] = palette.get(this.lightRule.onContainer)
     }
     const neutral = palettes.neutral
-    const neutralRoles: NeutralColorRoles<T> = {
-      // 默认的背景颜色
+    const neutralRoles: BaseColorRoles<T> = {
       surface: neutral.get(98),
-      // 反色表面容器颜色
       inverseSurface: neutral.get(20),
-      // 反色表面容器颜色之上的文本颜色
       inverseOnSurface: neutral.get(95),
-      // 表面最暗淡的颜色
       surfaceDim: neutral.get(87),
-      // 最亮表面颜色
       surfaceBright: neutral.get(98),
-      // 表面容器最低层的颜色
       surfaceContainerLowest: neutral.get(100),
-      // 表面容器颜色
       surfaceContainer: neutral.get(96),
-      // 低强调容器颜色
       surfaceContainerLow: neutral.get(94),
-      // 高强调容器颜色
       surfaceContainerHigh: neutral.get(92),
-      // 最高强调容器颜色
       surfaceContainerHighest: neutral.get(90),
-      // 背景之上的文本颜色
       onSurface: neutral.get(10),
-      // 背景之上的文本颜色，低强调浅灰色
       onSurfaceVariant: neutral.get(30),
-      // 通常用于描边，中性色
       outline: neutral.get(50),
-      // 通常用于分割线，偏向于灰色
       outlineVariant: neutral.get(80),
-      // 阴影颜色 通常需要降低透明度使用
       shadow: neutral.get(0)
     }
     Object.assign(roles, neutralRoles)
@@ -188,42 +202,37 @@ export class Scheme {
     for (const [key, palette] of Object.entries(palettes)) {
       // 跳过中性色，中性色由surface代替
       if (key === 'neutral') continue
+
       roles[key] = palette.get(this.darkRule.source)
+      roles[`${key}Hover`] = palette.get(this.darkRule.sourceHover)
+      roles[`${key}Active`] = palette.get(this.darkRule.sourceActive)
+      roles[`${key}Disabled`] = palette.get(this.darkRule.sourceDisabled)
+
       roles[`on${capitalize(key)}`] = palette.get(this.darkRule.onSource)
+      roles[`on${capitalize(key)}Hover`] = palette.get(this.darkRule.onSourceHover)
+      roles[`on${capitalize(key)}Active`] = palette.get(this.darkRule.onSourceActive)
+      roles[`on${capitalize(key)}Disabled`] = palettes.neutral.get(this.darkRule.onSourceDisabled)
+
       roles[`${key}Container`] = palette.get(this.darkRule.container)
+
       roles[`on${capitalize(key)}Container`] = palette.get(this.darkRule.onContainer)
     }
     const neutral = palettes.neutral
-    const neutralRoles: NeutralColorRoles<T> = {
-      // 默认的背景颜色
+    const neutralRoles: BaseColorRoles<T> = {
       surface: neutral.get(6),
-      // 反色表面容器颜色
       inverseSurface: neutral.get(90),
-      // 反色表面容器颜色之上的文本颜色
       inverseOnSurface: neutral.get(20),
-      // 表面最暗淡的颜色
       surfaceDim: neutral.get(6),
-      // 最亮表面颜色
       surfaceBright: neutral.get(24),
-      // 表面容器最低层的颜色
       surfaceContainerLowest: neutral.get(4),
-      // 表面容器颜色
       surfaceContainer: neutral.get(12),
-      // 低强调容器颜色
       surfaceContainerLow: neutral.get(10),
-      // 高强调容器颜色
       surfaceContainerHigh: neutral.get(17),
-      // 最高强调容器颜色
       surfaceContainerHighest: neutral.get(24),
-      // 背景之上的文本颜色
       onSurface: neutral.get(90),
-      // 背景之上的文本颜色，低强调浅灰色
       onSurfaceVariant: neutral.get(90),
-      // 通常用于描边，中性色
       outline: neutral.get(60),
-      // 通常用于分割线，偏向于灰色
       outlineVariant: neutral.get(30),
-      // 阴影颜色 通常需要降低透明度使用
       shadow: neutral.get(0)
     }
     Object.assign(roles, neutralRoles)
