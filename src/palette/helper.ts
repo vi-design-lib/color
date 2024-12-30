@@ -1,23 +1,7 @@
 import { anyColorToHslObject, anyColorToTargetColor, getColorType } from '../utils/index.js'
 import { Palette } from './palette.js'
-import type { AnyColor, ColorTag, ColorTagToColorType } from '../types.js'
+import type { AnyColor, PaletteOptions } from '../types.js'
 
-/**
- * 获取调色板颜色
- *
- * @template T - 输出颜色的类型标记
- * @param {number} i - 色阶索引，0~${size-1}
- * @param {RGBObject} sourceColor - 源色
- * @param {number} size - 色阶数量
- * @param {ColorTag} type - 输出颜色类型
- * @returns {T} - 调色板颜色
- */
-export function getPaletteColor<T extends ColorTag>(
-  i: number,
-  sourceColor: AnyColor,
-  size: number,
-  type: T
-): ColorTagToColorType<T>
 /**
  * 获取调色板颜色
  *
@@ -25,26 +9,31 @@ export function getPaletteColor<T extends ColorTag>(
  * @param {number} i - 色阶索引，0~${size-1}
  * @param {T} sourceColor - 源色
  * @param {number} size - 色阶数量
+ * @param options
  * @returns {T} - 调色板颜色，和源色类型一致
  */
-export function getPaletteColor<T extends ColorTag>(
-  i: number,
-  sourceColor: AnyColor,
-  size: number
-): ColorTagToColorType<T>
 export function getPaletteColor<T extends AnyColor>(
   i: number,
   sourceColor: T,
   size: number,
-  type?: ColorTag
+  options?: PaletteOptions
 ): T {
   if (i >= size) i = size - 1
-  type = type ?? getColorType(sourceColor)
+
+  const type = options?.type ?? getColorType(sourceColor)
 
   const { h, s } = anyColorToHslObject(sourceColor)
-  let newL: number
+
+  // 调整亮度的范围，使最暗和最亮的颜色不会完全是黑白
+  const minL = options?.min ?? 0 // 最暗亮度值
+  const maxL = options?.max ?? 1 // 最亮亮度值
+
   const factor = i / (size - 1)
-  newL = Math.round(factor * 100) / 100 // 亮度从 0 到 1 均匀变化
+  let newL: number
+
+  // 通过插值计算亮度，并确保亮度在 minL 和 maxL 之间
+  newL = minL + factor * (maxL - minL)
+
   return anyColorToTargetColor({ h, s, l: newL }, type, 'HSL') as T
 }
 
@@ -65,7 +54,7 @@ export function makePaletteArray<T extends AnyColor>(sourceColor: T, size: numbe
   const type = getColorType(sourceColor)
   const source = anyColorToHslObject(sourceColor, type)
   for (let i = 0; i < size; i++) {
-    palette.push(getPaletteColor(i, source, size, type) as T)
+    palette.push(getPaletteColor(i, source, size, { type }) as T)
   }
   return palette
 }
