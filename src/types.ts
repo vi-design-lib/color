@@ -55,6 +55,30 @@ export type HSLObject = { h: number; s: number; l: number }
 export type ColorTag = 'hex' | 'rgb' | 'hsl' | 'RGB' | 'HSL'
 
 /**
+ * 调色板可选
+ */
+export type PaletteOptions = {
+  /**
+   * 调色板最小亮度，默认为0
+   *
+   * @default 0
+   */
+  min?: number
+  /**
+   * 调色板最大亮度，默认为1
+   *
+   * @default 1
+   */
+  max?: number
+  /**
+   * 颜色类型
+   *
+   * 如果不传入则会根据源色类型自动识别
+   */
+  type?: ColorTag
+}
+
+/**
  * 颜色标签转颜色类型
  */
 export type ColorTagToColorType<T extends ColorTag> = T extends 'hex'
