@@ -1,6 +1,6 @@
 import { anyColorToHslObject, getColorType } from '../utils/index.js'
 import { getPaletteColor } from './helper.js'
-import type { AnyColor, ColorTag, HSLObject } from '../types.js'
+import type { AnyColor, ColorTag, HSLObject, PaletteOptions } from '../types.js'
 
 /**
  * 调色板类
@@ -19,12 +19,13 @@ export class Palette<T extends AnyColor = AnyColor> {
   // 源色
   readonly #sourceColor: T
   // 输出类型
-  readonly #outType: ColorTag
+  readonly #options: Required<PaletteOptions>
   /**
    * @param {T} sourceColor - 源色
    * @param {number} size - 色阶数量，不能小于9
+   * @param {PaletteOptions} [options] - 可选的配置项
    */
-  constructor(sourceColor: T, size: number) {
+  constructor(sourceColor: T, size: number, options?: PaletteOptions) {
     if (typeof size !== 'number' || size < 9) {
       throw new Error('size must be a number and greater than 9')
     }
@@ -32,7 +33,14 @@ export class Palette<T extends AnyColor = AnyColor> {
     this.#size = size
     this.#sourceHsl = anyColorToHslObject(sourceColor)
     this.#cacheColors.length = size
-    this.#outType = getColorType(sourceColor)
+    this.#options = Object.assign(
+      {
+        type: getColorType(sourceColor),
+        min: 0,
+        max: 1
+      },
+      options || {}
+    )
   }
 
   /**
@@ -55,7 +63,7 @@ export class Palette<T extends AnyColor = AnyColor> {
    * 调色板色彩类型
    */
   get type(): ColorTag {
-    return this.#outType
+    return this.#options.type
   }
 
   /**
@@ -72,7 +80,7 @@ export class Palette<T extends AnyColor = AnyColor> {
    */
   get(i: number): T {
     if (!this.#cacheColors[i]) {
-      this.#cacheColors[i] = getPaletteColor(i, this.#sourceHsl, this.size, this.#outType) as T
+      this.#cacheColors[i] = getPaletteColor(i, this.#sourceHsl, this.size, this.#options) as T
     }
     return this.#cacheColors[i]
   }
