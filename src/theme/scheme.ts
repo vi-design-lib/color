@@ -30,13 +30,13 @@ export class Scheme {
    */
   static readonly darkRule: PaletteExtractionColorRules = {
     source: 80,
-    onSource: 20,
+    onSource: 10,
     sourceHover: 72,
     onSourceHover: 24,
     sourceActive: 60,
     onSourceActive: 10,
-    sourceDisabled: 30,
-    onSourceDisabled: 72,
+    sourceDisabled: 18,
+    onSourceDisabled: 40,
     container: 30,
     onContainer: 90,
     base: {
@@ -212,35 +212,18 @@ export class Scheme {
       roles[`on${capitalize(key)}Hover`] = palette.get(rule.onSourceHover)
       roles[`on${capitalize(key)}Active`] = palette.get(rule.onSourceActive)
 
-      if (mode === 'dark') {
-        roles[`on${capitalize(key)}Disabled`] = palettes.neutral.get(rule.onSourceDisabled)
-      } else {
-        roles[`on${capitalize(key)}Disabled`] = palette.get(rule.onSourceDisabled)
-      }
+      roles[`on${capitalize(key)}Disabled`] = palettes.neutral.get(rule.onSourceDisabled)
 
       roles[`${key}Container`] = palette.get(rule.container)
 
       roles[`on${capitalize(key)}Container`] = palette.get(rule.onContainer)
     }
     const palette = palettes.neutral
-    const neutralRoles: BaseColorRoles<T> = {
-      surface: palette.get(rule.base.surface),
-      inverseSurface: palette.get(rule.base.inverseSurface),
-      inverseOnSurface: palette.get(rule.base.inverseOnSurface),
-      surfaceDim: palette.get(rule.base.surfaceDim),
-      surfaceBright: palette.get(rule.base.surfaceBright),
-      surfaceContainerLowest: palette.get(rule.base.surfaceContainerLowest),
-      surfaceContainer: palette.get(rule.base.surfaceContainer),
-      surfaceContainerLow: palette.get(rule.base.surfaceContainerLow),
-      surfaceContainerHigh: palette.get(rule.base.surfaceContainerHigh),
-      surfaceContainerHighest: palette.get(rule.base.surfaceContainerHighest),
-      onSurface: palette.get(rule.base.onSurface),
-      onSurfaceVariant: palette.get(rule.base.onSurfaceVariant),
-      outline: palette.get(rule.base.outline),
-      outlineVariant: palette.get(rule.base.outlineVariant),
-      shadow: palette.get(rule.base.shadow)
+    const baseRoles: BaseColorRoles<T> = {} as BaseColorRoles<T>
+    for (const [key, value] of Object.entries(rule.base)) {
+      baseRoles[key as keyof BaseColorRoles<T>] = palette.get(value)
     }
-    Object.assign(roles, neutralRoles)
+    Object.assign(roles, baseRoles)
     return roles as ColorSchemeRoles<T>
   }
 }
