@@ -19,6 +19,8 @@ export class Theme<T extends AnyColor> {
   readonly #schemes: ThemeSchemes<T>
   // 主题配色方案
   readonly #colors: ColorScheme<T>
+
+  // 构造函数
   constructor(colors: ColorScheme<T>) {
     this.#colors = colors
     this.#palettes = Scheme.colorSchemeToPalettes(colors)
@@ -30,6 +32,8 @@ export class Theme<T extends AnyColor> {
 
   /**
    * 调色板
+   *
+   * 色阶可选值的范围0-100
    */
   get palettes(): Readonly<ColorSchemePalettes<T>> {
     return this.#palettes
@@ -62,6 +66,8 @@ export class Theme<T extends AnyColor> {
 
   /**
    * 主题配色方案
+   *
+   * @returns {ThemeSchemes<T>} - 主题配色方案
    */
   get schemes(): ThemeSchemes<T> {
     return this.#schemes
@@ -69,6 +75,8 @@ export class Theme<T extends AnyColor> {
 
   /**
    * 源配色方案
+   *
+   * @returns {ColorScheme<T>} - 源配色方案
    */
   get colors(): ColorScheme<T> {
     return this.#colors
