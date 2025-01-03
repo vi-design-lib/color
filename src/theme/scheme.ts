@@ -113,9 +113,8 @@ export class Scheme {
     const errorHsl = { h: 0, ...sl } // 红色范围
 
     // 生成辅色和次要辅色的色相
-    const auxHue = HslFormula.adjacentHue(h, -30) // 基于主色的相邻色 反向偏移
-    const minorHue = HslFormula.adjacentHue(h, 30) // 基于主色的相邻色，正向偏移
-
+    const auxHue = HslFormula.adjacentHue(h, -45) // 基于主色的相邻色 反向偏移
+    const minorHue = HslFormula.adjacentHue(h, 45) // 基于主色的相邻色，正向偏移
     // 确保辅色和三级辅色的饱和度低于主色
     const auxHsl = { h: auxHue, s: HslFormula.ratioAdjust(s, 0.8), l: adjustedLightness }
     const minorHsl = { h: minorHue, s: HslFormula.ratioAdjust(s, 0.7), l: adjustedLightness }
