@@ -60,7 +60,7 @@ export function contrastRatio(color1: AnyColor, color2: AnyColor): number {
 export function schemeContrastRation<T extends ColorSchemeRoles<AnyColor>>(
   scheme: T
 ): Record<string, number> {
-  const roles: Array<ColorSchemeKeys> = ['main', 'aux', 'minor', 'warning', 'danger']
+  const roles: Array<ColorSchemeKeys> = ['main', 'aux', 'minor', 'warning', 'error']
   const result: Record<string, number> = {}
   for (const role of roles) {
     const caseRole = capitalize(role)

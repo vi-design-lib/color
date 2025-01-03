@@ -160,7 +160,7 @@ export type ColorScheme<T extends AnyColor = AnyColor> = Record<ColorSchemeKeys,
  * - `danger`: 危险颜色
  * - `neutral`: 中性颜色
  */
-export type ColorSchemeKeys = 'main' | 'aux' | 'minor' | 'warning' | 'danger' | 'neutral'
+export type ColorSchemeKeys = 'main' | 'aux' | 'minor' | 'warning' | 'error' | 'neutral'
 
 type RoleKeys = Exclude<ColorSchemeKeys, 'neutral'>
 
