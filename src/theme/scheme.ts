@@ -106,14 +106,11 @@ export class Scheme {
 
     // 亮度调整，确保不会过亮或过暗
     const adjustedLightness = parseFloat(Math.min(Math.max(l * 1.1, 0), 1).toFixed(2)) // 保持亮度在 [0, 1] 范围内
-
     const sl = { s: HslFormula.ratioAdjust(s, 0.9), l: adjustedLightness }
-
-    // 使用主色的反向互补颜色做为警告颜色
-    const warningHsl = { h: HslFormula.complementaryHue(h), ...sl }
-
+    // 使用黄色做为警告色
+    const warningHsl = { h: 30, ...sl } // 黄色范围
     // 固定红色范围的危险色
-    const dangerHsl = { h: 0, ...sl } // 红色范围
+    const errorHsl = { h: 0, ...sl } // 红色范围
 
     // 生成辅色和次要辅色的色相
     const auxHue = HslFormula.adjacentHue(h, -30) // 基于主色的相邻色 反向偏移
@@ -132,7 +129,7 @@ export class Scheme {
       aux: auxHsl,
       minor: minorHsl,
       warning: warningHsl,
-      danger: dangerHsl,
+      error: errorHsl,
       neutral: neutralHsl
     }
 
@@ -144,6 +141,7 @@ export class Scheme {
         hslScheme[key] = anyColorToTargetColor(hsl, outType, 'HSL') as any
       }
     }
+
     return hslScheme as ColorScheme<ColorToColorType<T>>
   }
 
