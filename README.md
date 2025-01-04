@@ -1,11 +1,12 @@
-# visdev-color
-visdev-color是由TS编写的网站主题配色工具，帮助开发者快速创建主题配色方案。
+# @vi-design/color
+@vi-design/color是由TS编写的配色方案库，帮助开发者快速创建主题配色方案。
 ___________________________________________________________________
 
 ## 安装
 ```shell
-npm install visdev-color
+npm install @vi-design/color
 ```
+
 ## 使用
 
 ```ts
@@ -26,5 +27,4 @@ theme.light.main
 theme.light.main
 // 主色容器之上的文本颜色
 theme.light.main
-// 更多配色查阅文档 ...
 ```
