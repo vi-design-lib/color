@@ -52,8 +52,8 @@ export class Scheme {
       surfaceContainerHighest: 24,
       onSurface: 90,
       onSurfaceVariant: 90,
-      outline: 60,
-      outlineVariant: 30,
+      outline: 40,
+      outlineVariant: 20,
       shadow: 0
     }
   }
@@ -85,7 +85,7 @@ export class Scheme {
       onSurface: 10,
       onSurfaceVariant: 30,
       outline: 50,
-      outlineVariant: 80,
+      outlineVariant: 90,
       shadow: 0
     }
   }
@@ -124,7 +124,7 @@ export class Scheme {
 
     // 创建 HSL 配色方案
     const hslScheme: ColorScheme<HSLObject> = {
-      main: primaryHsl,
+      primary: primaryHsl,
       aux: auxHsl,
       minor: minorHsl,
       warning: warningHsl,
