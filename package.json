@@ -1,6 +1,6 @@
 {
   "name": "@vi-design/color",
-  "version": "0.0.1-beta.1",
+  "version": "0.0.1-beta.2",
   "description": "@vi-design/color是由TS编写的配色方案库，帮助开发者快速创建主题配色方案。",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
