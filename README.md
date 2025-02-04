@@ -16,15 +16,15 @@ const theme = createTheme('#1376e7')
 logColorsWithLabels(theme.light) 
 logColorsWithLabels(theme.dark)
 // 从调色板中获取颜色0-100
-theme.palettes.main.get(10)
+theme.palettes.primary.get(10)
 // 从调色板中获取所有颜色
-theme.palettes.main.all()
+theme.palettes.primary.all()
 // 主色
-theme.light.main
+theme.light.primary
 // 主色之上的文本颜色
-theme.light.main
+theme.light.onPrimary
 // 主色容器
-theme.light.main
+theme.light.primaryContainer
 // 主色容器之上的文本颜色
-theme.light.main
+theme.light.onPrimaryContainer
 ```
