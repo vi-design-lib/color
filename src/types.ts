@@ -187,11 +187,11 @@ type RoleKeys = Exclude<ColorSchemeKeys, 'neutral'>
 export type ExpandColorSchemeRoles<T extends AnyColor, KS extends string = RoleKeys> = {
   [K in KS]: T
 } & {
-  [K in `on${Capitalize<RoleKeys>}`]: T
+  [K in `on${Capitalize<KS>}`]: T
 } & {
-  [K in `${RoleKeys}Container`]: T
+  [K in `${KS}Container`]: T
 } & {
-  [K in `on${Capitalize<RoleKeys>}Container`]: T
+  [K in `on${Capitalize<KS>}Container`]: T
 }
 
 /**
