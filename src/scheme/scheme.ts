@@ -1,13 +1,13 @@
 import type {
   AnyColor,
-  BaseColorRoles,
   BrightnessScheme,
   ColorScheme,
   ColorSchemePalettes,
-  ColorSchemeRole,
+  ColorSchemeRoles,
   ColorSchemeTonal,
   ColorToColorType,
   HSLObject,
+  NeutralColorRoles,
   PaletteExtractionColorRules,
   Schemes
 } from '../types.js'
@@ -76,7 +76,7 @@ export default class Scheme<T extends AnyColor> {
    *
    * @returns {Object} 浅色模式下的颜色角色
    */
-  get lightRoles(): ColorSchemeRole<T> {
+  get lightRoles(): ColorSchemeRoles<T> {
     return this.bright.light.roles
   }
 
@@ -85,7 +85,7 @@ export default class Scheme<T extends AnyColor> {
    *
    * @returns {Object} 深色模式下的颜色角色
    */
-  get darkRoles(): ColorSchemeRole<T> {
+  get darkRoles(): ColorSchemeRoles<T> {
     return this.bright.dark.roles
   }
 
@@ -267,7 +267,7 @@ export default class Scheme<T extends AnyColor> {
   static createColorSchemeRoles<T extends AnyColor>(
     palettes: ColorSchemePalettes<T>,
     mode: 'light' | 'dark'
-  ): ColorSchemeRole<T> {
+  ): ColorSchemeRoles<T> {
     const rule = mode === 'dark' ? this.darkRoleRule : this.lightRoleRule
     const roles: Record<string, any> = {}
     for (const [key, palette] of Object.entries(palettes)) {
@@ -290,12 +290,12 @@ export default class Scheme<T extends AnyColor> {
       roles[`on${capitalize(key)}Container`] = palette.get(rule.onContainer)
     }
     const palette = palettes.neutral
-    const baseRoles: BaseColorRoles<T> = {} as BaseColorRoles<T>
+    const baseRoles: NeutralColorRoles<T> = {} as NeutralColorRoles<T>
     for (const [key, value] of Object.entries(rule.base)) {
-      baseRoles[key as keyof BaseColorRoles<T>] = palette.get(value)
+      baseRoles[key as keyof NeutralColorRoles<T>] = palette.get(value)
     }
     Object.assign(roles, baseRoles)
-    return roles as ColorSchemeRole<T>
+    return roles as ColorSchemeRoles<T>
   }
 
   /**

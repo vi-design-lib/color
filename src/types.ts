@@ -142,7 +142,7 @@ export type PaletteExtractionColorRules = {
   /**
    * 中性色基准配色方案
    */
-  base: BaseColorRoles<number>
+  base: NeutralColorRoles<number>
 }
 
 /**
@@ -163,40 +163,41 @@ export type ColorScheme<T extends AnyColor = AnyColor> = Record<ColorSchemeKeys,
 export type ColorSchemeKeys = 'primary' | 'aux' | 'minor' | 'warning' | 'error' | 'neutral'
 
 /**
- * 简约色阶可选范围
+ * 色阶可选范围
  */
 export type Tone = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10
+
+/**
+ * 色阶键
+ */
+export type TonalKeys = `${ColorSchemeKeys}-${Tone}`
 
 /**
  * 色调调色板
  */
 export type ColorSchemeTonal<T extends AnyColor = AnyColor> = {
-  [K in `${ColorSchemeKeys}-${Tone}`]: T
+  [K in TonalKeys]: T
 }
 
 type RoleKeys = Exclude<ColorSchemeKeys, 'neutral'>
 
 /**
- * 配色方案对应的颜色角色
- *
- * 借鉴于{@link https://material.io/design/color/the-color-system.html#color-roles Material Design}。
- *
- * `neutral` 调色板转化的角色较多，单独处理，具体见 {@link BaseColorRoles} 接口
+ * 配色方案转换为角色
  */
-export type ColorSchemeRole<T extends AnyColor> = {
-  [K in RoleKeys]: T
+export type ExpandColorSchemeRoles<T extends AnyColor, KS extends string = RoleKeys> = {
+  [K in KS]: T
 } & {
   [K in `on${Capitalize<RoleKeys>}`]: T
 } & {
   [K in `${RoleKeys}Container`]: T
 } & {
   [K in `on${Capitalize<RoleKeys>}Container`]: T
-} & BaseColorRoles<T>
+}
 
 /**
  * 中性调色板生成的角色
  */
-export interface BaseColorRoles<T> {
+export interface NeutralColorRoles<T> {
   /**
    * 表面颜色，通常用于页面的默认背景颜色。
    */
@@ -281,13 +282,17 @@ export interface BaseColorRoles<T> {
 }
 
 /**
+ * 配色方案对应的颜色角色
+ */
+export type ColorSchemeRoles<T extends AnyColor> = ExpandColorSchemeRoles<T> & NeutralColorRoles<T>
+/**
  * 配色方案
  */
 export interface Schemes<T extends AnyColor = AnyColor> {
   /**
    * 角色配色方案
    */
-  roles: ColorSchemeRole<T>
+  roles: ColorSchemeRoles<T>
   /**
    * 色调配色方案
    */
