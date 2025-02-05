@@ -23,8 +23,6 @@ import { Palette } from '../palette/index.js'
 /**
  * 配色方案
  *
- * 该类没有任何动态方法，提供了一些静态方法，用于创建配色方案。
- *
  * 可以重写类中的静态方法，以自定义配色方案。
  */
 export default class Scheme<T extends AnyColor> {
