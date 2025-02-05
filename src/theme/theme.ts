@@ -1,9 +1,9 @@
 import type {
   AnyColor,
+  BrightnessScheme,
   ColorScheme,
   ColorSchemePalettes,
-  ColorSchemeRoles,
-  ThemeSchemes
+  Schemes
 } from '../types.js'
 import { Scheme } from './scheme.js'
 
@@ -14,71 +14,42 @@ import { Scheme } from './scheme.js'
  */
 export class Theme<T extends AnyColor> {
   // 配色方案对应的调色板
-  readonly #palettes: ColorSchemePalettes<T>
+  public readonly palettes: ColorSchemePalettes<T>
+  // 色调调色板
+  public readonly tonalPalettes: ColorSchemePalettes<T>
   // 主题配色方案模式
-  readonly #schemes: ThemeSchemes<T>
-  // 主题配色方案
-  readonly #colors: ColorScheme<T>
+  private schemes: BrightnessScheme<T>
 
-  // 构造函数
   constructor(colors: ColorScheme<T>) {
-    this.#colors = colors
-    this.#palettes = Scheme.colorSchemeToPalettes(colors)
-    this.#schemes = {
-      light: Scheme.lightFromPalettes(this.#palettes),
-      dark: Scheme.darkFromPalettes(this.#palettes)
+    this.palettes = Scheme.colorSchemeToPalettes(colors)
+    this.tonalPalettes = Scheme.colorSchemeToTonalPalettes(colors)
+    this.schemes = {
+      light: {
+        role: Scheme.createColorSchemeRoles(this.palettes, 'light'),
+        tonal: Scheme.createColorSchemeTonal(this.tonalPalettes, 'light')
+      },
+      dark: {
+        role: Scheme.createColorSchemeRoles(this.palettes, 'dark'),
+        tonal: Scheme.createColorSchemeTonal(this.tonalPalettes, 'dark')
+      }
     }
   }
 
   /**
-   * 调色板
+   * 获取主题配色方案
    *
-   * 色阶可选值的范围0-100
+   * @returns {Object} 主题配色方案
    */
-  get palettes(): Readonly<ColorSchemePalettes<T>> {
-    return this.#palettes
+  get light(): Schemes<T> {
+    return this.schemes.light
   }
 
   /**
-   * 亮色配色方案
-   */
-  get light(): ColorSchemeRoles<T> {
-    return this.#schemes.light
-  }
-
-  /**
-   * 暗色配色方案
-   */
-  get dark(): ColorSchemeRoles<T> {
-    return this.#schemes.dark
-  }
-
-  /**
-   * 将主题方案转换为JSON字符串
+   * 获取暗黑主题配色方案
    *
-   * 包含亮色和暗色配色方案
-   *
-   * @returns {string} - JSON字符串
+   * @returns {Object} 暗黑主题配色方案
    */
-  public toJson(): string {
-    return JSON.stringify(this.#schemes)
-  }
-
-  /**
-   * 主题配色方案
-   *
-   * @returns {ThemeSchemes<T>} - 主题配色方案
-   */
-  get schemes(): ThemeSchemes<T> {
-    return this.#schemes
-  }
-
-  /**
-   * 源配色方案
-   *
-   * @returns {ColorScheme<T>} - 源配色方案
-   */
-  get colors(): ColorScheme<T> {
-    return this.#colors
+  get dark(): Schemes<T> {
+    return this.schemes.dark
   }
 }
