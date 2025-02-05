@@ -37,12 +37,12 @@ export default class Scheme<T extends AnyColor> {
   /**
    * 亮度配色方案
    */
-  public readonly schemes: BrightnessScheme<T>
+  public readonly bright: BrightnessScheme<T>
 
   constructor(colors: ColorScheme<T>) {
     this.palettes = Scheme.colorSchemeToPalettes(colors)
     this.tonalPalettes = Scheme.colorSchemeToTonalPalettes(colors)
-    this.schemes = {
+    this.bright = {
       light: {
         role: Scheme.createColorSchemeRoles(this.palettes, 'light'),
         tonal: Scheme.createColorSchemeTonal(this.tonalPalettes, 'light')
@@ -60,7 +60,7 @@ export default class Scheme<T extends AnyColor> {
    * @returns {Object} 主题配色方案
    */
   get light(): Schemes<T> {
-    return this.schemes.light
+    return this.bright.light
   }
 
   /**
@@ -69,7 +69,7 @@ export default class Scheme<T extends AnyColor> {
    * @returns {Object} 暗黑主题配色方案
    */
   get dark(): Schemes<T> {
-    return this.schemes.dark
+    return this.bright.dark
   }
 
   /**
