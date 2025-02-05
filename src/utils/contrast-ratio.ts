@@ -1,4 +1,4 @@
-import type { AnyColor, ColorSchemeKeys, ColorSchemeRoles, RGBObject } from '../types.js'
+import type { AnyColor, ColorSchemeKeys, ColorSchemeRole, RGBObject } from '../types.js'
 import { anyColorToRgbObject } from './conversion.js'
 import { capitalize } from './tools.js'
 
@@ -57,7 +57,7 @@ export function contrastRatio(color1: AnyColor, color2: AnyColor): number {
  *
  * @param {Record<string, number>} scheme - 颜色方案
  */
-export function schemeContrastRation<T extends ColorSchemeRoles<AnyColor>>(
+export function schemeContrastRation<T extends ColorSchemeRole<AnyColor>>(
   scheme: T
 ): Record<string, number> {
   const roles: Array<ColorSchemeKeys> = ['primary', 'aux', 'minor', 'warning', 'error']
