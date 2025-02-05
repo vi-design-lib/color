@@ -116,9 +116,14 @@ export class Palette<T extends AnyColor = AnyColor> {
    * @template T - 源色类型
    * @param {AnyColor} sourceColor - 源色
    * @param {number} [size=11] - 色阶数量
+   * @param {Object} options - 可选的配置项
    * @returns {Palette<T>} - 调色板实例
    */
-  static create<T extends AnyColor>(sourceColor: T, size: number): Palette<T> {
-    return new Palette(sourceColor, size)
+  static create<T extends AnyColor>(
+    sourceColor: T,
+    size: number,
+    options?: PaletteOptions
+  ): Palette<T> {
+    return new Palette(sourceColor, size, options)
   }
 }
