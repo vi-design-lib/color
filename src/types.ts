@@ -1,4 +1,4 @@
-import { Palette } from './palette/index.js'
+import type { Palette } from './palette/index.js'
 
 /**
  * 16进制颜色类型
@@ -157,7 +157,7 @@ export type ColorScheme<T extends AnyColor = AnyColor> = Record<ColorSchemeKeys,
  * - `aux`: 辅助颜色
  * - `minor`: 次要颜色
  * - `warning`: 警告颜色
- * - `danger`: 危险颜色
+ * - `error`: 危险颜色
  * - `neutral`: 中性颜色
  */
 export type ColorSchemeKeys = 'primary' | 'aux' | 'minor' | 'warning' | 'error' | 'neutral'
@@ -269,7 +269,7 @@ export interface BaseColorRoles<T> {
 }
 
 /**
- * 主题配色
+ * 配色方案
  */
 export interface ThemeSchemes<T extends AnyColor = AnyColor> {
   /**
