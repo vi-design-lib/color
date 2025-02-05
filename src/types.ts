@@ -55,7 +55,7 @@ export type HSLObject = { h: number; s: number; l: number }
 export type ColorTag = 'hex' | 'rgb' | 'hsl' | 'RGB' | 'HSL'
 
 /**
- * 调色板可选
+ * 调色板可选配置
  */
 export type PaletteOptions = {
   /**
@@ -165,12 +165,12 @@ export type ColorSchemeKeys = 'primary' | 'aux' | 'minor' | 'warning' | 'error' 
 /**
  * 简约色阶可选范围
  */
-export type Tone = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10
+export type Tone = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10
 
 /**
  * 色调调色板
  */
-export type Tonal<T extends AnyColor = AnyColor> = {
+export type ColorSchemeTonal<T extends AnyColor = AnyColor> = {
   [K in `${ColorSchemeKeys}-${Tone}`]: T
 }
 
@@ -183,7 +183,7 @@ type RoleKeys = Exclude<ColorSchemeKeys, 'neutral'>
  *
  * `neutral` 调色板转化的角色较多，单独处理，具体见 {@link BaseColorRoles} 接口
  */
-export type ColorSchemeRoles<T extends AnyColor> = {
+export type ColorSchemeRole<T extends AnyColor> = {
   [K in RoleKeys]: T
 } & {
   [K in `on${Capitalize<RoleKeys>}`]: T
@@ -283,13 +283,21 @@ export interface BaseColorRoles<T> {
 /**
  * 配色方案
  */
-export interface ThemeSchemes<T extends AnyColor = AnyColor> {
+export interface Schemes<T extends AnyColor = AnyColor> {
   /**
-   * 亮色主题配色方案
+   * 角色配色方案
    */
-  light: ColorSchemeRoles<T>
+  role: ColorSchemeRole<T>
   /**
    * 暗色主题配色方案
    */
-  dark: ColorSchemeRoles<T>
+  tonal: ColorSchemeTonal<T>
+}
+
+/**
+ * 主题配色方案
+ */
+export interface BrightnessScheme<T extends AnyColor = AnyColor> {
+  dark: Schemes<T>
+  light: Schemes<T>
 }
