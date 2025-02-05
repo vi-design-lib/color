@@ -11,15 +11,15 @@ import type { AnyColor, ColorTag, HSLObject, PaletteOptions } from '../types.js'
  */
 export class Palette<T extends AnyColor = AnyColor> {
   // 源色RGB对象
-  readonly #sourceHsl: HSLObject
+  private readonly _sourceHsl: HSLObject
   // 缓存色阶颜色
-  readonly #cacheColors: Array<T> = []
+  private readonly _cacheColors: Array<T> = []
   // 色阶数量
-  readonly #size: number
+  private readonly _size: number
   // 源色
-  readonly #sourceColor: T
+  private readonly _sourceColor: T
   // 输出类型
-  readonly #options: Required<PaletteOptions>
+  private readonly _options: Required<PaletteOptions>
   /**
    * @param {T} sourceColor - 源色
    * @param {number} size - 色阶数量，不能小于9
@@ -29,11 +29,11 @@ export class Palette<T extends AnyColor = AnyColor> {
     if (typeof size !== 'number' || size < 9) {
       throw new Error('size must be a number and greater than 9')
     }
-    this.#sourceColor = sourceColor
-    this.#size = size
-    this.#sourceHsl = anyColorToHslObject(sourceColor)
-    this.#cacheColors.length = size
-    this.#options = Object.assign(
+    this._sourceColor = sourceColor
+    this._size = size
+    this._sourceHsl = anyColorToHslObject(sourceColor)
+    this._cacheColors.length = size
+    this._options = Object.assign(
       {
         type: getColorType(sourceColor),
         min: 0,
@@ -47,7 +47,7 @@ export class Palette<T extends AnyColor = AnyColor> {
    * 源色
    */
   get source(): T {
-    return this.#sourceColor
+    return this._sourceColor
   }
 
   /**
@@ -56,21 +56,21 @@ export class Palette<T extends AnyColor = AnyColor> {
    * @returns {HSLObject} - 源色HSL对象的拷贝
    */
   get hsl(): HSLObject {
-    return { ...this.#sourceHsl }
+    return { ...this._sourceHsl }
   }
 
   /**
    * 调色板色彩类型
    */
   get type(): ColorTag {
-    return this.#options.type
+    return this._options.type
   }
 
   /**
    * 调色板色阶数量
    */
   get size(): number {
-    return this.#size
+    return this._size
   }
 
   /**
@@ -79,10 +79,10 @@ export class Palette<T extends AnyColor = AnyColor> {
    * @param {number} i - 色阶索引，必须小于色阶数量
    */
   get(i: number): T {
-    if (!this.#cacheColors[i]) {
-      this.#cacheColors[i] = getPaletteColor(i, this.#sourceHsl, this.size, this.#options) as T
+    if (!this._cacheColors[i]) {
+      this._cacheColors[i] = getPaletteColor(i, this._sourceHsl, this.size, this._options) as T
     }
-    return this.#cacheColors[i]
+    return this._cacheColors[i]
   }
 
   /**
