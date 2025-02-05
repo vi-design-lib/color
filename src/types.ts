@@ -287,7 +287,7 @@ export interface Schemes<T extends AnyColor = AnyColor> {
   /**
    * 角色配色方案
    */
-  role: ColorSchemeRole<T>
+  roles: ColorSchemeRole<T>
   /**
    * 色调配色方案
    */

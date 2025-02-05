@@ -44,11 +44,11 @@ export default class Scheme<T extends AnyColor> {
     this.tonalPalettes = Scheme.colorSchemeToTonalPalettes(colors)
     this.bright = {
       light: {
-        role: Scheme.createColorSchemeRoles(this.palettes, 'light'),
+        roles: Scheme.createColorSchemeRoles(this.palettes, 'light'),
         tonal: Scheme.createColorSchemeTonal(this.tonalPalettes, 'light')
       },
       dark: {
-        role: Scheme.createColorSchemeRoles(this.palettes, 'dark'),
+        roles: Scheme.createColorSchemeRoles(this.palettes, 'dark'),
         tonal: Scheme.createColorSchemeTonal(this.tonalPalettes, 'dark')
       }
     }
@@ -70,6 +70,41 @@ export default class Scheme<T extends AnyColor> {
    */
   get dark(): Schemes<T> {
     return this.bright.dark
+  }
+  /**
+   * 获取浅色模式下的颜色角色
+   *
+   * @returns {Object} 浅色模式下的颜色角色
+   */
+  get lightRoles(): ColorSchemeRole<T> {
+    return this.bright.light.roles
+  }
+
+  /**
+   * 获取深色模式下的颜色角色
+   *
+   * @returns {Object} 深色模式下的颜色角色
+   */
+  get darkRoles(): ColorSchemeRole<T> {
+    return this.bright.dark.roles
+  }
+
+  /**
+   * 获取浅色模式下的色调
+   *
+   * @returns {Object} 浅色模式下的色调
+   */
+  get lightTonal(): ColorSchemeTonal<T> {
+    return this.bright.light.tonal
+  }
+
+  /**
+   * 获取深色模式下的色调
+   *
+   * @returns {Object} 深色模式下的色调
+   */
+  get darkTonal(): ColorSchemeTonal<T> {
+    return this.bright.dark.tonal
   }
 
   /**
