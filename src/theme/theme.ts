@@ -30,6 +30,14 @@ export interface ThemeOptions {
    * @default '_CACHE_THEME_MODE'
    */
   cacheKey: string
+  /**
+   * 自定义ref函数
+   *
+   * 支持`vitarx`和`vue3`框架中的ref函数
+   *
+   * @default ref
+   */
+  refProxy: RefFn
 }
 /**
  * 主题管理类
@@ -37,19 +45,13 @@ export interface ThemeOptions {
  * 依赖浏览器端`CSSStyleSheet`和`matchMedia`特性，自动生成css变量样式表，支持动态切换主题。
  */
 export class Theme<T extends AnyColor, CustomKeys extends string> {
-  /**
-   * ref代理函数
-   *
-   * 为了同时兼容`vitarx`和`vue`框架，提供此静态属性，用于指定`ref`函数来源，内部默认使用的是一个伪ref函数，
-   * 不具备响应式能力。
-   */
-  static refProxy: RefFn = ref
   // 主题模式
-  private _mode: Ref<ThemeMode> = Theme.refProxy(this.getCacheThemeMode())
+  private _mode: Ref<ThemeMode>
   // 样式表
   private readonly sheet: CSSStyleSheet
   // 颜色方案
   private _scheme: Ref<Scheme<ColorToColorType<T>>>
+  // 选项
   private options: ThemeOptions
   constructor(
     primary: T,
@@ -58,12 +60,14 @@ export class Theme<T extends AnyColor, CustomKeys extends string> {
   ) {
     this.options = Object.assign(
       {
-        cacheKey: '_CACHE_THEME_MODE'
+        cacheKey: '_CACHE_THEME_MODE',
+        refProxy: ref
       },
       options
     )
     this.sheet = this.createStyleSheet()
-    this._scheme = Theme.refProxy(createScheme(primary, customColorScheme))
+    this._mode = this.options.refProxy(this.getCacheThemeMode())
+    this._scheme = this.options.refProxy(createScheme(primary, customColorScheme))
     this.updateStyles()
   }
   /**
