@@ -162,6 +162,18 @@ export type ColorScheme<T extends AnyColor = AnyColor> = Record<ColorSchemeKeys,
  */
 export type ColorSchemeKeys = 'primary' | 'aux' | 'minor' | 'warning' | 'error' | 'neutral'
 
+/**
+ * 简约色阶可选范围
+ */
+export type Tone = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10
+
+/**
+ * 色调调色板
+ */
+export type Tonal<T extends AnyColor = AnyColor> = {
+  [K in `${ColorSchemeKeys}-${Tone}`]: T
+}
+
 type RoleKeys = Exclude<ColorSchemeKeys, 'neutral'>
 
 /**
@@ -281,8 +293,3 @@ export interface ThemeSchemes<T extends AnyColor = AnyColor> {
    */
   dark: ColorSchemeRoles<T>
 }
-
-/**
- * 主题配色方案模式
- */
-export type ThemeSchemeMode = keyof ThemeSchemes
