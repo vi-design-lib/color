@@ -39,7 +39,7 @@ export class Palette<T extends AnyColor = AnyColor> {
         min: 0,
         max: 1
       },
-      options || {}
+      options
     )
   }
 
