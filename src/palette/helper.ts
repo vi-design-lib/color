@@ -47,14 +47,19 @@ export function getPaletteColor<T extends AnyColor>(
  * @template T - 颜色类型
  * @param {T} sourceColor - 源颜色
  * @param {number} size - 色阶的数量
+ * @param {Object} options - 调色板选项
  * @returns {Array<T>} - 调色板色阶数组(黑->源->白)，色阶总数为奇数时最中间的色阶为源色
  */
-export function makePaletteArray<T extends AnyColor>(sourceColor: T, size: number): Array<T> {
+export function makePaletteArray<T extends AnyColor>(
+  sourceColor: T,
+  size: number,
+  options: PaletteOptions = {}
+): Array<T> {
   const palette: Array<T> = []
-  const type = getColorType(sourceColor)
-  const source = anyColorToHslObject(sourceColor, type)
+  if (!options.type) options.type = getColorType(sourceColor)
+  const source = anyColorToHslObject(sourceColor, options.type)
   for (let i = 0; i < size; i++) {
-    palette.push(getPaletteColor(i, source, size, { type }) as T)
+    palette.push(getPaletteColor(i, source, size, options) as T)
   }
   return palette
 }
