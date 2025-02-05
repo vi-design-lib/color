@@ -149,11 +149,29 @@ export class Scheme {
    *
    * @template T - 配色方案类型
    * @param {T} scheme - 配色方案
-   * @returns {ColorSchemePalettes<T>} 配色方案的调色板
+   * @returns {ColorSchemePalettes<T>} 配色方案的调色板，色阶范围0-100
    */
   static colorSchemeToPalettes<T extends AnyColor>(scheme: ColorScheme<T>): ColorSchemePalettes<T> {
     return Object.fromEntries(
       Object.entries(scheme).map(([key, value]) => [key, Palette.create(value, 101)])
+    ) as unknown as ColorSchemePalettes<T>
+  }
+
+  /**
+   * 将颜色方案转换为简单的调试板
+   *
+   * @template T - 配色方案类型
+   * @param {T} scheme - 配色方案
+   * @returns {ColorSchemePalettes<T>} 配色方案的调色板，色阶范围0-10
+   */
+  static colorSchemeToSimplePalettes<T extends AnyColor>(
+    scheme: ColorScheme<T>
+  ): ColorSchemePalettes<T> {
+    return Object.fromEntries(
+      Object.entries(scheme).map(([key, value]) => [
+        key,
+        Palette.create(value, 11, { min: 0.1, max: 0.9 })
+      ])
     ) as unknown as ColorSchemePalettes<T>
   }
 
