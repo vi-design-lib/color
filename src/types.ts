@@ -281,3 +281,8 @@ export interface ThemeSchemes<T extends AnyColor = AnyColor> {
    */
   dark: ColorSchemeRoles<T>
 }
+
+/**
+ * 主题配色方案模式
+ */
+export type ThemeSchemeMode = keyof ThemeSchemes
