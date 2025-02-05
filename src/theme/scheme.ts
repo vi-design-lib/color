@@ -3,7 +3,8 @@ import type {
   BaseColorRoles,
   ColorScheme,
   ColorSchemePalettes,
-  ColorSchemeRoles,
+  ColorSchemeRole,
+  ColorSchemeTonal,
   ColorToColorType,
   HSLObject,
   PaletteExtractionColorRules
@@ -28,7 +29,7 @@ export class Scheme {
   /**
    * 暗色模式调色板取色规则
    */
-  static readonly darkRule: PaletteExtractionColorRules = {
+  static readonly darkRoleRule: PaletteExtractionColorRules = {
     source: 80,
     onSource: 10,
     sourceHover: 72,
@@ -60,7 +61,7 @@ export class Scheme {
   /**
    * 亮色模式调色板取色规则
    */
-  static readonly lightRule: PaletteExtractionColorRules = {
+  static readonly lightRoleRule: PaletteExtractionColorRules = {
     source: 46,
     onSource: 98,
     sourceHover: 66,
@@ -162,57 +163,31 @@ export class Scheme {
    *
    * @template T - 配色方案类型
    * @param {T} scheme - 配色方案
-   * @returns {ColorSchemePalettes<T>} 配色方案的调色板，色阶范围0-10
+   * @returns {ColorSchemePalettes<T>} 配色方案的调色板，色阶范围0-9
    */
-  static colorSchemeToSimplePalettes<T extends AnyColor>(
+  static colorSchemeToTonalPalettes<T extends AnyColor>(
     scheme: ColorScheme<T>
   ): ColorSchemePalettes<T> {
     return Object.fromEntries(
       Object.entries(scheme).map(([key, value]) => [
         key,
-        Palette.create(value, 11, { min: 0.1, max: 0.9 })
+        Palette.create(value, 10, { min: 0.1, max: 0.9 })
       ])
     ) as unknown as ColorSchemePalettes<T>
   }
 
   /**
-   * 亮色主题配色方案样式
-   *
-   * @template T - BaseColorScheme
-   * @param {ColorSchemePalettes<T>} palettes - 基准配色调色板
-   * @returns {ColorSchemeRoles<T>} 亮色主题配色方案的角色
-   */
-  static lightFromPalettes<T extends AnyColor>(
-    palettes: ColorSchemePalettes<T>
-  ): ColorSchemeRoles<T> {
-    return this.themeColorSchemeRoles(palettes, 'light')
-  }
-
-  /**
-   * 暗色主题配色方案样式
-   *
-   * @template T - BaseColorScheme
-   * @param {ColorSchemePalettes<T>} palettes - 基准配色调色板
-   * @returns {ColorSchemeRoles<T>} 暗色主题配色方案的角色
-   */
-  static darkFromPalettes<T extends AnyColor>(
-    palettes: ColorSchemePalettes<T>
-  ): ColorSchemeRoles<T> {
-    return this.themeColorSchemeRoles(palettes, 'dark')
-  }
-
-  /**
-   * 主题配色方案样式
+   * 创建角色配色方案
    *
    * @template T - BaseColorScheme
    * @param {ColorSchemePalettes<T>} palettes - 基准配色调色板
    * @param {'light' | 'dark'} mode - 主题模式
    */
-  static themeColorSchemeRoles<T extends AnyColor>(
+  static createColorSchemeRoles<T extends AnyColor>(
     palettes: ColorSchemePalettes<T>,
     mode: 'light' | 'dark'
-  ): ColorSchemeRoles<T> {
-    const rule = mode === 'dark' ? this.darkRule : this.lightRule
+  ): ColorSchemeRole<T> {
+    const rule = mode === 'dark' ? this.darkRoleRule : this.lightRoleRule
     const roles: Record<string, any> = {}
     for (const [key, palette] of Object.entries(palettes)) {
       // 跳过中性色，中性色由surface代替
@@ -239,6 +214,27 @@ export class Scheme {
       baseRoles[key as keyof BaseColorRoles<T>] = palette.get(value)
     }
     Object.assign(roles, baseRoles)
-    return roles as ColorSchemeRoles<T>
+    return roles as ColorSchemeRole<T>
+  }
+
+  /**
+   * 创建色调配色方案
+   *
+   * @param {Object} palettes - 调色板
+   * @param {string} mode - 主题模式
+   */
+  static createColorSchemeTonal<T extends AnyColor>(
+    palettes: ColorSchemePalettes<T>,
+    mode: 'light' | 'dark'
+  ): ColorSchemeTonal<T> {
+    const toneIndex = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    const tonal: Record<string, T> = {}
+    for (const [key, palette] of Object.entries(palettes)) {
+      const colors = mode === 'light' ? palette.all().reverse() : palette.all()
+      for (const index of toneIndex) {
+        tonal[`${key}-${index}`] = colors[index - 1]
+      }
+    }
+    return tonal as ColorSchemeTonal<T>
   }
 }
