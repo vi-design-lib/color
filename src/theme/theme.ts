@@ -23,13 +23,21 @@ type Ref<T> = { value: T }
 const ref = <T>(value: T): Ref<T> => {
   return { value }
 }
-export interface ThemeOptions {
+export interface ThemeOptions<T extends AnyColor, CustomKeys extends string> {
+  /**
+   * 自定义颜色方案
+   *
+   * 如果和{@linkcode ColorSchemeKeys}配色重名，则可以覆盖配色方案
+   *
+   * @default {}
+   */
+  customColorScheme?: Record<CustomKeys, ColorToColorType<T>>
   /**
    * 缓存主题模式的key
    *
    * @default '_CACHE_THEME_MODE'
    */
-  cacheKey: string
+  cacheKey?: string
   /**
    * 自定义ref函数
    *
@@ -37,7 +45,7 @@ export interface ThemeOptions {
    *
    * @default ref
    */
-  refProxy: RefFn
+  refProxy?: RefFn
 }
 /**
  * 主题管理类
@@ -52,22 +60,19 @@ export class Theme<T extends AnyColor, CustomKeys extends string> {
   // 颜色方案
   private _scheme: Ref<Scheme<ColorToColorType<T>>>
   // 选项
-  private options: ThemeOptions
-  constructor(
-    primary: T,
-    customColorScheme: Record<CustomKeys, ColorToColorType<T>>,
-    options?: Partial<ThemeOptions>
-  ) {
+  private options: Required<ThemeOptions<T, CustomKeys>>
+  constructor(primary: T, options?: ThemeOptions<T, CustomKeys>) {
     this.options = Object.assign(
       {
         cacheKey: '_CACHE_THEME_MODE',
-        refProxy: ref
+        refProxy: ref,
+        customColorScheme: {}
       },
       options
     )
     this.sheet = this.createStyleSheet()
     this._mode = this.options.refProxy(this.getCacheThemeMode())
-    this._scheme = this.options.refProxy(createScheme(primary, customColorScheme))
+    this._scheme = this.options.refProxy(createScheme(primary, this.options.customColorScheme))
     this.updateStyles()
   }
   /**
