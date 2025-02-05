@@ -28,12 +28,18 @@ import { Palette } from '../palette/index.js'
  * 可以重写类中的静态方法，以自定义配色方案。
  */
 export default class Scheme<T extends AnyColor> {
-  // 配色方案对应的调色板
+  /**
+   * 角色方案对应的调色板
+   */
   public readonly palettes: ColorSchemePalettes<T>
-  // 色调调色板
+  /**
+   * 色调调色板
+   */
   public readonly tonalPalettes: ColorSchemePalettes<T>
-  // 主题配色方案模式
-  private schemes: BrightnessScheme<T>
+  /**
+   * 亮度配色方案
+   */
+  public readonly schemes: BrightnessScheme<T>
 
   constructor(colors: ColorScheme<T>) {
     this.palettes = Scheme.colorSchemeToPalettes(colors)
