@@ -289,7 +289,7 @@ export interface Schemes<T extends AnyColor = AnyColor> {
    */
   role: ColorSchemeRole<T>
   /**
-   * 暗色主题配色方案
+   * 色调配色方案
    */
   tonal: ColorSchemeTonal<T>
 }
