@@ -107,7 +107,7 @@ export class Theme<T extends AnyColor, CustomKeys extends string> {
     this._mode.value = mode
     if (this.bright === oldBright) return
     // 缓存主题
-    localStorage.setItem('_CACHE_THEME_MODE', mode)
+    localStorage.setItem(this.options.cacheKey, mode)
     // 切换样式
     document.body.setAttribute('data-theme', this.bright)
     this.updateStyles()
