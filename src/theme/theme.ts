@@ -109,7 +109,7 @@ export class Theme<T extends AnyColor, CustomKeys extends string> {
     // 缓存主题
     localStorage.setItem(this.options.cacheKey, mode)
     // 切换样式
-    document.body.setAttribute('data-theme', this.bright)
+    document.documentElement.setAttribute('data-theme', this.bright)
     this.updateStyles()
   }
 
