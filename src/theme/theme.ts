@@ -219,8 +219,8 @@ export class Theme<T extends AnyColor, CustomKeys extends string> {
       generateRoleStyles(this.scheme, 'light') + generateTonalStyles(this.scheme, 'light')
     const darkStyles =
       generateRoleStyles(this.scheme, 'dark') + generateTonalStyles(this.scheme, 'dark')
-    this.sheet.insertRule(`body[data-theme="light"]{${lightStyles}}`, 0)
-    this.sheet.insertRule(`body[data-theme="dark"]{${darkStyles}}`, 1)
+    this.sheet.insertRule(`html[data-theme="light"]{${lightStyles}}`, 0)
+    this.sheet.insertRule(`html[data-theme="dark"]{${darkStyles}}`, 1)
   }
 
   /**
