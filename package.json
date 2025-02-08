@@ -4,6 +4,7 @@
   "description": "@vi-design/color是用TS编写的配色方案库，帮助开发者快速创建主题配色方案。",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "type": "module",
   "author": "ZhuChongLin <8210856@qq.com>",
   "keywords": [
     "visdev-color"
