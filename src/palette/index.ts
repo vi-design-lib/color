@@ -1,2 +1,2 @@
 export * from './helper.js'
-export * from './palette'
+export * from './palette.js'
