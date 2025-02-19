@@ -199,6 +199,14 @@ export type ExpandColorSchemeRoles<T extends AnyColor, KS extends string = RoleK
  */
 export interface NeutralColorRoles<T> {
   /**
+   * 背景色，与 `surface` 的颜色相同
+   */
+  background: T
+  /**
+   * 前景色，与 `onSurface` 的颜色相同。
+   */
+  onBackground: T
+  /**
    * 表面颜色，通常用于页面的默认背景颜色。
    */
   surface: T

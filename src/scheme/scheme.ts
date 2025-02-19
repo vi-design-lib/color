@@ -123,6 +123,8 @@ export default class Scheme<T extends AnyColor> {
     onContainer: 90,
     base: {
       surface: 6,
+      onSurface: 90,
+      onSurfaceVariant: 90,
       inverseSurface: 90,
       inverseOnSurface: 20,
       surfaceDim: 6,
@@ -132,11 +134,11 @@ export default class Scheme<T extends AnyColor> {
       surfaceContainerLow: 10,
       surfaceContainerHigh: 17,
       surfaceContainerHighest: 24,
-      onSurface: 90,
-      onSurfaceVariant: 90,
       outline: 40,
       outlineVariant: 20,
-      shadow: 0
+      shadow: 0,
+      background: 6,
+      onBackground: 90
     }
   }
   /**
@@ -168,7 +170,9 @@ export default class Scheme<T extends AnyColor> {
       onSurfaceVariant: 30,
       outline: 50,
       outlineVariant: 90,
-      shadow: 0
+      shadow: 0,
+      background: 98,
+      onBackground: 10
     }
   }
 
