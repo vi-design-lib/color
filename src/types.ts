@@ -205,15 +205,19 @@ export interface NeutralColorRoles<T> {
   /**
    * 前景色，与 `onSurface` 的颜色相同。
    */
+
   onBackground: T
+
   /**
    * 表面颜色，通常用于页面的默认背景颜色。
    */
   surface: T
+
   /**
    * 表面变暗的颜色，通常用于页面的默认背景颜色。
    */
   surfaceVariant: T
+
   /**
    * 针对任何表面颜色的文本和图标，通常做为页面的默认文本颜色。
    */
