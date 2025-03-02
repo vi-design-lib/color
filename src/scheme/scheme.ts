@@ -119,8 +119,8 @@ export default class Scheme<T extends AnyColor> {
     onSourceActive: 10,
     sourceDisabled: 18,
     onSourceDisabled: 40,
-    container: 30,
-    onContainer: 90,
+    container: 20,
+    onContainer: 80,
     base: {
       surface: 6,
       surfaceVariant: 30,
