@@ -9,8 +9,10 @@ npm install @vi-design/color
 
 ## 使用
 
+[阅读文档](https://color.visdev.cn/)
+
 ```ts
-import { createTheme,logColorsWithLabels } from 'visdev-color';
+import { createTheme,logColorsWithLabels } from '@vi-design/color';
 
 const theme = createTheme('#1376e7')
 logColorsWithLabels(theme.light) 
