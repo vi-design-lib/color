@@ -1,5 +1,11 @@
 import type { HSLObject } from '../types.js'
 
+type Hues = [number, number, number]
+/**
+ * 计算模式
+ */
+export type ComputeMode = 'triadic' | 'adjacent' | 'complementary'
+
 /**
  * HSL颜色公式
  */
@@ -21,10 +27,68 @@ export class HslFormula {
    * 等同于`adjacentHue(hue, 180)`
    *
    * @param { number } hue - 色相
-   * @returns { number } - 相邻颜色的HSL对象
+   * @returns { number } - 互补色相值
    */
   static complementaryHue(hue: number): number {
     return this.adjacentHue(hue, 180)
+  }
+
+  /**
+   * 计算邻近色相
+   *
+   * 基于正负45度偏移生成邻近色相，这种方法在实际应用中通常比固定比例的算法更美观
+   *
+   * @param { number } hue - 基准色相
+   * @param { number } [angle=45] - 偏移角度，默认45度
+   * @returns { Hues } - 邻近色相数组，包括基准色相
+   */
+  static adjacentHues(hue: number, angle: number = 45): Hues {
+    return [hue, this.adjacentHue(hue, -angle), this.adjacentHue(hue, angle)]
+  }
+
+  /**
+   * 计算三分色相
+   *
+   * 默认使用较小的偏移角度(90度) 而非传统的三等分色环(120度)，
+   * 这在实际应用中通常产生更和谐的配色
+   *
+   * @param { number } hue - 基准色相
+   * @param { number } [angle=90] - 偏移角度，默认90度
+   * @returns { Hues } - 三分色相数组，包括基准色相
+   */
+  static triadicHues(hue: number, angle: number = 60): Hues {
+    return [hue, this.adjacentHue(hue, angle), this.adjacentHue(hue, angle * 2)]
+  }
+
+  /**
+   * 计算分裂互补色相
+   *
+   * @param { number } hue - 基准色相
+   * @param { number } [angle=30] - 分裂角度，默认30度
+   * @returns { number[] } - 分裂互补色相数组，包括基准色相
+   */
+  static splitComplementaryHues(hue: number, angle: number = 30): Hues {
+    const complement = this.complementaryHue(hue)
+    return [hue, this.adjacentHue(complement, -angle), this.adjacentHue(complement, angle)]
+  }
+
+  /**
+   * 根据主色计算出辅色和次要色
+   *
+   * @param mode - 计算模式
+   * @param hue - 主色相
+   * @param angle - 起始角度
+   * @returns { Hues } - 计算后的色相数组
+   */
+  static computeHues(mode: ComputeMode, hue: number, angle?: number): Hues {
+    switch (mode) {
+      case 'triadic':
+        return this.triadicHues(hue, angle)
+      case 'adjacent':
+        return this.adjacentHues(hue, angle)
+      default:
+        return this.splitComplementaryHues(hue, angle)
+    }
   }
 
   /**
@@ -39,27 +103,73 @@ export class HslFormula {
   }
 
   /**
-   * 调整HSL颜色的亮度和饱和度
+   * 根据色相动态调整饱和度
    *
+   * 不同色相在相同饱和度下感知强度不同，此函数根据色相动态调整饱和度
+   * 更精细的色相区间划分和调整系数，以获得更美观的配色效果
    *
-   * @param { HSLObject } color - 需要调整的HSL颜色对象
-   * @param { number } saturationAdjust - 饱和度调整值，范围 -1 到 1，负值降低饱和度，正值增加饱和度
-   * @param { number } lightnessAdjust - 亮度调整值，范围 -1 到 1，负值降低亮度，正值增加亮度
-   * @returns { HSLObject } 新的HSL颜色对象
+   * @param { number } hue - 色相值
+   * @param { number } saturation - 原始饱和度
+   * @returns { number } - 调整后的饱和度
    */
-  static adjustHSL(color: HSLObject, saturationAdjust: number, lightnessAdjust: number): HSLObject {
-    // 饱和度调整：范围 [0, 1]
-    let newS = color.s + saturationAdjust
-    newS = Math.min(Math.max(newS, 0), 1) // 确保饱和度在 [0, 1] 范围内
+  static dynamicSaturation(hue: number, saturation: number): number {
+    // 初始因子
+    let factor: number
 
-    // 亮度调整：范围 [0, 1]
-    let newL = color.l + lightnessAdjust
-    newL = Math.min(Math.max(newL, 0), 1) // 确保亮度在 [0, 1] 范围内
-    // 返回调整后的 HSL 对象
-    return {
-      h: color.h,
-      s: newS,
-      l: newL
+    // 更精细的色相区间划分和调整
+    if (hue >= 20 && hue < 60) {
+      // 黄色区域感知饱和度较高，需要较大幅度降低饱和度
+      factor = 0.8
+    } else if (hue >= 60 && hue < 90) {
+      // 黄绿过渡区域，适度降低饱和度
+      factor = 0.85
+    } else if (hue >= 90 && hue < 150) {
+      // 绿色区域，轻微降低饱和度
+      factor = 0.92
+    } else if (hue >= 150 && hue < 210) {
+      // 青色到蓝色过渡区域，基本保持原饱和度
+      factor = 1.0
+    } else if (hue >= 210 && hue < 270) {
+      // 蓝色区域感知饱和度较低，需要提高饱和度
+      factor = 1.15
+    } else if (hue >= 270 && hue < 320) {
+      // 紫色区域，轻微提高饱和度
+      factor = 1.08
+    } else {
+      // 红色到品红区域，轻微降低饱和度
+      factor = 0.95
     }
+
+    return this.ratioAdjust(saturation, factor)
+  }
+
+  /**
+   * 感知均匀性调整
+   *
+   * 调整HSL颜色以获得更好的感知均匀性
+   *
+   * @param h - 色相
+   * @param s - 饱和度
+   * @param l - 亮度
+   */
+  static perceptuallyUniform(h: number, s: number, l: number): HSLObject {
+    // 调整亮度以获得更好的感知均匀性
+    // 中间亮度区域(0.4-0.6)需要更精细的调整
+    // 动态调整饱和度
+    s = this.dynamicSaturation(h, s)
+
+    // 亮度感知调整
+    if (l > 0.4 && l < 0.6) {
+      // 中间亮度区域使用更精细的调整
+      l = 0.5 + (l - 0.5) * 0.8
+    } else if (l <= 0.4) {
+      // 暗色区域压缩亮度范围，避免过暗
+      l = 0.1 + l * 0.75
+    } else {
+      // 亮色区域压缩亮度范围，避免过亮
+      l = 0.6 + (l - 0.6) * 0.8
+    }
+
+    return { h, s, l }
   }
 }
