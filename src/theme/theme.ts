@@ -186,7 +186,7 @@ export class Theme<T extends AnyColor, CustomKeys extends string> {
   }
 
   /**
-   * 获取当前主题的颜色方案
+   * 配色方案实例
    */
   get scheme(): Readonly<Scheme<ColorToColorType<T>>> {
     return this._scheme.value
