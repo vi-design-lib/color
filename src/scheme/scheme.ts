@@ -72,10 +72,10 @@ export default class Scheme<T extends AnyColor> {
     onSource: 100,
     sourceHover: 60,
     onSourceHover: 100,
-    sourceActive: 42,
+    sourceActive: 40,
     onSourceActive: 98,
-    sourceDisabled: 68,
-    onSourceDisabled: 92,
+    sourceDisabled: 36,
+    onSourceDisabled: 96,
     container: 90,
     onContainer: 30,
     base: {
@@ -211,11 +211,6 @@ export default class Scheme<T extends AnyColor> {
     // 获取调整后的 HSL 值
     const { h, s, l } = adjustedPrimaryHsl
 
-    // 使用黄色做为警告色，并应用感知均匀性调整
-    const warningHsl = HslFormula.perceptuallyUniform(30, s, l) // 黄色范围
-    // 固定红色范围的危险色，并应用感知均匀性调整
-    const errorHsl = HslFormula.perceptuallyUniform(0, s, l) // 红色范围
-
     // 三分色 triadic
     // 正负相连色 adjacent
     // 分裂互补 splitComplementary
@@ -228,6 +223,18 @@ export default class Scheme<T extends AnyColor> {
 
     const minorHsl = HslFormula.perceptuallyUniform(minorHue, s, l)
 
+    // 智能计算成功色色相值，并应用感知均匀性调整
+    const successHue = HslFormula.smartFunctionalHue('success', h)
+    const successHsl = HslFormula.perceptuallyUniform(successHue, s, l) // 动态绿色范围
+
+    // 智能计算警告色色相值，并应用感知均匀性调整
+    const warningHue = HslFormula.smartFunctionalHue('warning', h)
+    const warningHsl = HslFormula.perceptuallyUniform(warningHue, s, l) // 动态黄色范围
+
+    // 智能计算错误色色相值，并应用感知均匀性调整
+    const errorHue = HslFormula.smartFunctionalHue('error', h)
+    const errorHsl = HslFormula.perceptuallyUniform(errorHue, s, l) // 动态红色范围
+
     // 生成中性色：灰色调带有主色调，并应用感知均匀性调整
     const neutralHsl = { h, s: 0.15, l } // 灰色带有主色调的HSL
 
@@ -236,6 +243,7 @@ export default class Scheme<T extends AnyColor> {
       primary: primaryHsl,
       aux: auxHsl,
       minor: minorHsl,
+      success: successHsl,
       warning: warningHsl,
       error: errorHsl,
       neutral: neutralHsl

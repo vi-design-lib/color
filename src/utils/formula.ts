@@ -147,6 +147,66 @@ export class HslFormula {
   }
 
   /**
+   * 智能功能色相计算
+   *
+   * 根据主色调智能计算功能色的色相值，考虑色彩和谐性和色彩心理学
+   *
+   * @param { string } type - 功能色类型: 'success', 'warning', 'error'
+   * @param { number } primaryHue - 主色调色相值
+   * @returns { number } - 计算后的功能色色相值
+   */
+  static smartFunctionalHue(type: 'success' | 'warning' | 'error', primaryHue: number): number {
+    // 基础功能色色相值范围
+    const baseHues = {
+      success: { min: 85, max: 110, default: 95 }, // 绿色范围
+      warning: { min: 25, max: 45, default: 35 }, // 黄色范围
+      error: { min: 355, max: 10, default: 0 } // 红色范围
+    }
+
+    const range = baseHues[type]
+
+    // 检查主色是否与功能色色相接近，如果接近则适当调整以增加区分度
+    let adjustedHue = range.default
+
+    // 处理红色特殊情况（跨越0度）
+    const compareHue = (h1: number, h2: number): number => {
+      // 计算最短距离（考虑色环）
+      const dist1 = Math.abs(h1 - h2)
+      const dist2 = 360 - dist1
+      return Math.min(dist1, dist2)
+    }
+
+    // 计算主色与默认功能色的色相距离
+    const distance = compareHue(primaryHue, range.default)
+
+    // 如果主色与功能色色相距离过近（小于30度），则调整功能色
+    if (distance < 30) {
+      // 根据主色位置决定调整方向
+      if (type === 'error') {
+        // 错误色特殊处理（跨越0度）
+        if (primaryHue > 180) {
+          // 主色在色环右侧，错误色向左调整
+          adjustedHue = 5 // 偏红色
+        } else {
+          // 主色在色环左侧，错误色向右调整
+          adjustedHue = 355 // 偏品红
+        }
+      } else {
+        // 成功色和警告色的调整
+        if (primaryHue > range.default) {
+          // 主色在功能色右侧，功能色向左调整
+          adjustedHue = range.min
+        } else {
+          // 主色在功能色左侧，功能色向右调整
+          adjustedHue = range.max
+        }
+      }
+    }
+
+    return adjustedHue
+  }
+
+  /**
    * 感知均匀性调整
    *
    * 调整HSL颜色以获得更好的感知均匀性
