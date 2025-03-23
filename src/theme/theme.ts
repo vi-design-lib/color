@@ -197,7 +197,7 @@ export class Theme<T extends AnyColor, CustomKeys extends string> {
    *
    * @param role
    */
-  roles(role: keyof ColorSchemeRoles<T> | CustomKeys) {
+  role(role: keyof ColorSchemeRoles<T> | CustomKeys): ColorToColorType<T> {
     return this.scheme[this.bright].roles[role as keyof ColorSchemeRoles<T>]
   }
 
@@ -207,7 +207,7 @@ export class Theme<T extends AnyColor, CustomKeys extends string> {
    * @param scheme
    * @param tone
    */
-  tonal(scheme: ColorSchemeKeys | CustomKeys, tone: Tone): T {
+  tonal(scheme: ColorSchemeKeys | CustomKeys, tone: Tone): ColorToColorType<T> {
     if (tone < 1 || tone > 10) {
       throw new Error(`Invalid tone value: ${tone}. Tone must be between 1 and 10.`)
     }
@@ -216,7 +216,7 @@ export class Theme<T extends AnyColor, CustomKeys extends string> {
     if (color === undefined) {
       throw new Error(`Invalid scheme : ${scheme}. not found`)
     }
-    return color as unknown as T
+    return color
   }
 
   /**
