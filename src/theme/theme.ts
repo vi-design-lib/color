@@ -1,51 +1,17 @@
 import type {
   AnyColor,
-  ColorSchemeKeys,
   ColorSchemeRoles,
   ColorToColorType,
   ExpandColorSchemeRoles,
   TonalKeys,
   Tone
 } from '../types.js'
-import { createScheme, Scheme } from '../scheme/index.js'
+import { Scheme } from '../scheme/index.js'
 import { anyColorToHexColor, camelToKebab } from '../utils/index.js'
+import { BaseTheme, type BaseThemeOptions, type Bright, type ThemeMode } from './base-theme.js'
 
-/**
- * 亮度
- */
-export type Bright = 'light' | 'dark'
-/**
- * 主题模式
- */
-export type ThemeMode = Bright | 'system'
-type RefFn = <T>(value: T) => { value: T }
-type Ref<T> = { value: T }
-const ref = <T>(value: T): Ref<T> => {
-  return { value }
-}
-export interface ThemeOptions<T extends AnyColor, CustomKeys extends string> {
-  /**
-   * 自定义颜色方案
-   *
-   * 如果和{@linkcode ColorSchemeKeys}配色重名，则可以覆盖配色方案
-   *
-   * @default {}
-   */
-  customColorScheme?: Record<CustomKeys, ColorToColorType<T>>
-  /**
-   * 缓存主题模式的key
-   *
-   * @default '_CACHE_THEME_MODE'
-   */
-  cacheKey?: string
-  /**
-   * 自定义ref函数
-   *
-   * 支持`vitarx`和`vue3`框架中的ref函数
-   *
-   * @default ref
-   */
-  refProxy?: RefFn
+export interface ThemeOptions<T extends AnyColor, CustomKeys extends string>
+  extends BaseThemeOptions<T, CustomKeys> {
   /**
    * css变量前缀
    *
@@ -67,23 +33,30 @@ export interface ThemeOptions<T extends AnyColor, CustomKeys extends string> {
    */
   varSuffix?: string
 }
+
 /**
- * 主题管理类
+ * 浏览器环境，主题管理类
  *
  * 依赖浏览器端`CSSStyleSheet`和`matchMedia`特性，自动生成css变量样式表，支持动态切换主题。
  *
  * @template T - 主题色类型
  * @template CustomKeys - 自定义配色名称
  */
-export class Theme<T extends AnyColor, CustomKeys extends string> {
-  // 主题模式
-  private _mode: Ref<ThemeMode>
+export class Theme<T extends AnyColor, CustomKeys extends string> extends BaseTheme<T, CustomKeys> {
   // 样式表
   private readonly _sheet: CSSStyleSheet
-  // 颜色方案
-  private _scheme: Ref<Scheme<ColorToColorType<T>>>
-  // 选项
-  private options: Required<ThemeOptions<T, CustomKeys>>
+  /**
+   * css变量后缀
+   *
+   * @default ''
+   */
+  public readonly varSuffix: string
+  /**
+   * css变量前缀
+   *
+   * @default '--color'
+   */
+  public readonly varPrefix: string
 
   /**
    * Theme构造函数
@@ -98,21 +71,10 @@ export class Theme<T extends AnyColor, CustomKeys extends string> {
    * @param options.cacheKey - 自定义缓存名称
    */
   constructor(primary: T, options?: ThemeOptions<T, CustomKeys>) {
-    this.options = Object.assign(
-      {
-        cacheKey: '_CACHE_THEME_MODE',
-        refProxy: ref,
-        customColorScheme: {},
-        varPrefix: '--color-',
-        varSuffix: ''
-      },
-      options
-    )
-    // 避免空前缀
-    if (!this.options.varPrefix) this.options.varPrefix = '--'
+    super(primary, options)
+    this.varPrefix = options?.varPrefix || '--color'
+    this.varSuffix = options?.varSuffix || ''
     this._sheet = this.createStyleSheet()
-    this._mode = this.options.refProxy(this.getCacheThemeMode())
-    this._scheme = this.options.refProxy(createScheme(primary, this.options.customColorScheme))
     this.updateStyles()
   }
 
@@ -138,107 +100,21 @@ export class Theme<T extends AnyColor, CustomKeys extends string> {
   }
 
   /**
-   * css变量前缀
+   * @inheritDoc
    */
-  get varPrefix() {
-    return this.options.varPrefix
+  protected override cacheThemeMode(mode: ThemeMode) {
+    localStorage.setItem(this.cacheKey, mode)
   }
 
   /**
-   * css变量后缀
+   * @inheritDoc
    */
-  get varSuffix() {
-    return this.options.varSuffix
-  }
-
-  /**
-   * 设置主题模式
-   *
-   * @param mode - 主题模式
-   */
-  set mode(mode: ThemeMode) {
-    const oldBright = this.bright
-    this._mode.value = mode
-    if (this.bright === oldBright) return
-    // 缓存主题
-    localStorage.setItem(this.options.cacheKey, mode)
-    // 切换样式
-    document.documentElement.setAttribute('data-theme', this.bright)
-    this.updateStyles()
-  }
-
-  /**
-   * 设置主题模式
-   *
-   * 和 `theme.mode = 'light'` 效果是一致的
-   *
-   * @param {ThemeMode} mode - 亮度模式
-   */
-  setBright(mode: ThemeMode) {
-    this.mode = mode
-  }
-
-  /**
-   * 获取主题模式
-   */
-  get mode() {
-    return this._mode.value
-  }
-
-  /**
-   * 动态切换颜色方案
-   *
-   * @param primary
-   * @param customColorScheme
-   */
-  public changeColorScheme(
+  public override changeColorScheme(
     primary: ColorToColorType<T>,
     customColorScheme?: Record<CustomKeys, ColorToColorType<T>>
   ) {
-    this._scheme.value = createScheme(primary as unknown as T, customColorScheme)
+    super.changeColorScheme(primary, customColorScheme)
     this.updateStyles()
-  }
-
-  /**
-   * 获取当前主题的亮度
-   */
-  get bright(): Bright {
-    const mode = this.mode
-    return mode === 'system' ? Theme.systemBright : mode
-  }
-
-  /**
-   * 配色方案实例
-   */
-  get scheme(): Readonly<Scheme<ColorToColorType<T>>> {
-    return this._scheme.value
-  }
-
-  /**
-   * 获取角色颜色
-   *
-   * @param role
-   */
-  role(role: keyof ColorSchemeRoles<T> | CustomKeys): ColorToColorType<T> {
-    return this.scheme[this.bright].roles[role as keyof ColorSchemeRoles<T>]
-  }
-
-  /**
-   * 获取色调颜色
-   *
-   * @param scheme
-   * @param tone
-   */
-  tonal(scheme: ColorSchemeKeys | CustomKeys, tone: Tone): ColorToColorType<T> {
-    if (tone < 1 || tone > 10) {
-      throw new Error(`Invalid tone value: ${tone}. Tone must be between 1 and 10.`)
-    }
-    const name = `${scheme}-${tone}` as TonalKeys
-    const color = this.scheme[this.bright].tonal[name]
-    if (color === undefined) {
-      throw new Error(`Invalid scheme : ${scheme}. not found`)
-    }
-    return color
   }
 
   /**
@@ -277,9 +153,11 @@ export class Theme<T extends AnyColor, CustomKeys extends string> {
   }
 
   /**
-   * 更新样式
+   * 更新样式表
    *
-   * @private
+   * 仅支持浏览器端！
+   *
+   * 需要在非浏览器端使用请重写此方法！
    */
   protected updateStyles() {
     while (this._sheet.cssRules.length > 0) {
@@ -311,23 +189,32 @@ export class Theme<T extends AnyColor, CustomKeys extends string> {
   }
 
   /**
-   * 获取系统亮度
+   * @inheritDoc
    */
-  static get systemBright(): Bright {
+  override get systemBright(): Bright {
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
   }
 
   /**
-   * 获取缓存的主题
+   * @inheritDoc
    */
-  private getCacheThemeMode(): ThemeMode {
-    return (localStorage.getItem(this.options.cacheKey) || 'system') as ThemeMode
+  public override setMode(mode: ThemeMode): boolean {
+    const result = super.setMode(mode)
+    if (result) this.updateStyles()
+    return result
   }
 
   /**
-   * 清除缓存
+   * @inheritDoc
    */
-  public clearCache() {
-    localStorage.removeItem(this.options.cacheKey)
+  public override getCacheThemeMode(): ThemeMode {
+    return (localStorage.getItem(this.cacheKey) || 'system') as ThemeMode
+  }
+
+  /**
+   * @inheritDoc
+   */
+  public override clearCache() {
+    localStorage.removeItem(this.cacheKey)
   }
 }
