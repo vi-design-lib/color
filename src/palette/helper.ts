@@ -29,12 +29,11 @@ export function getPaletteColor<T extends AnyColor>(
   const maxL = options?.max ?? 1 // 最亮亮度值
 
   const factor = i / (size - 1)
-  let newL: number
 
   // 通过插值计算亮度，并确保亮度在 minL 和 maxL 之间
-  newL = minL + factor * (maxL - minL)
+  const l = minL + factor * (maxL - minL)
 
-  return anyColorToTargetColor({ h, s, l: newL }, type, 'HSL') as T
+  return anyColorToTargetColor({ h, s, l }, type, 'HSL') as T
 }
 
 /**
