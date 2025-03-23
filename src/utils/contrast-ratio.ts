@@ -149,12 +149,5 @@ export function adjustForContrast<T extends AnyColor>(
     }
   }
 
-  // 如果经过所有调整后仍然无法满足对比度要求
-  // 则强制设置为黑色或白色以确保最大对比度
-  if (ratio < minRatio) {
-    fgHSL.s = 0
-    fgHSL.l = shouldDarken ? 0 : 1
-  }
-
   return anyColorToTargetColor(fgHSL, type, 'HSL') as any
 }
