@@ -204,14 +204,18 @@ export class Theme<T extends AnyColor, CustomKeys extends string> {
   /**
    * 获取色调颜色
    *
-   * @param role
+   * @param scheme
    * @param tone
    */
-  tonal(role: ColorSchemeKeys | CustomKeys, tone: Tone) {
+  tonal(scheme: ColorSchemeKeys | CustomKeys, tone: Tone) {
+    if (tone < 1 || tone > 10) {
+      throw new Error(`Invalid tone value: ${tone}. Tone must be between 1 and 10.`)
+    }
+    const name = `${scheme}-${tone}` as TonalKeys
     if (this.bright === 'dark') {
-      return this.scheme.tonalPalettes[role as ColorSchemeKeys].all().reverse()[tone - 1]
+      return this.scheme.darkTonal[name] as unknown as T
     } else {
-      return this.scheme.tonalPalettes[role as ColorSchemeKeys].get(tone - 1)
+      return this.scheme.lightTonal[name] as unknown as T
     }
   }
 
