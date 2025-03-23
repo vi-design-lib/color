@@ -2,9 +2,12 @@ import type { HSLObject } from '../types.js'
 
 type Hues = [number, number, number]
 /**
- * 计算模式
+ * 计算公式：
+ * - triadic：三分色，默认偏移为60度
+ * - adjacent：相邻色，默认偏移为±45度
+ * - complementary：分裂互补色，默认偏移为30度
  */
-export type ComputeMode = 'triadic' | 'adjacent' | 'complementary'
+export type ComputeFormula = 'triadic' | 'adjacent' | 'complementary'
 
 /**
  * HSL颜色公式
@@ -80,7 +83,7 @@ export class HslFormula {
    * @param angle - 起始角度
    * @returns { Hues } - 计算后的色相数组
    */
-  static computeHues(mode: ComputeMode, hue: number, angle?: number): Hues {
+  static computeHues(mode: ComputeFormula, hue: number, angle?: number): Hues {
     switch (mode) {
       case 'triadic':
         return this.triadicHues(hue, angle)
