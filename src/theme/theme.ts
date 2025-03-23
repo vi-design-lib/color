@@ -84,6 +84,7 @@ export class Theme<T extends AnyColor, CustomKeys extends string> {
   private _scheme: Ref<Scheme<ColorToColorType<T>>>
   // 选项
   private options: Required<ThemeOptions<T, CustomKeys>>
+
   constructor(primary: T, options?: ThemeOptions<T, CustomKeys>) {
     this.options = Object.assign(
       {
@@ -102,6 +103,7 @@ export class Theme<T extends AnyColor, CustomKeys extends string> {
     this._scheme = this.options.refProxy(createScheme(primary, this.options.customColorScheme))
     this.updateStyles()
   }
+
   /**
    * 创建一个样式表
    *
