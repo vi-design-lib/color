@@ -15,7 +15,7 @@ import {
   anyColorToHslObject,
   anyColorToTargetColor,
   capitalize,
-  type ComputeMode,
+  type ComputeFormula,
   getColorType,
   HslFormula
 } from '../utils/index.js'
@@ -189,13 +189,13 @@ export default class Scheme<T extends AnyColor> {
    *
    * @template T - 颜色类型
    * @param {AnyColor} primary - 主色
-   * @param {ComputeMode} mode - 颜色模式
+   * @param {ComputeFormula} mode - 颜色模式
    * @param {number} [angle] - 色相角度
    * @returns {ColorScheme<T>} - 基准颜色配色方案
    */
   static createBaseColorScheme<T extends AnyColor>(
     primary: T,
-    mode: ComputeMode = 'triadic',
+    mode: ComputeFormula = 'triadic',
     angle?: number
   ): ColorScheme<ColorToColorType<T>> {
     const outType = getColorType(primary)
