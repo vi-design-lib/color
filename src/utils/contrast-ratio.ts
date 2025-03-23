@@ -112,7 +112,8 @@ export function adjustForContrast<T extends AnyColor>(
   const type = getColorType(foreground)
   const fgHSL = anyColorToHslObject(foreground)
   const bgHSL = anyColorToHslObject(background)
-  let ratio = contrastRatio(fgHSL, bgHSL)
+  const bgRgb = anyColorToRgbObject(background)
+  let ratio = contrastRatio(fgHSL, bgRgb)
 
   // 如果已经满足要求，直接返回
   if (ratio >= minRatio) return foreground as any
@@ -127,7 +128,7 @@ export function adjustForContrast<T extends AnyColor>(
 
   while (ratio < minRatio && attempts < maxAttempts) {
     fgHSL.l = Math.max(0, Math.min(1, fgHSL.l + step))
-    ratio = contrastRatio(fgHSL, bgHSL)
+    ratio = contrastRatio(fgHSL, bgRgb)
     attempts++
 
     // 如果亮度已经到达极限但仍未满足要求，尝试调整饱和度
@@ -140,7 +141,7 @@ export function adjustForContrast<T extends AnyColor>(
 
       while (ratio < minRatio && satAttempts < maxSatAttempts) {
         fgHSL.s = Math.max(0, Math.min(1, fgHSL.s + satStep))
-        ratio = contrastRatio(fgHSL, bgHSL)
+        ratio = contrastRatio(fgHSL, bgRgb)
         satAttempts++
       }
 
