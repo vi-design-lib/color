@@ -110,6 +110,11 @@ export default class Scheme<T extends AnyColor> {
    */
   public readonly bright: BrightnessScheme<T>
 
+  /**
+   * 配色方案构造函数
+   *
+   * @param {ColorScheme<T>} colors - 基准配色方
+   */
   constructor(colors: ColorScheme<T>) {
     this.palettes = Scheme.colorSchemeToPalettes(colors)
     this.tonalPalettes = Scheme.colorSchemeToTonalPalettes(colors)
