@@ -214,25 +214,55 @@ export default class Scheme<T extends AnyColor> {
     // 三分色 triadic
     // 正负相连色 adjacent
     // 分裂互补 splitComplementary
-    const splitCompHues = HslFormula.computeHues(mode, h, angle)
+    // 计算功能色色相值
+    const successHue = HslFormula.smartFunctionalHue('success', h)
+    const warningHue = HslFormula.smartFunctionalHue('warning', h)
+    const errorHue = HslFormula.smartFunctionalHue('error', h)
+
+    // 检查色相距离的辅助函数
+    const checkHueDistance = (hue1: number, hue2: number): number => {
+      const dist1 = Math.abs(hue1 - hue2)
+      const dist2 = 360 - dist1
+      return Math.min(dist1, dist2)
+    }
+
+    // 检查一组色相是否与功能色冲突
+    const hasColorConflict = (hues: number[]): boolean => {
+      const functionalHues = [successHue, warningHue, errorHue]
+      for (const hue of hues) {
+        for (const funcHue of functionalHues) {
+          if (checkHueDistance(hue, funcHue) < 30) {
+            return true
+          }
+        }
+      }
+      return false
+    }
+
+    // 根据色相冲突调整angle参数
+    let adjustedAngle = angle || (mode === 'triadic' ? 60 : mode === 'adjacent' ? 45 : 30)
+    let splitCompHues: number[]
+    let attempts = 0
+    const maxAttempts = 3
+
+    do {
+      splitCompHues = HslFormula.computeHues(mode, h, adjustedAngle)
+      if (!hasColorConflict(splitCompHues)) break
+      // 增加角度以尝试避免冲突
+      adjustedAngle = adjustedAngle + 30
+      attempts++
+    } while (attempts < maxAttempts)
+
     const auxHue = splitCompHues[1]
     const minorHue = splitCompHues[2]
 
     // 确保辅色和三级辅色的饱和度低于主色，并应用感知均匀性调整
     const auxHsl = HslFormula.perceptuallyUniform(auxHue, s, l)
-
     const minorHsl = HslFormula.perceptuallyUniform(minorHue, s, l)
 
-    // 智能计算成功色色相值，并应用感知均匀性调整
-    const successHue = HslFormula.smartFunctionalHue('success', h)
+    // 应用功能色
     const successHsl = HslFormula.perceptuallyUniform(successHue, s, l) // 动态绿色范围
-
-    // 智能计算警告色色相值，并应用感知均匀性调整
-    const warningHue = HslFormula.smartFunctionalHue('warning', h)
     const warningHsl = HslFormula.perceptuallyUniform(warningHue, s, l) // 动态黄色范围
-
-    // 智能计算错误色色相值，并应用感知均匀性调整
-    const errorHue = HslFormula.smartFunctionalHue('error', h)
     const errorHsl = HslFormula.perceptuallyUniform(errorHue, s, l) // 动态红色范围
 
     // 生成中性色：灰色调带有主色调，并应用感知均匀性调整
