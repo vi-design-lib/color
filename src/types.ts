@@ -160,7 +160,14 @@ export type ColorScheme<T extends AnyColor = AnyColor> = Record<ColorSchemeKeys,
  * - `error`: 危险颜色
  * - `neutral`: 中性颜色
  */
-export type ColorSchemeKeys = 'primary' | 'aux' | 'minor' | 'warning' | 'error' | 'neutral'
+export type ColorSchemeKeys =
+  | 'primary'
+  | 'aux'
+  | 'minor'
+  | 'success'
+  | 'warning'
+  | 'error'
+  | 'neutral'
 
 /**
  * 色阶可选范围
