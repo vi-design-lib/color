@@ -7,6 +7,7 @@ import type {
   Tone
 } from '../types.js'
 import { createScheme, Scheme } from '../scheme/index.js'
+import type { ComputeFormula } from '../utils/index.js'
 
 /**
  * 亮度
@@ -44,6 +45,16 @@ export interface BaseThemeOptions<T extends AnyColor, CustomKeys extends string>
    * @default ref
    */
   refProxy?: RefFn
+  /**
+   * 配色算法
+   *
+   * @default 'triadic'
+   */
+  formula?: ComputeFormula
+  /**
+   * 色相偏移角度
+   */
+  angle?: number
 }
 /**
  * 主题管理抽象基类
@@ -79,7 +90,13 @@ export abstract class BaseTheme<T extends AnyColor, CustomKeys extends string> {
     this.cacheKey = options?.cacheKey || '_CACHE_THEME_MODE'
     const refProxy = options?.refProxy || ref
     this._mode = refProxy(this.getCacheThemeMode())
-    this._scheme = refProxy(createScheme(primary, options?.customColorScheme))
+    this._scheme = refProxy(
+      createScheme(primary, {
+        customColorScheme: options?.customColorScheme,
+        formula: options?.formula,
+        angle: options?.angle
+      })
+    )
   }
 
   /**
