@@ -67,7 +67,7 @@ export default class Scheme<T extends AnyColor> {
    * 亮色模式调色板取色规则
    */
   static readonly lightRoleRule: PaletteExtractionColorRules = {
-    source: 46,
+    source: 44,
     onSource: 100,
     sourceHover: 60,
     onSourceHover: 100,
