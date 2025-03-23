@@ -207,16 +207,16 @@ export class Theme<T extends AnyColor, CustomKeys extends string> {
    * @param scheme
    * @param tone
    */
-  tonal(scheme: ColorSchemeKeys | CustomKeys, tone: Tone) {
+  tonal(scheme: ColorSchemeKeys | CustomKeys, tone: Tone): T {
     if (tone < 1 || tone > 10) {
       throw new Error(`Invalid tone value: ${tone}. Tone must be between 1 and 10.`)
     }
     const name = `${scheme}-${tone}` as TonalKeys
-    if (this.bright === 'dark') {
-      return this.scheme.darkTonal[name] as unknown as T
-    } else {
-      return this.scheme.lightTonal[name] as unknown as T
+    const color = this.scheme[this.bright].tonal[name]
+    if (color === undefined) {
+      throw new Error(`Invalid scheme : ${scheme}. not found`)
     }
+    return color as unknown as T
   }
 
   /**
