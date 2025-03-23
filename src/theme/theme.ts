@@ -154,8 +154,7 @@ export class Theme<T extends AnyColor, CustomKeys extends string> {
   /**
    * 设置主题模式
    *
-   * @param mode
-   * @protected
+   * @param mode - 主题模式
    */
   set mode(mode: ThemeMode) {
     const oldBright = this.bright
@@ -166,6 +165,17 @@ export class Theme<T extends AnyColor, CustomKeys extends string> {
     // 切换样式
     document.documentElement.setAttribute('data-theme', this.bright)
     this.updateStyles()
+  }
+
+  /**
+   * 设置主题模式
+   *
+   * 和 `theme.mode = 'light'` 效果是一致的
+   *
+   * @param {ThemeMode} mode - 亮度模式
+   */
+  setBright(mode: ThemeMode) {
+    this.mode = mode
   }
 
   /**
