@@ -15,6 +15,7 @@ import {
   anyColorToHslObject,
   anyColorToTargetColor,
   capitalize,
+  type ComputeMode,
   getColorType,
   HslFormula
 } from '../utils/index.js'
@@ -188,32 +189,46 @@ export default class Scheme<T extends AnyColor> {
    *
    * @template T - 颜色类型
    * @param {AnyColor} primary - 主色
+   * @param {ComputeMode} mode - 颜色模式
+   * @param {number} [angle] - 色相角度
    * @returns {ColorScheme<T>} - 基准颜色配色方案
    */
-  static createBaseColorScheme<T extends AnyColor>(primary: T): ColorScheme<ColorToColorType<T>> {
+  static createBaseColorScheme<T extends AnyColor>(
+    primary: T,
+    mode: ComputeMode = 'triadic',
+    angle?: number
+  ): ColorScheme<ColorToColorType<T>> {
     const outType = getColorType(primary)
     // 获取主色的 HSL 对象
     const primaryHsl = anyColorToHslObject(primary, outType)
-    // 获取主色的 HSL 值
-    const { h, s, l } = primaryHsl
+    // 应用感知均匀性调整
+    const adjustedPrimaryHsl = HslFormula.perceptuallyUniform(
+      primaryHsl.h,
+      primaryHsl.s,
+      primaryHsl.l
+    )
+    // 获取调整后的 HSL 值
+    const { h, s, l } = adjustedPrimaryHsl
 
-    // 亮度调整，确保不会过亮或过暗
-    const adjustedLightness = parseFloat(Math.min(Math.max(l * 1.1, 0), 1).toFixed(2)) // 保持亮度在 [0, 1] 范围内
-    const sl = { s: HslFormula.ratioAdjust(s, 0.9), l: adjustedLightness }
-    // 使用黄色做为警告色
-    const warningHsl = { h: 30, ...sl } // 黄色范围
-    // 固定红色范围的危险色
-    const errorHsl = { h: 0, ...sl } // 红色范围
+    // 使用黄色做为警告色，并应用感知均匀性调整
+    const warningHsl = HslFormula.perceptuallyUniform(30, s, l) // 黄色范围
+    // 固定红色范围的危险色，并应用感知均匀性调整
+    const errorHsl = HslFormula.perceptuallyUniform(0, s, l) // 红色范围
 
-    // 生成辅色和次要辅色的色相
-    const auxHue = HslFormula.adjacentHue(h, -45) // 基于主色的相邻色 反向偏移
-    const minorHue = HslFormula.adjacentHue(h, 45) // 基于主色的相邻色，正向偏移
-    // 确保辅色和三级辅色的饱和度低于主色
-    const auxHsl = { h: auxHue, s: HslFormula.ratioAdjust(s, 0.8), l: adjustedLightness }
-    const minorHsl = { h: minorHue, s: HslFormula.ratioAdjust(s, 0.7), l: adjustedLightness }
+    // 三分色 triadic
+    // 正负相连色 adjacent
+    // 分裂互补 splitComplementary
+    const splitCompHues = HslFormula.computeHues(mode, h, angle)
+    const auxHue = splitCompHues[1]
+    const minorHue = splitCompHues[2]
 
-    // 生成中性色：灰色调带有主色调
-    const neutralHsl = { h, s: 0.1, l: l * 0.9 } // 灰色带有主色调的HSL
+    // 确保辅色和三级辅色的饱和度低于主色，并应用感知均匀性调整
+    const auxHsl = HslFormula.perceptuallyUniform(auxHue, s, l)
+
+    const minorHsl = HslFormula.perceptuallyUniform(minorHue, s, l)
+
+    // 生成中性色：灰色调带有主色调，并应用感知均匀性调整
+    const neutralHsl = { h, s: 0.15, l } // 灰色带有主色调的HSL
 
     // 创建 HSL 配色方案
     const hslScheme: ColorScheme<HSLObject> = {
