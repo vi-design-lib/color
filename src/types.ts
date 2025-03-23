@@ -202,6 +202,7 @@ export interface NeutralColorRoles<T> {
    * 背景色，与 `surface` 的颜色相同
    */
   background: T
+
   /**
    * 前景色，与 `onSurface` 的颜色相同。
    */
@@ -291,7 +292,7 @@ export interface NeutralColorRoles<T> {
   outlineVariant: T
 
   /**
-   * 阴影颜色，非常暗淡的黑色，通常需要降低透明度使用。
+   * 阴影颜色，通常需要降低透明度使用。
    */
   shadow: T
 }
