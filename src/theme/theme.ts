@@ -56,7 +56,7 @@ export class Theme<T extends AnyColor, CustomKeys extends string> {
   // 主题模式
   private _mode: Ref<ThemeMode>
   // 样式表
-  private readonly sheet: CSSStyleSheet
+  private readonly _sheet: CSSStyleSheet
   // 颜色方案
   private _scheme: Ref<Scheme<ColorToColorType<T>>>
   // 选项
@@ -70,7 +70,7 @@ export class Theme<T extends AnyColor, CustomKeys extends string> {
       },
       options
     )
-    this.sheet = this.createStyleSheet()
+    this._sheet = this.createStyleSheet()
     this._mode = this.options.refProxy(this.getCacheThemeMode())
     this._scheme = this.options.refProxy(createScheme(primary, this.options.customColorScheme))
     this.updateStyles()
@@ -195,8 +195,8 @@ export class Theme<T extends AnyColor, CustomKeys extends string> {
    * @private
    */
   protected updateStyles() {
-    while (this.sheet.cssRules.length > 0) {
-      this.sheet.deleteRule(0)
+    while (this._sheet.cssRules.length > 0) {
+      this._sheet.deleteRule(0)
     }
     const generateRoleStyles = (scheme: Scheme<AnyColor>, theme: 'dark' | 'light') => {
       return Object.keys(scheme[theme].roles)
@@ -219,8 +219,8 @@ export class Theme<T extends AnyColor, CustomKeys extends string> {
       generateRoleStyles(this.scheme, 'light') + generateTonalStyles(this.scheme, 'light')
     const darkStyles =
       generateRoleStyles(this.scheme, 'dark') + generateTonalStyles(this.scheme, 'dark')
-    this.sheet.insertRule(`html[data-theme="light"]{${lightStyles}}`, 0)
-    this.sheet.insertRule(`html[data-theme="dark"]{${darkStyles}}`, 1)
+    this._sheet.insertRule(`html[data-theme="light"]{${lightStyles}}`, 0)
+    this._sheet.insertRule(`html[data-theme="dark"]{${darkStyles}}`, 1)
   }
 
   /**
