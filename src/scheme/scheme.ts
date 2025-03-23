@@ -32,16 +32,16 @@ export default class Scheme<T extends AnyColor> {
    * 暗色模式调色板取色规则
    */
   static readonly darkRoleRule: PaletteExtractionColorRules = {
-    source: 80,
+    source: 70,
     onSource: 10,
-    sourceHover: 72,
-    onSourceHover: 24,
-    sourceActive: 60,
+    sourceHover: 80,
+    onSourceHover: 20,
+    sourceActive: 64,
     onSourceActive: 10,
-    sourceDisabled: 18,
-    onSourceDisabled: 40,
-    container: 20,
-    onContainer: 80,
+    sourceDisabled: 26,
+    onSourceDisabled: 70,
+    container: 30,
+    onContainer: 90,
     base: {
       surface: 6,
       surfaceVariant: 30,
@@ -68,11 +68,11 @@ export default class Scheme<T extends AnyColor> {
    */
   static readonly lightRoleRule: PaletteExtractionColorRules = {
     source: 46,
-    onSource: 98,
-    sourceHover: 66,
+    onSource: 100,
+    sourceHover: 60,
     onSourceHover: 100,
-    sourceActive: 52,
-    onSourceActive: 88,
+    sourceActive: 42,
+    onSourceActive: 98,
     sourceDisabled: 68,
     onSourceDisabled: 92,
     container: 90,
