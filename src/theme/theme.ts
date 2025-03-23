@@ -46,11 +46,34 @@ export interface ThemeOptions<T extends AnyColor, CustomKeys extends string> {
    * @default ref
    */
   refProxy?: RefFn
+  /**
+   * css变量前缀
+   *
+   * 默认是 `--color-`，生成的变量名会自动转换为`kebab-case`格式。
+   *
+   * 例如：`--color-primary: #ffffff;`
+   *
+   * > 注意：如果不需要前缀也必须传入`--`，因为css变量定义必须以`--`开头
+   *
+   * @default '--color-'
+   */
+  varPrefix?: string
+  /**
+   * css变量后缀
+   *
+   * 通常以 `-` 开头，例如：`-color`
+   *
+   * @default ''
+   */
+  varSuffix?: string
 }
 /**
  * 主题管理类
  *
  * 依赖浏览器端`CSSStyleSheet`和`matchMedia`特性，自动生成css变量样式表，支持动态切换主题。
+ *
+ * @template T - 主题色类型
+ * @template CustomKeys - 自定义配色名称
  */
 export class Theme<T extends AnyColor, CustomKeys extends string> {
   // 主题模式
@@ -66,10 +89,14 @@ export class Theme<T extends AnyColor, CustomKeys extends string> {
       {
         cacheKey: '_CACHE_THEME_MODE',
         refProxy: ref,
-        customColorScheme: {}
+        customColorScheme: {},
+        varPrefix: '--color-',
+        varSuffix: ''
       },
       options
     )
+    // 避免空前缀
+    if (!this.options.varPrefix) this.options.varPrefix = '--'
     this._sheet = this.createStyleSheet()
     this._mode = this.options.refProxy(this.getCacheThemeMode())
     this._scheme = this.options.refProxy(createScheme(primary, this.options.customColorScheme))
@@ -94,6 +121,20 @@ export class Theme<T extends AnyColor, CustomKeys extends string> {
       cssSheet = style.sheet!
     }
     return cssSheet
+  }
+
+  /**
+   * css变量前缀
+   */
+  get varPrefix() {
+    return this.options.varPrefix
+  }
+
+  /**
+   * css变量后缀
+   */
+  get varSuffix() {
+    return this.options.varSuffix
   }
 
   /**
@@ -175,8 +216,16 @@ export class Theme<T extends AnyColor, CustomKeys extends string> {
   /**
    * 获取css变量
    *
-   * @param {} key
-   * @return {string} css变量
+   * 如果仅需要获取变量名，请使用`varName`方法
+   *
+   * @example
+   * theme.cssVar('primary')
+   * theme.cssVar('primary-10')
+   * theme.cssVar('custom-color')
+   * theme.cssVar('custom-color-10')
+   *
+   * @param {string} key - 配色方案key、调色板key、自定义配色key
+   * @return {string} css变量，已包含var(...)
    */
   cssVar(
     key:
@@ -185,8 +234,18 @@ export class Theme<T extends AnyColor, CustomKeys extends string> {
       | CustomKeys
       | TonalKeys
       | `${CustomKeys}-${Tone}`
-  ): `var(--color-${string})` {
-    return `var(--color-${camelToKebab(key)})`
+  ): `var(${string})` {
+    return `var(${this.varName(key)})`
+  }
+
+  /**
+   * 将配色方案key转换为css变量名
+   *
+   * @param {string} key - 配色方案key
+   * @returns {string} css变量名
+   */
+  varName(key: string): `--${string}` {
+    return `${this.varPrefix}${camelToKebab(key)}${this.varSuffix}` as `--${string}`
   }
 
   /**
@@ -202,7 +261,7 @@ export class Theme<T extends AnyColor, CustomKeys extends string> {
       return Object.keys(scheme[theme].roles)
         .map((rule) => {
           const color = scheme[theme].roles[rule as 'primary']
-          return `--color-${camelToKebab(rule)}: ${color};`
+          return `${this.varName(rule)}: ${color};`
         })
         .join('\n')
     }
@@ -210,7 +269,7 @@ export class Theme<T extends AnyColor, CustomKeys extends string> {
     const generateTonalStyles = (scheme: Scheme<AnyColor>, theme: 'dark' | 'light') => {
       return Object.entries(scheme[theme].tonal)
         .map(([key, value]) => {
-          return `--color-${camelToKebab(key)}: ${anyColorToHexColor(value)};`
+          return `${this.varName(key)}: ${anyColorToHexColor(value)};`
         })
         .join('\n')
     }
