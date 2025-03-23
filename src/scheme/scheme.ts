@@ -12,6 +12,7 @@ import type {
   Schemes
 } from '../types.js'
 import {
+  adjustForContrast,
   anyColorToHslObject,
   anyColorToTargetColor,
   capitalize,
@@ -299,21 +300,35 @@ export default class Scheme<T extends AnyColor> {
     for (const [key, palette] of Object.entries(palettes)) {
       // 跳过中性色，中性色由surface代替
       if (key === 'neutral') continue
+      const onKey = `on${capitalize(key)}`
 
       roles[key] = palette.get(rule.source)
-      roles[`${key}Hover`] = palette.get(rule.sourceHover)
-      roles[`${key}Active`] = palette.get(rule.sourceActive)
-      roles[`${key}Disabled`] = palette.get(rule.sourceDisabled)
+      roles[onKey] = adjustForContrast(palette.get(rule.onSource), roles[key])
 
-      roles[`on${capitalize(key)}`] = palette.get(rule.onSource)
-      roles[`on${capitalize(key)}Hover`] = palette.get(rule.onSourceHover)
-      roles[`on${capitalize(key)}Active`] = palette.get(rule.onSourceActive)
+      const hoverKey = `${key}Hover`
+      roles[hoverKey] = palette.get(rule.sourceHover)
+      roles[`${onKey}Hover`] = adjustForContrast(palette.get(rule.onSourceHover), roles[hoverKey])
 
-      roles[`on${capitalize(key)}Disabled`] = palettes.neutral.get(rule.onSourceDisabled)
+      const activeKey = `${key}Active`
+      roles[activeKey] = palette.get(rule.sourceActive)
+      roles[`${onKey}Active`] = adjustForContrast(
+        palette.get(rule.onSourceActive),
+        roles[activeKey]
+      )
 
-      roles[`${key}Container`] = palette.get(rule.container)
+      const disabledKey = `${key}Disabled`
+      roles[disabledKey] = palette.get(rule.sourceDisabled)
+      roles[`${onKey}Disabled`] = adjustForContrast(
+        palette.get(rule.onSourceDisabled),
+        roles[disabledKey]
+      )
 
-      roles[`on${capitalize(key)}Container`] = palette.get(rule.onContainer)
+      const containerKey = `${key}Container`
+      roles[containerKey] = palette.get(rule.container)
+      roles[`${onKey}Container`] = adjustForContrast(
+        palette.get(rule.onContainer),
+        roles[containerKey]
+      )
     }
     const palette = palettes.neutral
     const baseRoles: NeutralColorRoles<T> = {} as NeutralColorRoles<T>
