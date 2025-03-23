@@ -27,6 +27,76 @@ import { Palette } from '../palette/index.js'
  */
 export default class Scheme<T extends AnyColor> {
   /**
+   * 暗色模式调色板取色规则
+   */
+  static readonly darkRoleRule: PaletteExtractionColorRules = {
+    source: 80,
+    onSource: 10,
+    sourceHover: 72,
+    onSourceHover: 24,
+    sourceActive: 60,
+    onSourceActive: 10,
+    sourceDisabled: 18,
+    onSourceDisabled: 40,
+    container: 20,
+    onContainer: 80,
+    base: {
+      surface: 6,
+      surfaceVariant: 30,
+      onSurface: 90,
+      onSurfaceVariant: 90,
+      inverseSurface: 90,
+      inverseOnSurface: 20,
+      surfaceDim: 6,
+      surfaceBright: 24,
+      surfaceContainerLowest: 4,
+      surfaceContainer: 12,
+      surfaceContainerLow: 10,
+      surfaceContainerHigh: 17,
+      surfaceContainerHighest: 24,
+      outline: 40,
+      outlineVariant: 20,
+      shadow: 0,
+      background: 6,
+      onBackground: 90
+    }
+  }
+  /**
+   * 亮色模式调色板取色规则
+   */
+  static readonly lightRoleRule: PaletteExtractionColorRules = {
+    source: 46,
+    onSource: 98,
+    sourceHover: 66,
+    onSourceHover: 100,
+    sourceActive: 52,
+    onSourceActive: 88,
+    sourceDisabled: 68,
+    onSourceDisabled: 92,
+    container: 90,
+    onContainer: 30,
+    base: {
+      surface: 98,
+      surfaceVariant: 90,
+      inverseSurface: 20,
+      inverseOnSurface: 95,
+      surfaceDim: 87,
+      surfaceBright: 98,
+      surfaceContainerLowest: 100,
+      surfaceContainer: 96,
+      surfaceContainerLow: 94,
+      surfaceContainerHigh: 92,
+      surfaceContainerHighest: 90,
+      onSurface: 10,
+      onSurfaceVariant: 30,
+      outline: 50,
+      outlineVariant: 90,
+      shadow: 0,
+      background: 98,
+      onBackground: 10
+    }
+  }
+  /**
    * 角色方案对应的调色板
    */
   public readonly palettes: ColorSchemePalettes<T>
@@ -105,77 +175,6 @@ export default class Scheme<T extends AnyColor> {
    */
   get darkTonal(): ColorSchemeTonal<T> {
     return this.bright.dark.tonal
-  }
-
-  /**
-   * 暗色模式调色板取色规则
-   */
-  static readonly darkRoleRule: PaletteExtractionColorRules = {
-    source: 80,
-    onSource: 10,
-    sourceHover: 72,
-    onSourceHover: 24,
-    sourceActive: 60,
-    onSourceActive: 10,
-    sourceDisabled: 18,
-    onSourceDisabled: 40,
-    container: 20,
-    onContainer: 80,
-    base: {
-      surface: 6,
-      surfaceVariant: 30,
-      onSurface: 90,
-      onSurfaceVariant: 90,
-      inverseSurface: 90,
-      inverseOnSurface: 20,
-      surfaceDim: 6,
-      surfaceBright: 24,
-      surfaceContainerLowest: 4,
-      surfaceContainer: 12,
-      surfaceContainerLow: 10,
-      surfaceContainerHigh: 17,
-      surfaceContainerHighest: 24,
-      outline: 40,
-      outlineVariant: 20,
-      shadow: 0,
-      background: 6,
-      onBackground: 90
-    }
-  }
-  /**
-   * 亮色模式调色板取色规则
-   */
-  static readonly lightRoleRule: PaletteExtractionColorRules = {
-    source: 46,
-    onSource: 98,
-    sourceHover: 66,
-    onSourceHover: 100,
-    sourceActive: 52,
-    onSourceActive: 88,
-    sourceDisabled: 68,
-    onSourceDisabled: 92,
-    container: 90,
-    onContainer: 30,
-    base: {
-      surface: 98,
-      surfaceVariant: 90,
-      inverseSurface: 20,
-      inverseOnSurface: 95,
-      surfaceDim: 87,
-      surfaceBright: 98,
-      surfaceContainerLowest: 100,
-      surfaceContainer: 96,
-      surfaceContainerLow: 94,
-      surfaceContainerHigh: 92,
-      surfaceContainerHighest: 90,
-      onSurface: 10,
-      onSurfaceVariant: 30,
-      outline: 50,
-      outlineVariant: 90,
-      shadow: 0,
-      background: 98,
-      onBackground: 10
-    }
   }
 
   /**
