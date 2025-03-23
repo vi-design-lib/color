@@ -54,7 +54,7 @@ export class Theme<T extends AnyColor, CustomKeys extends string> extends BaseTh
   /**
    * css变量前缀
    *
-   * @default '--color'
+   * @default '--color-'
    */
   public readonly varPrefix: string
 
@@ -72,7 +72,7 @@ export class Theme<T extends AnyColor, CustomKeys extends string> extends BaseTh
    */
   constructor(primary: T, options?: ThemeOptions<T, CustomKeys>) {
     super(primary, options)
-    this.varPrefix = options?.varPrefix || '--color'
+    this.varPrefix = options?.varPrefix || '--color-'
     this.varSuffix = options?.varSuffix || ''
     this._sheet = this.createStyleSheet()
     this.updateStyles()
