@@ -1,6 +1,12 @@
-import type { AnyColor, ColorSchemeKeys, ColorSchemeRoles, RGBObject } from '../types.js'
-import { anyColorToRgbObject } from './conversion.js'
-import { capitalize } from './tools.js'
+import type {
+  AnyColor,
+  ColorSchemeKeys,
+  ColorSchemeRoles,
+  ColorToColorType,
+  RGBObject
+} from '../types.js'
+import { anyColorToHslObject, anyColorToRgbObject, anyColorToTargetColor } from './conversion.js'
+import { capitalize, getColorType } from './tools.js'
 
 /**
  * 将RGB颜色值转换为标准化颜色值
@@ -85,4 +91,69 @@ export function schemeContrastRation<T extends ColorSchemeRoles<AnyColor>>(
     result[`${role}Container`] = contrastRatio(containerColor, onContainerColor)
   }
   return result
+}
+
+/**
+ * 自动调整前景色使其符合对比度要求
+ *
+ * @template T - 前景色类型
+ * @param {T} foreground - 前景色
+ * @param {ColorToColorType<T>} background - 背景色
+ * @param {'AA' | 'AAA'} [level=AA] - WCAG标准级别
+ *
+ */
+export function adjustForContrast<T extends AnyColor>(
+  foreground: T,
+  background: ColorToColorType<T>,
+  level: 'AA' | 'AAA' = 'AA'
+): ColorToColorType<T> {
+  const minRatio = level === 'AA' ? 4.5 : 7
+
+  const type = getColorType(foreground)
+  const fgHSL = anyColorToHslObject(foreground)
+  const bgHSL = anyColorToHslObject(background)
+  let ratio = contrastRatio(fgHSL, bgHSL)
+
+  // 如果已经满足要求，直接返回
+  if (ratio >= minRatio) return foreground as any
+
+  // 确定是增加还是减少亮度
+  const shouldDarken = bgHSL.l > 0.5
+
+  // 逐步调整亮度直到满足对比度要求
+  const step = shouldDarken ? -0.05 : 0.05
+  let attempts = 0
+  const maxAttempts = 20 // 防止无限循环
+
+  while (ratio < minRatio && attempts < maxAttempts) {
+    fgHSL.l = Math.max(0, Math.min(1, fgHSL.l + step))
+    ratio = contrastRatio(fgHSL, bgHSL)
+    attempts++
+
+    // 如果亮度已经到达极限但仍未满足要求，尝试调整饱和度
+    if ((fgHSL.l <= 0.05 || fgHSL.l >= 0.95) && ratio < minRatio) {
+      // 调整饱和度以增加对比度
+      // 对于暗背景，增加饱和度；对于亮背景，减少饱和度
+      const satStep = shouldDarken ? 0.1 : -0.1
+      let satAttempts = 0
+      const maxSatAttempts = 10
+
+      while (ratio < minRatio && satAttempts < maxSatAttempts) {
+        fgHSL.s = Math.max(0, Math.min(1, fgHSL.s + satStep))
+        ratio = contrastRatio(fgHSL, bgHSL)
+        satAttempts++
+      }
+
+      break // 饱和度调整后退出亮度调整循环
+    }
+  }
+
+  // 如果经过所有调整后仍然无法满足对比度要求
+  // 则强制设置为黑色或白色以确保最大对比度
+  if (ratio < minRatio) {
+    fgHSL.s = 0
+    fgHSL.l = shouldDarken ? 0 : 1
+  }
+
+  return anyColorToTargetColor(fgHSL, type, 'HSL') as any
 }
