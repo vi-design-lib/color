@@ -18,11 +18,11 @@ function filterValuesLessThanThreshold(
   return result
 }
 const theme = createScheme('#9371ed')
-const r = schemeContrastRation(theme.dark.roles)
-console.log(r)
-
-console.log('不符合规范的')
-console.log(filterValuesLessThanThreshold(r))
-// logColorsWithLabels(theme.light.roles as any)
-//
-// const c = ['#F2875F', '#FFFFFF']
+console.log(
+  '亮色模式不符合规范角色',
+  filterValuesLessThanThreshold(schemeContrastRation(theme.light.roles))
+)
+console.log(
+  '暗色模式不符合规范角色',
+  filterValuesLessThanThreshold(schemeContrastRation(theme.dark.roles))
+)
