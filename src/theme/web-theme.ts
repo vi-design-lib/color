@@ -133,7 +133,7 @@ export class WebTheme<
   /**
    * @inheritDoc
    */
-  protected override cacheThemeMode(mode: ThemeMode) {
+  protected override setCacheThemeMode(mode: ThemeMode) {
     localStorage.setItem(this.cacheKey, mode)
   }
 

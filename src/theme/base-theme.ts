@@ -132,7 +132,7 @@ export abstract class BaseTheme<T extends AnyColor, CustomKeys extends string> {
     this._mode.value = mode
     if (this.bright === oldBright) return false
     // 缓存主题
-    this.cacheThemeMode(mode)
+    this.setCacheThemeMode(mode)
     return true
   }
 
@@ -142,7 +142,7 @@ export abstract class BaseTheme<T extends AnyColor, CustomKeys extends string> {
    * @param {ThemeMode} mode - 主题模式
    * @protected
    */
-  protected abstract cacheThemeMode(mode: ThemeMode): void
+  protected abstract setCacheThemeMode(mode: ThemeMode): void
 
   /**
    * 获取主题模式

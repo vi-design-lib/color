@@ -57,7 +57,7 @@ export class UniAppTheme<
   /**
    * @inheritDoc
    */
-  protected override cacheThemeMode(mode: ThemeMode): void {
+  protected override setCacheThemeMode(mode: ThemeMode): void {
     uni.setStorageSync(this.cacheKey, mode)
   }
 
