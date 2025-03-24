@@ -102,6 +102,11 @@ export class Theme<
       document.documentElement.setAttribute(options?.attribute || 'theme', this.bright)
       this._sheet = Theme.createStyleSheet()
       this.updateStyles()
+      // 监听系统主题变化
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+        // 如果是system模式，则切换主题
+        if (this.mode === 'system') this.setMode(e.matches ? 'dark' : 'light')
+      })
     }
   }
 
