@@ -229,7 +229,10 @@ export class WebTheme<
    */
   public override setMode(mode: ThemeMode): boolean {
     const result = super.setMode(mode)
-    if (result) this.updateStyles()
+    if (result) {
+      document.documentElement.setAttribute(this.attribute, mode)
+      this.updateStyles()
+    }
     return result
   }
 
