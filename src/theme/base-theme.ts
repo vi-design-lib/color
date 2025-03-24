@@ -73,6 +73,9 @@ export abstract class BaseTheme<T extends AnyColor, CustomKeys extends string> {
   private _mode: Ref<ThemeMode>
   // 颜色方案
   private _scheme: Ref<Scheme<ColorToColorType<T>>>
+  /**
+   * 缓存名称
+   */
   public readonly cacheKey: string
 
   /**
