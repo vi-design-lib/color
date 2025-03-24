@@ -71,8 +71,8 @@ export class UniAppTheme<
   /**
    * @inheritDoc
    */
-  override getCacheThemeMode(): ThemeMode {
-    return uni.getStorageSync(this.cacheKey) || 'system'
+  override getCacheThemeMode() {
+    return uni.getStorageSync(this.cacheKey)
   }
 
   /**
