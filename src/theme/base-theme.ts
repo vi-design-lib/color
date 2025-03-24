@@ -13,11 +13,11 @@ import type { ComputeFormula } from '../utils/index.js'
 /**
  * 亮度
  */
-export type Bright = 'light' | 'dark'
+export type Brightness = 'light' | 'dark'
 /**
  * 主题模式
  */
-export type ThemeMode = Bright | 'system'
+export type ThemeMode = Brightness | 'system'
 type RefFn = <T>(value: T) => { value: T }
 type Ref<T> = { value: T }
 const ref = <T>(value: T): Ref<T> => {
@@ -158,7 +158,7 @@ export abstract class BaseTheme<T extends AnyColor, CustomKeys extends string> {
   /**
    * 获取当前主题的亮度
    */
-  get bright(): Bright {
+  get bright(): Brightness {
     const mode = this.mode
     return mode === 'system' ? this.systemBright : mode
   }
@@ -202,9 +202,9 @@ export abstract class BaseTheme<T extends AnyColor, CustomKeys extends string> {
   /**
    * 获取系统亮度
    *
-   * @returns {Bright}
+   * @returns {Brightness}
    */
-  abstract get systemBright(): Bright
+  abstract get systemBright(): Brightness
 
   /**
    * 获取缓存的主题

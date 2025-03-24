@@ -9,7 +9,7 @@ import type {
 } from '../types.js'
 import { Scheme } from '../scheme/index.js'
 import { anyColorToHexColor, camelToKebab } from '../utils/index.js'
-import { BaseTheme, type BaseThemeOptions, type Bright, type ThemeMode } from './base-theme.js'
+import { BaseTheme, type BaseThemeOptions, type Brightness, type ThemeMode } from './base-theme.js'
 
 export interface ThemeOptions<T extends AnyColor, CustomKeys extends string>
   extends BaseThemeOptions<T, CustomKeys> {
@@ -221,7 +221,7 @@ export class Theme<
   /**
    * @inheritDoc
    */
-  override get systemBright(): Bright {
+  override get systemBright(): Brightness {
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
   }
 
