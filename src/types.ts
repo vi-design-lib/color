@@ -1,4 +1,5 @@
 import type { Palette } from './palette/index.js'
+import type { WebThemeOptions } from './theme/index.js'
 
 /**
  * 16进制颜色类型
@@ -328,4 +329,16 @@ export interface Schemes<T extends AnyColor = AnyColor> {
 export interface BrightnessScheme<T extends AnyColor = AnyColor> {
   dark: Schemes<T>
   light: Schemes<T>
+}
+
+export type ThemePluginOptions<T extends AnyColor, CustomKeys extends string> = Omit<
+  WebThemeOptions<T, CustomKeys>,
+  'refProxy'
+> & {
+  /**
+   * 主色
+   *
+   * @default '#1677ff'
+   */
+  primary?: T
 }
