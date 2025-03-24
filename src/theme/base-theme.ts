@@ -57,6 +57,7 @@ export interface BaseThemeOptions<T extends AnyColor, CustomKeys extends string>
    */
   angle?: number
 }
+
 /**
  * 主题管理抽象基类
  *
@@ -64,6 +65,7 @@ export interface BaseThemeOptions<T extends AnyColor, CustomKeys extends string>
  * - getCacheThemeMode
  * - cacheThemeMode
  * - clearCache
+ * - getSystemBright
  *
  * @template T - 主题色类型
  * @template CustomKeys - 自定义配色名称
