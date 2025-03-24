@@ -11,7 +11,7 @@ import { Scheme } from '../scheme/index.js'
 import { anyColorToHexColor, camelToKebab } from '../utils/index.js'
 import { BaseTheme, type BaseThemeOptions, type Brightness, type ThemeMode } from './base-theme.js'
 
-export interface ThemeOptions<T extends AnyColor, CustomKeys extends string>
+export interface WebThemeOptions<T extends AnyColor, CustomKeys extends string>
   extends BaseThemeOptions<T, CustomKeys> {
   /**
    * css变量前缀
@@ -49,7 +49,7 @@ export interface ThemeOptions<T extends AnyColor, CustomKeys extends string>
  * @template T - 主题色类型
  * @template CustomKeys - 自定义配色名称
  */
-export class Theme<
+export class WebTheme<
   T extends AnyColor = HexColor,
   CustomKeys extends string = never
 > extends BaseTheme<T, CustomKeys> {
@@ -84,7 +84,7 @@ export class Theme<
    *
    * @constructor
    * @param { AnyColor } primary - 主色
-   * @param { ThemeOptions } options - 选项
+   * @param { WebThemeOptions } options - 选项
    * @param { Object } options.customColorScheme - 自定义基准配色
    * @param { string } [options.varPrefix=--color-] - css变量前缀，仅浏览器端有效
    * @param { string } [options.varSuffix] - css变量后缀，仅浏览器端有效
@@ -93,21 +93,20 @@ export class Theme<
    * @param { ComputeFormula } [options.formula=triadic] - 配色方案算法
    * @param { number } [options.angle] - 色相偏移角度
    */
-  constructor(primary: T, options?: ThemeOptions<T, CustomKeys>) {
+  constructor(primary: T, options?: WebThemeOptions<T, CustomKeys>) {
     super(primary, options)
+    if (!this._isBrowser) throw new Error('当前环境非浏览器环境，请使用浏览器环境运行！')
     this.attribute = options?.attribute || 'theme'
     this.varPrefix = options?.varPrefix || '--color-'
     this.varSuffix = options?.varSuffix || ''
-    if (this._isBrowser) {
-      document.documentElement.setAttribute(options?.attribute || 'theme', this.bright)
-      this._sheet = Theme.createStyleSheet()
-      this.updateStyles()
-      // 监听系统主题变化
-      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-        // 如果是system模式，则切换主题
-        if (this.mode === 'system') this.setMode(e.matches ? 'dark' : 'light')
-      })
-    }
+    document.documentElement.setAttribute(options?.attribute || 'theme', this.bright)
+    this._sheet = WebTheme.createStyleSheet()
+    this.updateStyles()
+    // 监听系统主题变化
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+      // 如果是system模式，则切换主题
+      if (this.mode === 'system') this.setMode(e.matches ? 'dark' : 'light')
+    })
   }
 
   /**
@@ -247,4 +246,30 @@ export class Theme<
   public override clearCache() {
     localStorage.removeItem(this.cacheKey)
   }
+}
+
+/**
+ * 创建WEB主题实例
+ *
+ * 如果你使用的是 `Vitarx` 或 `Vue3` 框架，则指定 `options.refProxy` 为框架提供的 `ref` 函数，
+ * 这样可以让 role 和 tonal 获取的颜色具有响应性
+ *
+ * > 注意：此函数创建的主题实例仅兼容浏览器端，非浏览器端会抛出异常！
+ *
+ * @param { AnyColor } primary - 主色
+ * @param { WebThemeOptions } [options] - 选项
+ * @param { Object } options.customColorScheme - 自定义基准配色
+ * @param { string } [options.varPrefix=--color-] - css变量前缀
+ * @param { string } [options.varSuffix] - css变量后缀
+ * @param { function } [options.refProxy] - 自定义ref函数
+ * @param { string } [options.cacheKey=_CACHE_THEME_MODE] - 自定义缓存名称
+ * @param { ComputeFormula } [options.formula=triadic] - 配色方案算法
+ * @param { number } [options.angle] - 色相偏移角度
+ * @returns {WebTheme} - 主题实例
+ */
+export function createWebTheme<T extends AnyColor, CustomKeys extends string>(
+  primary: T,
+  options?: WebThemeOptions<T, CustomKeys>
+): WebTheme<T, CustomKeys> {
+  return new WebTheme(primary, options)
 }
