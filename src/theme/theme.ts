@@ -32,6 +32,12 @@ export interface ThemeOptions<T extends AnyColor, CustomKeys extends string>
    * @default ''
    */
   varSuffix?: string
+  /**
+   * HTML根元素用于记录主题亮度的属性名
+   *
+   * @default 'theme'
+   */
+  attribute?: string
 }
 
 /**
@@ -57,6 +63,12 @@ export class Theme<T extends AnyColor, CustomKeys extends string> extends BaseTh
    * @default '--color-'
    */
   public readonly varPrefix: string
+  /**
+   * HTML根元素用于记录主题亮度的属性名
+   *
+   * @private
+   */
+  public readonly attribute: string
 
   /**
    * Theme构造函数
@@ -71,10 +83,15 @@ export class Theme<T extends AnyColor, CustomKeys extends string> extends BaseTh
    * @param options.cacheKey - 自定义缓存名称
    */
   constructor(primary: T, options?: ThemeOptions<T, CustomKeys>) {
+    if (typeof window !== 'object' || typeof document !== 'object') {
+      throw new Error('非浏览器环境不支持主题管理！')
+    }
     super(primary, options)
+    this.attribute = options?.attribute || 'theme'
+    document.documentElement.setAttribute(options?.attribute || 'theme', this.bright)
     this.varPrefix = options?.varPrefix || '--color-'
     this.varSuffix = options?.varSuffix || ''
-    this._sheet = this.createStyleSheet()
+    this._sheet = Theme.createStyleSheet()
     this.updateStyles()
   }
 
@@ -83,7 +100,7 @@ export class Theme<T extends AnyColor, CustomKeys extends string> extends BaseTh
    *
    * @returns {CSSStyleSheet} - CSSStyleSheet。
    */
-  private createStyleSheet(): CSSStyleSheet {
+  public static createStyleSheet(): CSSStyleSheet {
     let cssSheet: CSSStyleSheet
     if ('CSSStyleSheet' in window && 'adoptedStyleSheets' in document) {
       cssSheet = new CSSStyleSheet()
@@ -184,8 +201,8 @@ export class Theme<T extends AnyColor, CustomKeys extends string> extends BaseTh
       generateRoleStyles(this.scheme, 'light') + generateTonalStyles(this.scheme, 'light')
     const darkStyles =
       generateRoleStyles(this.scheme, 'dark') + generateTonalStyles(this.scheme, 'dark')
-    this._sheet.insertRule(`html[data-theme="light"]{${lightStyles}}`, 0)
-    this._sheet.insertRule(`html[data-theme="dark"]{${darkStyles}}`, 1)
+    this._sheet.insertRule(`html[${this.attribute}="light"]{${lightStyles}}`, 0)
+    this._sheet.insertRule(`html[${this.attribute}="dark"]{${darkStyles}}`, 1)
   }
 
   /**
