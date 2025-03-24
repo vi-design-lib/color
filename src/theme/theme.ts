@@ -172,9 +172,7 @@ export class Theme<T extends AnyColor, CustomKeys extends string> extends BaseTh
   /**
    * 更新样式表
    *
-   * 仅支持浏览器端！
-   *
-   * 需要在非浏览器端使用请重写此方法！
+   * 仅支持浏览器环境！
    */
   protected updateStyles() {
     while (this._sheet.cssRules.length > 0) {
