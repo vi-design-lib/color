@@ -18,7 +18,7 @@ export type Brightness = 'light' | 'dark'
  * 主题模式
  */
 export type ThemeMode = Brightness | 'system'
-type RefFn = <T>(value: T) => { value: T }
+export type RefFn = <T>(value: T) => { value: T }
 type Ref<T> = { value: T }
 const ref = <T>(value: T): Ref<T> => {
   return { value }
