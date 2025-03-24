@@ -333,7 +333,7 @@ export interface BrightnessScheme<T extends AnyColor = AnyColor> {
 
 export type ThemePluginOptions<T extends AnyColor, CustomKeys extends string> = Omit<
   WebThemeOptions<T, CustomKeys>,
-  'refProxy'
+  'refFactory'
 > & {
   /**
    * 主色
