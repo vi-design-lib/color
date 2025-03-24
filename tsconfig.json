@@ -9,8 +9,12 @@
     "module": "ESNext",            // 模块系统
     "esModuleInterop": true,       // 启用 ES 模块与 CommonJS 的互操作性
     "skipLibCheck": true,          // 跳过库文件的类型检查
-    "strict": true                 // 启用严格模式
+    "strict": true,                 // 启用严格模式
+    "moduleResolution": "bundler"
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": [
+    "src/**/*.ts",
+    "node_modules/@dcloudio/types/uni-app/uni/legacy/uni.d.ts",
+    "node_modules/@dcloudio/types/uni-app/uni/base/ThemeChange.d.ts"
+  ]
 }
