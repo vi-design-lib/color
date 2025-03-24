@@ -64,13 +64,12 @@ export { installTheme as ThemePlugin }
  * @param { string } [options.varPrefix=--color-] - css变量前缀
  * @param { string } [options.varSuffix] - css变量后缀
  * @param { function } [options.refProxy] - 自定义ref函数
- * @param { string } [options.cacheKey=theme] - 自定义缓存名称
+ * @param { string } [options.cacheKey=_CACHE_THEME_MODE] - 自定义缓存名称
  * @param { ComputeFormula } [options.formula=triadic] - 配色方案算法
  * @param { number } [options.angle] - 色相偏移角度
  * @returns {Theme} - 主题实例
- * @throws {Error} - 如果非浏览器端调用，则会抛出异常
  */
-export function createWebTheme<T extends AnyColor, CustomKeys extends string>(
+export function createTheme<T extends AnyColor, CustomKeys extends string>(
   primary: T,
   options?: ThemeOptions<T, CustomKeys>
 ): Theme<T, CustomKeys> {
