@@ -54,7 +54,7 @@ export class Theme<
   CustomKeys extends string = never
 > extends BaseTheme<T, CustomKeys> {
   // 样式表
-  private readonly _sheet: CSSStyleSheet
+  private readonly _sheet: CSSStyleSheet | undefined
   /**
    * css变量后缀
    *
@@ -73,7 +73,12 @@ export class Theme<
    * @private
    */
   public readonly attribute: string
-
+  /**
+   * 是否为浏览器环境
+   *
+   * @private
+   */
+  protected _isBrowser = typeof window === 'object' && typeof document === 'object'
   /**
    * Theme构造函数
    *
@@ -81,24 +86,23 @@ export class Theme<
    * @param { AnyColor } primary - 主色
    * @param { ThemeOptions } options - 选项
    * @param { Object } options.customColorScheme - 自定义基准配色
-   * @param { string } [options.varPrefix=--color-] - css变量前缀
-   * @param { string } [options.varSuffix] - css变量后缀
+   * @param { string } [options.varPrefix=--color-] - css变量前缀，仅浏览器端有效
+   * @param { string } [options.varSuffix] - css变量后缀，仅浏览器端有效
    * @param { function } [options.refProxy] - 自定义ref函数
-   * @param { string } [options.cacheKey=theme] - 自定义缓存名称
+   * @param { string } [options.cacheKey=_CACHE_THEME_MODE] - 自定义缓存名称
    * @param { ComputeFormula } [options.formula=triadic] - 配色方案算法
    * @param { number } [options.angle] - 色相偏移角度
    */
   constructor(primary: T, options?: ThemeOptions<T, CustomKeys>) {
-    if (typeof window !== 'object' || typeof document !== 'object') {
-      throw new Error('非浏览器环境不支持主题管理！')
-    }
     super(primary, options)
     this.attribute = options?.attribute || 'theme'
-    document.documentElement.setAttribute(options?.attribute || 'theme', this.bright)
     this.varPrefix = options?.varPrefix || '--color-'
     this.varSuffix = options?.varSuffix || ''
-    this._sheet = Theme.createStyleSheet()
-    this.updateStyles()
+    if (this._isBrowser) {
+      document.documentElement.setAttribute(options?.attribute || 'theme', this.bright)
+      this._sheet = Theme.createStyleSheet()
+      this.updateStyles()
+    }
   }
 
   /**
@@ -148,17 +152,16 @@ export class Theme<
    * @example
    * theme.cssVar('primary')
    * theme.cssVar('primary-10')
-   * theme.cssVar('custom-color')
-   * theme.cssVar('custom-color-10')
+   * theme.cssVar('customColor')
+   * theme.cssVar('customColor-10')
    *
-   * @param {string} key - 配色方案key、调色板key、自定义配色key
+   * @param {string} key - 配色角色key、调色板key
    * @return {string} css变量，已包含var(...)
    */
   cssVar(
     key:
       | keyof ColorSchemeRoles<T>
       | keyof ExpandColorSchemeRoles<T, CustomKeys>
-      | CustomKeys
       | TonalKeys
       | `${CustomKeys}-${Tone}`
   ): `var(${string})` {
@@ -178,9 +181,10 @@ export class Theme<
   /**
    * 更新样式表
    *
-   * 仅支持浏览器环境！
+   * 非浏览器环境，不会更新样式表！
    */
   protected updateStyles() {
+    if (!this._isBrowser || !this._sheet) return
     while (this._sheet.cssRules.length > 0) {
       this._sheet.deleteRule(0)
     }
