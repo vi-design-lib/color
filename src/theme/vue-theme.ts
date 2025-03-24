@@ -3,6 +3,11 @@ import { ref } from 'vue'
 import type { AnyColor, HexColor, ThemePluginOptions } from '../types.js'
 import { WebTheme, type WebThemeOptions } from './web-theme.js'
 
+export type VitarxThemeOptions<T extends AnyColor, CustomKeys extends string> = Omit<
+  WebThemeOptions<T, CustomKeys>,
+  'refProxy'
+>
+
 export type VueThemePluginOptions<
   T extends AnyColor,
   CustomKeys extends string
@@ -22,7 +27,7 @@ export class VueTheme<
   /**
    * @inheritDoc
    */
-  constructor(primary: T, options: Omit<WebThemeOptions<T, CustomKeys>, 'refProxy'> = {}) {
+  constructor(primary: T, options: VitarxThemeOptions<T, CustomKeys> = {}) {
     // @ts-ignore
     options.refProxy = ref
     super(primary, options)
@@ -61,3 +66,23 @@ export function theme<T extends AnyColor, CustomKeys extends string>(
   }
 }
 export { theme as ThemePlugin }
+
+/**
+ * 创建Vue主题实例
+ *
+ * @param { AnyColor } primary - 主色
+ * @param { WebThemeOptions } [options] - 选项
+ * @param { Object } options.customColorScheme - 自定义基准配色
+ * @param { string } [options.varPrefix=--color-] - css变量前缀
+ * @param { string } [options.varSuffix] - css变量后缀
+ * @param { string } [options.cacheKey=_CACHE_THEME_MODE] - 自定义缓存名称
+ * @param { ComputeFormula } [options.formula=triadic] - 配色方案算法
+ * @param { number } [options.angle] - 色相偏移角度
+ * @returns {VitarxTheme} - 主题实例
+ */
+export function createVitarxTheme<T extends AnyColor, CustomKeys extends string>(
+  primary: T,
+  options?: VueThemePluginOptions<T, CustomKeys>
+): VueTheme<T, CustomKeys> {
+  return new VueTheme(primary, options)
+}
