@@ -83,7 +83,7 @@ export class UniAppTheme<
  * 创建UniAPP主题实例
  *
  * @param { AnyColor } primary - 主色
- * @param { ThemeOptions } [options] - 选项
+ * @param { UniAppThemeOptions } [options] - 选项
  * @param { Object } options.customColorScheme - 自定义基准配色
  * @param { string } [options.cacheKey=_CACHE_THEME_MODE] - 自定义缓存名称
  * @param { ComputeFormula } [options.formula=triadic] - 配色方案算法
