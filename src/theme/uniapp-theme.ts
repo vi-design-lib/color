@@ -1,16 +1,13 @@
-import {
-  BaseTheme,
-  type BaseThemeOptions,
-  type Brightness,
-  type RefFn,
-  type ThemeMode
-} from './base-theme.js'
+// @ts-ignore
+import { ref } from 'vue'
+import { BaseTheme, type BaseThemeOptions, type Brightness, type ThemeMode } from './base-theme.js'
 import type { AnyColor, HexColor } from '../types.js'
 
-export interface UniAppThemeOptions<T extends AnyColor, CustomKeys extends string>
-  extends BaseThemeOptions<T, CustomKeys> {
-  refProxy: RefFn
-}
+export type UniAppThemeOptions<T extends AnyColor, CustomKeys extends string> = Omit<
+  BaseThemeOptions<T, CustomKeys>,
+  'refProxy'
+>
+
 /**
  * uni-app主题
  *
@@ -43,7 +40,9 @@ export class UniAppTheme<
   /**
    * @inheritDoc
    */
-  constructor(primary: T, options?: BaseThemeOptions<T, CustomKeys>) {
+  constructor(primary: T, options: UniAppThemeOptions<T, CustomKeys> = {}) {
+    // @ts-ignore
+    options.refProxy = ref
     super(primary, options)
     uni.onThemeChange(({ theme }) => {
       // 如果是system模式，则切换主题
@@ -78,4 +77,22 @@ export class UniAppTheme<
   override get systemBright(): Brightness {
     return (uni.getSystemInfoSync().theme as Brightness) || 'light'
   }
+}
+
+/**
+ * 创建UniAPP主题实例
+ *
+ * @param { AnyColor } primary - 主色
+ * @param { ThemeOptions } [options] - 选项
+ * @param { Object } options.customColorScheme - 自定义基准配色
+ * @param { string } [options.cacheKey=_CACHE_THEME_MODE] - 自定义缓存名称
+ * @param { ComputeFormula } [options.formula=triadic] - 配色方案算法
+ * @param { number } [options.angle] - 色相偏移角度
+ * @returns {UniAppTheme} - 主题实例
+ */
+export function createUniTheme<T extends AnyColor, CustomKeys extends string>(
+  primary: T,
+  options?: UniAppThemeOptions<T, CustomKeys>
+): UniAppTheme<T, CustomKeys> {
+  return new UniAppTheme(primary, options as UniAppThemeOptions<T, CustomKeys>)
 }
