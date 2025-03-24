@@ -5,7 +5,7 @@ import type { AnyColor, HexColor } from '../types.js'
 
 export type UniAppThemeOptions<T extends AnyColor, CustomKeys extends string> = Omit<
   BaseThemeOptions<T, CustomKeys>,
-  'refProxy'
+  'refFactory'
 >
 
 /**

@@ -9,6 +9,7 @@ import type {
 } from '../types.js'
 import { createScheme, Scheme } from '../scheme/index.js'
 import type { ComputeFormula } from '../utils/index.js'
+import { ref, type Ref, type RefFactory } from './common.js'
 
 /**
  * 亮度
@@ -18,11 +19,6 @@ export type Brightness = 'light' | 'dark'
  * 主题模式
  */
 export type ThemeMode = Brightness | 'system'
-export type RefFn = <T>(value: T) => { value: T }
-type Ref<T> = { value: T }
-const ref = <T>(value: T): Ref<T> => {
-  return { value }
-}
 export interface BaseThemeOptions<T extends AnyColor, CustomKeys extends string> {
   /**
    * 自定义颜色方案
@@ -45,7 +41,7 @@ export interface BaseThemeOptions<T extends AnyColor, CustomKeys extends string>
    *
    * @default ref
    */
-  refProxy?: RefFn
+  refFactory?: RefFactory
   /**
    * 配色算法
    *
@@ -105,7 +101,7 @@ export abstract class BaseTheme<T extends AnyColor, CustomKeys extends string> {
   protected constructor(primary: T, options?: BaseThemeOptions<T, CustomKeys>) {
     this.cacheKey = options?.cacheKey || '_CACHE_THEME_MODE'
     this.defaultMode = options?.defaultMode || 'system'
-    const refProxy = options?.refProxy || ref
+    const refProxy = options?.refFactory || ref
     this._mode = refProxy(this.getCacheThemeMode() || this.defaultMode)
     this._scheme = refProxy(
       createScheme(primary, {

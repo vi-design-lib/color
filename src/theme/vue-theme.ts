@@ -5,7 +5,7 @@ import { WebTheme, type WebThemeOptions } from './web-theme.js'
 
 export type VitarxThemeOptions<T extends AnyColor, CustomKeys extends string> = Omit<
   WebThemeOptions<T, CustomKeys>,
-  'refProxy'
+  'refFactory'
 >
 
 export type VueThemePluginOptions<
