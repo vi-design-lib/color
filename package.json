@@ -26,15 +26,15 @@
         "default": "./dist/index.js"
       }
     },
-    "./vitarx-theme": {
+    "./theme/vitarx": {
       "types": "./dist/theme/vitarx-theme.d.ts",
       "default": "./dist/theme/vitarx-theme.js"
     },
-    "./uniapp-theme": {
+    "./theme/uniapp": {
       "types": "./dist/theme/uniapp-theme.d.ts",
       "default": "./dist/theme/uniapp-theme.js"
     },
-    "./vue-theme": {
+    "./theme/vue": {
       "types": "./dist/theme/vue-theme.d.ts",
       "default": "./dist/theme/vue-theme.js"
     }
