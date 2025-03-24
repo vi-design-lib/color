@@ -78,9 +78,9 @@ export { theme as ThemePlugin }
  * @param { string } [options.cacheKey=_CACHE_THEME_MODE] - 自定义缓存名称
  * @param { ComputeFormula } [options.formula=triadic] - 配色方案算法
  * @param { number } [options.angle] - 色相偏移角度
- * @returns {VitarxTheme} - 主题实例
+ * @returns {VueTheme} - 主题实例
  */
-export function createVitarxTheme<T extends AnyColor, CustomKeys extends string>(
+export function createVueTheme<T extends AnyColor, CustomKeys extends string>(
   primary: T,
   options?: VueThemePluginOptions<T, CustomKeys>
 ): VueTheme<T, CustomKeys> {
