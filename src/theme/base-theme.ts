@@ -3,6 +3,7 @@ import type {
   ColorSchemeKeys,
   ColorSchemeRoles,
   ColorToColorType,
+  ExpandColorSchemeRoles,
   TonalKeys,
   Tone
 } from '../types.js'
@@ -171,7 +172,9 @@ export abstract class BaseTheme<T extends AnyColor, CustomKeys extends string> {
    *
    * @param role
    */
-  role(role: keyof ColorSchemeRoles<T> | CustomKeys): ColorToColorType<T> {
+  role(
+    role: keyof ColorSchemeRoles<T> | keyof ExpandColorSchemeRoles<ColorToColorType<T>, CustomKeys>
+  ): ColorToColorType<T> {
     return this.scheme[this.bright].roles[role as keyof ColorSchemeRoles<T>]
   }
 
