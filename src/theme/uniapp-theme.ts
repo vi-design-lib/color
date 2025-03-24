@@ -1,6 +1,16 @@
-import { BaseTheme, type BaseThemeOptions, type Brightness, type ThemeMode } from './base-theme.js'
-import type { AnyColor } from '../types.js'
+import {
+  BaseTheme,
+  type BaseThemeOptions,
+  type Brightness,
+  type RefFn,
+  type ThemeMode
+} from './base-theme.js'
+import type { AnyColor, HexColor } from '../types.js'
 
+export interface UniAppThemeOptions<T extends AnyColor, CustomKeys extends string>
+  extends BaseThemeOptions<T, CustomKeys> {
+  refProxy: RefFn
+}
 /**
  * uni-app主题
  *
@@ -26,7 +36,10 @@ import type { AnyColor } from '../types.js'
  * </view>
  * ```
  */
-class UniAppTheme<T extends AnyColor, CustomKeys extends string> extends BaseTheme<T, CustomKeys> {
+export class UniAppTheme<
+  T extends AnyColor = HexColor,
+  CustomKeys extends string = never
+> extends BaseTheme<T, CustomKeys> {
   /**
    * @inheritDoc
    */
