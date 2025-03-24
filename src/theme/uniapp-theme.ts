@@ -38,6 +38,10 @@ export class UniAppTheme<
   CustomKeys extends string = never
 > extends BaseTheme<T, CustomKeys> {
   /**
+   * 单例
+   */
+  static readonly instance: UniAppTheme | undefined
+  /**
    * @inheritDoc
    */
   constructor(primary: T, options: UniAppThemeOptions<T, CustomKeys> = {}) {
@@ -81,6 +85,8 @@ export class UniAppTheme<
 
 /**
  * 创建UniAPP主题实例
+ *
+ * 仅支持 vue3 模式，兼容微信小程序 和 App vue
  *
  * @param { AnyColor } primary - 主色
  * @param { UniAppThemeOptions } [options] - 选项
