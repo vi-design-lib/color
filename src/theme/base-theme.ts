@@ -56,6 +56,10 @@ export interface BaseThemeOptions<T extends AnyColor, CustomKeys extends string>
    * 色相偏移角度
    */
   angle?: number
+  /**
+   * 默认主题模式
+   */
+  defaultMode?: 'system'
 }
 
 /**
@@ -79,6 +83,12 @@ export abstract class BaseTheme<T extends AnyColor, CustomKeys extends string> {
    * 缓存名称
    */
   public readonly cacheKey: string
+  /**
+   * 默认主题模式
+   *
+   * @private
+   */
+  public readonly defaultMode: 'system'
 
   /**
    * Theme构造函数
@@ -94,8 +104,9 @@ export abstract class BaseTheme<T extends AnyColor, CustomKeys extends string> {
    */
   protected constructor(primary: T, options?: BaseThemeOptions<T, CustomKeys>) {
     this.cacheKey = options?.cacheKey || '_CACHE_THEME_MODE'
+    this.defaultMode = options?.defaultMode || 'system'
     const refProxy = options?.refProxy || ref
-    this._mode = refProxy(this.getCacheThemeMode())
+    this._mode = refProxy(this.getCacheThemeMode() || this.defaultMode)
     this._scheme = refProxy(
       createScheme(primary, {
         customColorScheme: options?.customColorScheme,
@@ -211,7 +222,7 @@ export abstract class BaseTheme<T extends AnyColor, CustomKeys extends string> {
   /**
    * 获取缓存的主题
    */
-  public abstract getCacheThemeMode(): ThemeMode
+  public abstract getCacheThemeMode(): ThemeMode | undefined | null
 
   /**
    * 清除缓存
