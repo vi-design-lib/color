@@ -3,6 +3,7 @@ import type {
   ColorSchemeRoles,
   ColorToColorType,
   ExpandColorSchemeRoles,
+  HexColor,
   TonalKeys,
   Tone
 } from '../types.js'
@@ -48,7 +49,10 @@ export interface ThemeOptions<T extends AnyColor, CustomKeys extends string>
  * @template T - 主题色类型
  * @template CustomKeys - 自定义配色名称
  */
-export class Theme<T extends AnyColor, CustomKeys extends string> extends BaseTheme<T, CustomKeys> {
+export class Theme<
+  T extends AnyColor = HexColor,
+  CustomKeys extends string = never
+> extends BaseTheme<T, CustomKeys> {
   // 样式表
   private readonly _sheet: CSSStyleSheet
   /**
