@@ -221,6 +221,8 @@ export abstract class BaseTheme<T extends AnyColor, CustomKeys extends string> {
 
   /**
    * 获取缓存的主题
+   *
+   * 如果没有缓存则返回null或undefined
    */
   public abstract getCacheThemeMode(): ThemeMode | undefined | null
 
