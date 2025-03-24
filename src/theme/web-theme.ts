@@ -230,7 +230,7 @@ export class WebTheme<
   public override setMode(mode: ThemeMode): boolean {
     const result = super.setMode(mode)
     if (result) {
-      document.documentElement.setAttribute(this.attribute, mode)
+      document.documentElement.setAttribute(this.attribute, this.bright)
       this.updateStyles()
     }
     return result
@@ -239,8 +239,8 @@ export class WebTheme<
   /**
    * @inheritDoc
    */
-  public override getCacheThemeMode(): ThemeMode {
-    return (localStorage.getItem(this.cacheKey) || 'system') as ThemeMode
+  public override getCacheThemeMode(): ThemeMode | null {
+    return localStorage.getItem(this.cacheKey) as ThemeMode
   }
 
   /**
