@@ -31,7 +31,7 @@ npm install @vi-design/color
     ```jsx
     // 假设在 src/assets/theme.js 中定义 
     
-    import { createVitarxTheme } from '@vi-design/color/vitarx-theme';
+    import { createVitarxTheme } from '@vi-design/color/theme/vitarx';
     
     const theme = createVitarxTheme('#1677ff',{
       myColor:'#ff5500'
@@ -59,7 +59,7 @@ npm install @vi-design/color
 ```js
 // main.js
 
-import { theme } from '@vi-design/color/vue-theme'; // 注意包路径！
+import { theme } from '@vi-design/color/theme/vue'; // 注意包路径！
 import { createApp } from 'vitarx'
 import App from './App.vue'
 
@@ -75,7 +75,7 @@ const app = createApp(App).use(theme,{ primary:'#1677ff' }).mount('#app')
   // App.vue
   
   // 导入 theme
-  import { createUniTheme } from '@vi-design/color/uniapp-theme'; // 注意包路径！
+  import { createUniTheme } from '@vi-design/color/theme/uniapp'; // 注意包路径！
   
   export default {
     onLaunch(){
@@ -93,7 +93,7 @@ TypeScript类型支持：
 
 interface Uni {
   // 如果有自定义主题色，可以传入第二个泛型参数，指定主题色名称的联合类型
-  $theme: import('@vi-design/color/uniapp-theme').UniAppTheme<`#${string}`>
+  $theme: import('@vi-design/color/theme/uniapp').UniAppTheme<`#${string}`>
 }
 ```
 
