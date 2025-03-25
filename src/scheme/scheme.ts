@@ -60,6 +60,7 @@ export default class Scheme<T extends AnyColor> {
       outline: 40,
       outlineVariant: 20,
       shadow: 0,
+      scrim: 0,
       background: 6,
       onBackground: 90
     }
@@ -95,6 +96,7 @@ export default class Scheme<T extends AnyColor> {
       outline: 50,
       outlineVariant: 90,
       shadow: 0,
+      scrim: 0,
       background: 98,
       onBackground: 10
     }

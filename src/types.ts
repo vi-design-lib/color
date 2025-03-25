@@ -297,6 +297,10 @@ export interface NeutralColorRoles<T> {
    * 阴影颜色，通常需要降低透明度使用。
    */
   shadow: T
+  /**
+   * 遮罩颜色，通常需要降低透明度使用。
+   */
+  scrim: T
 }
 
 /**
