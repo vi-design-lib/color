@@ -26,6 +26,14 @@ export interface StaticThemeOptions {
    * 默认为内置的一个伪ref函数
    */
   refFactory?: RefFactory
+  /**
+   * 服务端渲染时的系统主题亮度
+   *
+   * 由于服务端调用浏览器端的api，所以需要设置一个默认的主题亮度，可以是`light`或`dark`
+   *
+   * @default false
+   */
+  ssr?: Brightness | false
 }
 
 /**
@@ -54,6 +62,13 @@ export class WebThemeManger {
   protected config: Required<StaticThemeOptions>
 
   /**
+   * 是否为浏览器环境
+   *
+   * @private
+   */
+  protected _isBrowser = typeof window === 'object' && typeof document === 'object'
+
+  /**
    * 创建静态主题
    *
    * @param {StaticThemeOptions} [options] - 配置选项
@@ -68,16 +83,19 @@ export class WebThemeManger {
         attribute: 'theme',
         cacheKey: '_CACHE_THEME_MODE',
         defaultMode: 'system',
-        refFactory: ref
+        refFactory: ref,
+        ssr: false
       },
       options
     )
     this._mode = this.config.refFactory(this.getCacheThemeMode() || this.config.defaultMode)
-    // 监听系统主题变化
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-      // 如果是system模式，则切换主题
-      if (this.mode === 'system') this.setMode(e.matches ? 'dark' : 'light')
-    })
+    if (this._isBrowser) {
+      // 监听系统主题变化
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+        // 如果是system模式，则切换主题
+        if (this.mode === 'system') this.setMode(e.matches ? 'dark' : 'light')
+      })
+    }
   }
 
   /**
@@ -90,7 +108,9 @@ export class WebThemeManger {
     if (this.mode !== mode) {
       this._mode.value = mode
       this.setCacheThemeMode(mode)
-      document.documentElement.setAttribute(this.attribute, this.bright)
+      if (this._isBrowser) {
+        document.documentElement.setAttribute(this.attribute, this.bright)
+      }
     }
   }
 
@@ -142,6 +162,7 @@ export class WebThemeManger {
    * @returns {Brightness} 系统主题
    */
   get systemBright(): Brightness {
+    if (!this._isBrowser) return this.config.ssr === 'light' ? 'light' : 'dark'
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
   }
 
@@ -149,6 +170,7 @@ export class WebThemeManger {
    * 获取缓存的主题
    */
   public getCacheThemeMode(): ThemeMode | null {
+    if (!this._isBrowser) return null
     return localStorage.getItem(this.config.cacheKey) as ThemeMode
   }
 
@@ -156,6 +178,7 @@ export class WebThemeManger {
    * 设置缓存的主题
    */
   public setCacheThemeMode(mode: ThemeMode): void {
+    if (!this._isBrowser) return
     localStorage.setItem(this.config.cacheKey, mode)
   }
 
@@ -163,12 +186,13 @@ export class WebThemeManger {
    * 清除缓存的主题
    */
   public clearCache(): void {
+    if (!this._isBrowser) return
     localStorage.removeItem(this.config.cacheKey)
   }
 }
 
 /**
- * 创建WEB主题管理器
+ * 创建WEB主题管理器（支持服务端渲染）
  *
  * 管理器只具备管理主题模式的功能，不具备生成主题样式的功能，需搭配主题样式css样式配合使用。
  *
