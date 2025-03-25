@@ -20,7 +20,7 @@ import { getColorType } from './tools.js'
 export function hexToRgbObject(hex: string): RGBObject {
   // 验证输入颜色值是否有效
   if (!/^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/.test(hex)) {
-    throw new Error('Invalid primary color format')
+    throw new Error('Invalid hex color format')
   }
   // 去掉前导的 #
   let hexBody = hex.replace(/^#/, '')
