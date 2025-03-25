@@ -154,21 +154,15 @@ export type ColorScheme<T extends AnyColor = AnyColor> = Record<ColorSchemeKeys,
 /**
  * 配色方案键
  *
- * - `primary`: 主要颜色
+ * - `main`: 主要颜色
  * - `aux`: 辅助颜色
- * - `minor`: 次要颜色
+ * - `extra`: 额外的颜色
+ * - `success`: 成功颜色
  * - `warning`: 警告颜色
  * - `error`: 危险颜色
  * - `neutral`: 中性颜色
  */
-export type ColorSchemeKeys =
-  | 'primary'
-  | 'aux'
-  | 'minor'
-  | 'success'
-  | 'warning'
-  | 'error'
-  | 'neutral'
+export type ColorSchemeKeys = 'main' | 'aux' | 'extra' | 'success' | 'warning' | 'error' | 'neutral'
 
 /**
  * 色阶可选范围
