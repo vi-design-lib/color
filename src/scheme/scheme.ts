@@ -6,6 +6,7 @@ import type {
   ColorSchemeRoles,
   ColorSchemeTonal,
   ColorToColorType,
+  DeepPartial,
   HSLObject,
   NeutralColorRoles,
   PaletteExtractionColorRules,
@@ -22,6 +23,24 @@ import {
 } from '../utils/index.js'
 import { Palette } from '../palette/index.js'
 
+interface SchemeOptions {
+  /**
+   * 暗色模式调色板取色规则
+   *
+   * 会和 {@linkcode Scheme.darkRoleRule} 进行深度合并
+   *
+   * @default Scheme.darkRoleRule
+   */
+  darkRoleRule?: DeepPartial<PaletteExtractionColorRules>
+  /**
+   * 亮色模式调色板取色规则
+   *
+   * 会和 {@linkcode Scheme.lightRoleRule} 进行深度合并
+   *
+   * @default Scheme.lightRoleRule
+   */
+  lightRoleRule?: DeepPartial<PaletteExtractionColorRules>
+}
 /**
  * 配色方案
  *
@@ -35,6 +54,7 @@ export default class Scheme<T extends AnyColor> {
   static readonly darkRoleRule: PaletteExtractionColorRules = {
     source: 70,
     onSource: 10,
+    sourceShadow: 20,
     sourceHover: 80,
     onSourceHover: 20,
     sourceActive: 64,
@@ -70,6 +90,7 @@ export default class Scheme<T extends AnyColor> {
    */
   static readonly lightRoleRule: PaletteExtractionColorRules = {
     source: 44,
+    sourceShadow: 20,
     onSource: 100,
     sourceHover: 60,
     onSourceHover: 100,
@@ -102,7 +123,9 @@ export default class Scheme<T extends AnyColor> {
     }
   }
   /**
-   * 角色方案对应的调色板
+   * 主调色板
+   *
+   * 所有的颜色角色都是通过此调色板取色！
    */
   public readonly palettes: ColorSchemePalettes<T>
   /**
@@ -115,20 +138,53 @@ export default class Scheme<T extends AnyColor> {
   public readonly bright: BrightnessScheme<T>
 
   /**
+   * 深度合并规则
+   *
+   * @param {T} defaultRules - 默认的规则
+   * @param {DeepPartial<T>} custom - 自定义的规则
+   * @returns {T} - 合并后的对象
+   */
+  private static deepMergeRules<T extends Record<string, any>>(
+    defaultRules: T,
+    custom?: DeepPartial<T>
+  ): T {
+    if (!custom) return defaultRules
+    const result = JSON.parse(JSON.stringify(defaultRules))
+    for (const key in custom) {
+      const value = custom[key]
+      if (value && typeof value === 'object' && !Array.isArray(value)) {
+        result[key] = this.deepMergeRules(defaultRules[key], value)
+      } else if (value !== undefined) {
+        result[key] = value as T[typeof key]
+      }
+    }
+    return result
+  }
+
+  /**
    * 配色方案构造函数
    *
    * @param {ColorScheme<T>} colors - 基准配色方
+   * @param {SchemeOptions} [options] - 配置选项
+   * @param {SchemeOptions} [options.darkRoleRule=Scheme.darkRoleRule] - 暗色模式调色板取色规则
+   * @param {SchemeOptions} [options.lightRoleRule=Scheme.lightRoleRule] - 亮色模式调色板取色规则
    */
-  constructor(colors: ColorScheme<T>) {
+  constructor(colors: ColorScheme<T>, options?: SchemeOptions) {
     this.palettes = Scheme.colorSchemeToPalettes(colors)
     this.tonalPalettes = Scheme.colorSchemeToTonalPalettes(colors)
+    const { darkRoleRule, lightRoleRule } = options || {}
+
+    // 深度合并自定义规则和默认规则
+    const mergedDarkRule = Scheme.deepMergeRules(Scheme.darkRoleRule, darkRoleRule)
+    const mergedLightRule = Scheme.deepMergeRules(Scheme.lightRoleRule, lightRoleRule)
+
     this.bright = {
       light: {
-        roles: Scheme.createColorSchemeRoles(this.palettes, 'light'),
+        roles: Scheme.createColorSchemeRoles(this.palettes, mergedLightRule),
         tonal: Scheme.createColorSchemeTonal(this.tonalPalettes, 'light')
       },
       dark: {
-        roles: Scheme.createColorSchemeRoles(this.palettes, 'dark'),
+        roles: Scheme.createColorSchemeRoles(this.palettes, mergedDarkRule),
         tonal: Scheme.createColorSchemeTonal(this.tonalPalettes, 'dark')
       }
     }
@@ -329,50 +385,50 @@ export default class Scheme<T extends AnyColor> {
    *
    * @template T - BaseColorScheme
    * @param {ColorSchemePalettes<T>} palettes - 基准配色调色板
-   * @param {'light' | 'dark'} mode - 主题模式
+   * @param {PaletteExtractionColorRules} rules - 配色方案提取规则，可以通过 `Scheme.darkRoleRule|lightRoleRule` 获取默认的规则，也可以自定义规则
+   * @param rules
    */
   static createColorSchemeRoles<T extends AnyColor>(
     palettes: ColorSchemePalettes<T>,
-    mode: 'light' | 'dark'
+    rules: PaletteExtractionColorRules
   ): ColorSchemeRoles<T> {
-    const rule = mode === 'dark' ? this.darkRoleRule : this.lightRoleRule
     const roles: Record<string, any> = {}
     for (const [key, palette] of Object.entries(palettes)) {
       // 跳过中性色，中性色由surface代替
       if (key === 'neutral') continue
       const onKey = `on${capitalize(key)}`
 
-      roles[key] = palette.get(rule.source)
-      roles[onKey] = adjustForContrast(palette.get(rule.onSource), roles[key])
+      roles[key] = palette.get(rules.source)
+      roles[onKey] = adjustForContrast(palette.get(rules.onSource), roles[key])
 
       const hoverKey = `${key}Hover`
-      roles[hoverKey] = palette.get(rule.sourceHover)
-      roles[`${onKey}Hover`] = adjustForContrast(palette.get(rule.onSourceHover), roles[hoverKey])
+      roles[hoverKey] = palette.get(rules.sourceHover)
+      roles[`${onKey}Hover`] = adjustForContrast(palette.get(rules.onSourceHover), roles[hoverKey])
 
       const activeKey = `${key}Active`
-      roles[activeKey] = palette.get(rule.sourceActive)
+      roles[activeKey] = palette.get(rules.sourceActive)
       roles[`${onKey}Active`] = adjustForContrast(
-        palette.get(rule.onSourceActive),
+        palette.get(rules.onSourceActive),
         roles[activeKey]
       )
 
       const disabledKey = `${key}Disabled`
-      roles[disabledKey] = palette.get(rule.sourceDisabled)
+      roles[disabledKey] = palette.get(rules.sourceDisabled)
       roles[`${onKey}Disabled`] = adjustForContrast(
-        palette.get(rule.onSourceDisabled),
+        palette.get(rules.onSourceDisabled),
         roles[disabledKey]
       )
 
       const containerKey = `${key}Container`
-      roles[containerKey] = palette.get(rule.container)
+      roles[containerKey] = palette.get(rules.container)
       roles[`${onKey}Container`] = adjustForContrast(
-        palette.get(rule.onContainer),
+        palette.get(rules.onContainer),
         roles[containerKey]
       )
     }
     const palette = palettes.neutral
     const baseRoles: NeutralColorRoles<T> = {} as NeutralColorRoles<T>
-    for (const [key, value] of Object.entries(rule.base)) {
+    for (const [key, value] of Object.entries(rules.base)) {
       baseRoles[key as keyof NeutralColorRoles<T>] = palette.get(value)
     }
     Object.assign(roles, baseRoles)
