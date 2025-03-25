@@ -23,7 +23,7 @@ npm install @vi-design/color
     import { createApp } from 'vitarx'
     import App from './App.js'
     
-    const app = createApp('#root').use(theme,{ primary:'#1677ff' }).render(App)
+    const app = createApp('#root').use(theme,{ mainColor:'#1677ff' }).render(App)
     ```
 
 2. 通过es模块直接导出：
@@ -48,7 +48,7 @@ npm install @vi-design/color
     
     function App() {
       // 如果主题模式变化，或主题颜色变化，都会自动更新视图
-      return <div style={{color:theme.role('primary')}}>Hello World</div>
+      return <div style={{color:theme.role('main')}}>Hello World</div>
     }
     ```
 
@@ -63,7 +63,7 @@ import { theme } from '@vi-design/color/theme/vue'; // 注意包路径！
 import { createApp } from 'vitarx'
 import App from './App.vue'
 
-const app = createApp(App).use(theme,{ primary:'#1677ff' }).mount('#app')
+const app = createApp(App).use(theme,{ mainColor:'#1677ff' }).mount('#app')
 ```
 
 ### 在 [UniApp](https://uniapp.dcloud.net.cn/) 中使用
@@ -80,7 +80,7 @@ const app = createApp(App).use(theme,{ primary:'#1677ff' }).mount('#app')
   export default {
     onLaunch(){
       // 在应用启动钩子中创建主题，并将其挂载到 uni.$theme 上
-      uni.$theme = createUniTheme({ primary: '#1677ff' });
+      uni.$theme = createUniTheme('#1677ff');
     }
   }
 </script>
@@ -105,7 +105,7 @@ interface Uni {
     
     ```js
     import { createWebTheme } from '@vi-design/color';
-    const theme = createWebTheme({ primary: '#1677ff' });
+    const theme = createWebTheme('#1677ff');
     
     // ❌ 错误做法，主题模式变化时 背景颜色并不会更新
     document.body.style.backgroundColor = theme.role('background');
@@ -124,7 +124,7 @@ interface Uni {
     </head>
     <body>
     <script>
-      const theme = Color.createWebTheme({ primary: '#1677ff' })
+      const theme = Color.createWebTheme('#1677ff')
       document.body.style.backgroundColor = theme.cssVar('background')
     </script>
     </body>
@@ -138,7 +138,7 @@ interface Uni {
 ```css
 body{
   background-color: var(--color-background);
-  color: var(--color-text);
+  color: var(--color-on-background);
 }
 ```
 
@@ -200,7 +200,7 @@ const scheme = theme.scheme
 
 ```js
 // 获取主色
-const primary = theme.role('primary')
+const main = theme.role('main')
 // 获取背景色
 const background = theme.role('background')
 // 获取文本色
@@ -212,7 +212,7 @@ const text = theme.role('text')
 
 ```js
 // 获取主色的色调颜色
-const primary5 = theme.tonal('primary', 5)
+const primary5 = theme.tonal('main', 5)
 // 获取自定义颜色的色调
 const myColor3 = theme.tonal('myColor', 3)
 ```
