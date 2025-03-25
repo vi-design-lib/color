@@ -1,10 +1,4 @@
-import type {
-  AnyColor,
-  ColorSchemeKeys,
-  ColorSchemeRoles,
-  ColorToColorType,
-  RGBObject
-} from '../types.js'
+import type { AnyColor, ColorSchemeRoles, ColorToColorType, RGBObject } from '../types.js'
 import { anyColorToHslObject, anyColorToRgbObject, anyColorToTargetColor } from './conversion.js'
 import { capitalize, getColorType } from './tools.js'
 
@@ -62,11 +56,13 @@ export function contrastRatio(color1: AnyColor, color2: AnyColor): number {
  * 计算颜色方案的对比度
  *
  * @param {Record<string, number>} scheme - 颜色方案
+ * @param {string[]} [customColorKeys] - 自定义颜色的键，没有则不传入
  */
 export function schemeContrastRation<T extends ColorSchemeRoles<AnyColor>>(
-  scheme: T
+  scheme: T,
+  customColorKeys: string[] = []
 ): Record<string, number> {
-  const roles: Array<ColorSchemeKeys> = ['primary', 'aux', 'minor', 'warning', 'error']
+  const roles: string[] = ['main', 'aux', 'extra', 'warning', 'error'].concat(customColorKeys)
   const result: Record<string, number> = {}
   for (const role of roles) {
     const caseRole = capitalize(role)
