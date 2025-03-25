@@ -24,17 +24,20 @@ export interface ColorSchemeOptions<T extends AnyColor> {
  * 创建主题
  *
  * @template T - 颜色类型
- * @param {T} primary - 主色，支持16进制字符串颜色、rgb颜色、hsl颜色、颜色对象
- * @param options
+ * @param {T} main - 主色，支持16进制字符串颜色、rgb颜色、hsl颜色、颜色对象
+ * @param {ColorSchemeOptions<ColorToColorType<T>>} [options] - 可选的配置项
+ * @param {ComputeFormula} [options.formula] - 主题计算公式
+ * @param {number} [options.angle] - 色相偏移角度
+ * @param {Record<string, ColorToColorType<T>>} [options.customColorScheme] - 自定义颜色方案
  * @returns {Scheme} - 主题实例
  */
 export function createScheme<T extends AnyColor>(
-  primary: T,
+  main: T,
   options?: ColorSchemeOptions<ColorToColorType<T>>
 ): Scheme<ColorToColorType<T>> {
-  const primaryColorType = getColorType(primary)
+  const primaryColorType = getColorType(main)
   // 创建基本配色方案
-  const colorsScheme = Scheme.createBaseColorScheme(primary, options?.formula, options?.angle)
+  const colorsScheme = Scheme.createBaseColorScheme(main, options?.formula, options?.angle)
   const customColorScheme = options?.customColorScheme
   // 合并自定义配色方案
   if (typeof customColorScheme === 'object' && !Array.isArray(customColorScheme)) {

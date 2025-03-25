@@ -90,21 +90,21 @@ export abstract class BaseTheme<T extends AnyColor, CustomKeys extends string> {
    * Theme构造函数
    *
    * @constructor
-   * @param primary - 主色
-   * @param options - 选项
-   * @param options.customColorScheme - 自定义基准配色
-   * @param options.varPrefix - css变量前缀
-   * @param options.varSuffix - css变量后缀
-   * @param options.refProxy - 自定义ref函数
-   * @param options.cacheKey - 自定义缓存名称
+   * @param mainColor - 主色
+   * @param [options] - 选项
+   * @param [options.customColorScheme] - 自定义基准配色
+   * @param [options.varPrefix] - css变量前缀
+   * @param [options.varSuffix] - css变量后缀
+   * @param [options.refProxy] - 自定义ref函数
+   * @param [options.cacheKey] - 自定义缓存名称
    */
-  protected constructor(primary: T, options?: BaseThemeOptions<T, CustomKeys>) {
+  protected constructor(mainColor: T, options?: BaseThemeOptions<T, CustomKeys>) {
     this.cacheKey = options?.cacheKey || '_CACHE_THEME_MODE'
     this.defaultMode = options?.defaultMode || 'system'
     const refProxy = options?.refFactory || ref
     this._mode = refProxy(this.getCacheThemeMode() || this.defaultMode)
     this._scheme = refProxy(
-      createScheme(primary, {
+      createScheme(mainColor, {
         customColorScheme: options?.customColorScheme,
         formula: options?.formula,
         angle: options?.angle

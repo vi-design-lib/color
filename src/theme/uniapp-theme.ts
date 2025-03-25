@@ -26,8 +26,8 @@ export type UniAppThemeOptions<T extends AnyColor, CustomKeys extends string> = 
  * template:
  *
  * <view :style="{
- *      backgroundColor: uni.$them.role('primary-container'),
- *      color: uni.$them.tonal('on-primary-container')
+ *      backgroundColor: uni.$them.role('main-container'),
+ *      color: uni.$them.tonal('on-main-container')
  *    }">
  *   主题色
  * </view>
@@ -44,10 +44,10 @@ export class UniAppTheme<
   /**
    * @inheritDoc
    */
-  constructor(primary: T, options: UniAppThemeOptions<T, CustomKeys> = {}) {
+  constructor(mainColor: T, options: UniAppThemeOptions<T, CustomKeys> = {}) {
     // @ts-ignore
     options.refProxy = ref
-    super(primary, options)
+    super(mainColor, options)
     uni.onThemeChange(({ theme }) => {
       // 如果是system模式，则切换主题
       if (this.mode === 'system') this.setMode(theme as Brightness)
@@ -88,7 +88,7 @@ export class UniAppTheme<
  *
  * 仅支持 vue3 模式，兼容微信小程序 和 App vue
  *
- * @param { AnyColor } primary - 主色
+ * @param { AnyColor } mainColor - 主色
  * @param { UniAppThemeOptions } [options] - 选项
  * @param { Object } options.customColorScheme - 自定义基准配色
  * @param { string } [options.cacheKey=_CACHE_THEME_MODE] - 自定义缓存名称
@@ -97,8 +97,8 @@ export class UniAppTheme<
  * @returns {UniAppTheme} - 主题实例
  */
 export function createUniTheme<T extends AnyColor, CustomKeys extends string>(
-  primary: T,
+  mainColor: T,
   options?: UniAppThemeOptions<T, CustomKeys>
 ): UniAppTheme<T, CustomKeys> {
-  return new UniAppTheme(primary, options as UniAppThemeOptions<T, CustomKeys>)
+  return new UniAppTheme(mainColor, options as UniAppThemeOptions<T, CustomKeys>)
 }

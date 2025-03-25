@@ -334,5 +334,5 @@ export type ThemePluginOptions<T extends AnyColor, CustomKeys extends string> = 
    *
    * @default '#1677ff'
    */
-  primary?: T
+  mainColor?: T
 }

@@ -27,10 +27,10 @@ export class VueTheme<
   /**
    * @inheritDoc
    */
-  constructor(primary: T, options: VitarxThemeOptions<T, CustomKeys> = {}) {
+  constructor(mainColor: T, options: VitarxThemeOptions<T, CustomKeys> = {}) {
     // @ts-ignore
     options.refProxy = ref
-    super(primary, options)
+    super(mainColor, options)
   }
 }
 
@@ -42,7 +42,7 @@ export class VueTheme<
  * @alias ThemePlugin
  * @param {Object} app - Vue应用实例
  * @param { VueThemePluginOptions } options - 选项
- * @param { AnyColor } [options.primary=#1677ff] - 主色
+ * @param { AnyColor } [options.main=#1677ff] - 主色
  * @param { Object } options.customColorScheme - 自定义基准配色
  * @param { string } [options.varPrefix=--color-] - css变量前缀
  * @param { string } [options.varSuffix] - css变量后缀
@@ -57,9 +57,9 @@ export function theme<T extends AnyColor, CustomKeys extends string>(
   options?: VueThemePluginOptions<T, CustomKeys>
 ): void {
   if (typeof app?.provide === 'function') {
-    const { primary = '#1677ff', ...config } = options || {}
-    if (!primary) throw new Error('primary color is required')
-    const theme = new VueTheme(primary, config)
+    const { mainColor = '#1677ff', ...config } = options || {}
+    if (!mainColor) throw new Error('main color is required')
+    const theme = new VueTheme(mainColor, config)
     // 注入到应用中
     app.provide('theme', theme)
     app.config.globalProperties.$theme = theme
@@ -70,7 +70,7 @@ export { theme as ThemePlugin }
 /**
  * 创建Vue主题实例
  *
- * @param { AnyColor } primary - 主色
+ * @param { AnyColor } mainColor - 主色
  * @param { WebThemeOptions } [options] - 选项
  * @param { Object } options.customColorScheme - 自定义基准配色
  * @param { string } [options.varPrefix=--color-] - css变量前缀
@@ -81,8 +81,8 @@ export { theme as ThemePlugin }
  * @returns {VueTheme} - 主题实例
  */
 export function createVueTheme<T extends AnyColor, CustomKeys extends string>(
-  primary: T,
+  mainColor: T,
   options?: VueThemePluginOptions<T, CustomKeys>
 ): VueTheme<T, CustomKeys> {
-  return new VueTheme(primary, options)
+  return new VueTheme(mainColor, options)
 }

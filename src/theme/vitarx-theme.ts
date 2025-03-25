@@ -25,10 +25,10 @@ export class VitarxTheme<
   /**
    * @inheritDoc
    */
-  constructor(primary: T, options: VitarxThemeOptions<T, CustomKeys> = {}) {
+  constructor(mainColor: T, options: VitarxThemeOptions<T, CustomKeys> = {}) {
     // @ts-ignore
     options.refProxy = ref
-    super(primary, options)
+    super(mainColor, options)
   }
 }
 
@@ -40,7 +40,7 @@ export class VitarxTheme<
  * @alias ThemePlugin
  * @param {Object} app - Vue应用实例
  * @param { VitarxThemePluginOptions } options - 选项
- * @param { AnyColor } [options.primary=#1677ff] - 主色
+ * @param { AnyColor } [options.main=#1677ff] - 主色
  * @param { Object } options.customColorScheme - 自定义基准配色
  * @param { string } [options.varPrefix=--color-] - css变量前缀
  * @param { string } [options.varSuffix] - css变量后缀
@@ -55,9 +55,9 @@ export function theme<T extends AnyColor, CustomKeys extends string>(
   options?: VitarxThemePluginOptions<T, CustomKeys>
 ): void {
   if (typeof app?.provide === 'function') {
-    const { primary = '#1677ff', ...config } = options || {}
-    if (!primary) throw new Error('primary color is required')
-    const theme = new VitarxTheme(primary, config)
+    const { mainColor = '#1677ff', ...config } = options || {}
+    if (!mainColor) throw new Error('main color is required')
+    const theme = new VitarxTheme(mainColor, config)
     // 注入到应用中
     app.provide('theme', theme)
     app.register('theme', theme)
@@ -68,7 +68,7 @@ export { theme as ThemePlugin }
 /**
  * 创建Vitarx主题实例
  *
- * @param { AnyColor } primary - 主色
+ * @param { AnyColor } mainColor - 主色
  * @param { WebThemeOptions } [options] - 选项
  * @param { Object } options.customColorScheme - 自定义基准配色
  * @param { string } [options.varPrefix=--color-] - css变量前缀
@@ -79,8 +79,8 @@ export { theme as ThemePlugin }
  * @returns {VitarxTheme} - 主题实例
  */
 export function createVitarxTheme<T extends AnyColor, CustomKeys extends string>(
-  primary: T,
+  mainColor: T,
   options?: VitarxThemePluginOptions<T, CustomKeys>
 ): VitarxTheme<T, CustomKeys> {
-  return new VitarxTheme(primary, options)
+  return new VitarxTheme(mainColor, options)
 }

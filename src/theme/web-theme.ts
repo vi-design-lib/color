@@ -18,7 +18,7 @@ export interface WebThemeOptions<T extends AnyColor, CustomKeys extends string>
    *
    * 默认是 `--color-`，生成的变量名会自动转换为`kebab-case`格式。
    *
-   * 例如：`--color-primary: #ffffff;`
+   * 例如：`--color-main: #ffffff;`
    *
    * > 注意：如果不需要前缀也必须传入`--`，因为css变量定义必须以`--`开头
    *
@@ -83,7 +83,7 @@ export class WebTheme<
    * Theme构造函数
    *
    * @constructor
-   * @param { AnyColor } primary - 主色
+   * @param { AnyColor } mainColor - 主色
    * @param { WebThemeOptions } options - 选项
    * @param { Object } options.customColorScheme - 自定义基准配色
    * @param { string } [options.varPrefix=--color-] - css变量前缀，仅浏览器端有效
@@ -93,8 +93,8 @@ export class WebTheme<
    * @param { ComputeFormula } [options.formula=triadic] - 配色方案算法
    * @param { number } [options.angle] - 色相偏移角度
    */
-  constructor(primary: T, options?: WebThemeOptions<T, CustomKeys>) {
-    super(primary, options)
+  constructor(mainColor: T, options?: WebThemeOptions<T, CustomKeys>) {
+    super(mainColor, options)
     if (!this._isBrowser) throw new Error('当前环境非浏览器环境，请使用浏览器环境运行！')
     this.attribute = options?.attribute || 'theme'
     this.varPrefix = options?.varPrefix || '--color-'
@@ -154,8 +154,8 @@ export class WebTheme<
    * 如果仅需要获取变量名，请使用`varName`方法
    *
    * @example
-   * theme.cssVar('primary')
-   * theme.cssVar('primary-10')
+   * theme.cssVar('main')
+   * theme.cssVar('main-10')
    * theme.cssVar('customColor')
    * theme.cssVar('customColor-10')
    *
@@ -195,7 +195,7 @@ export class WebTheme<
     const generateRoleStyles = (scheme: Scheme<AnyColor>, theme: 'dark' | 'light') => {
       return Object.keys(scheme[theme].roles)
         .map((rule) => {
-          const color = scheme[theme].roles[rule as 'primary']
+          const color = scheme[theme].roles[rule as 'main']
           return `${this.varName(rule)}: ${color};`
         })
         .join('\n')
