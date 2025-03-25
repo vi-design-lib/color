@@ -23,7 +23,7 @@ import {
 } from '../utils/index.js'
 import { Palette } from '../palette/index.js'
 
-interface SchemeOptions {
+export interface SchemeOptions {
   /**
    * 暗色模式调色板取色规则
    *
@@ -47,7 +47,7 @@ interface SchemeOptions {
  * @template T - 颜色类型
  * @param {ColorScheme<T>} colors - 配色方案
  */
-export default class Scheme<T extends AnyColor> {
+export class Scheme<T extends AnyColor> {
   /**
    * 暗色模式调色板取色规则
    */

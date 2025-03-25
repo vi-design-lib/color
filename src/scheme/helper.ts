@@ -1,8 +1,8 @@
 import type { AnyColor, ColorScheme, ColorToColorType } from '../types.js'
 import { type ComputeFormula, getColorType } from '../utils/index.js'
-import Scheme from './scheme.js'
+import { Scheme, type SchemeOptions } from './scheme.js'
 
-export interface ColorSchemeOptions<T extends AnyColor> {
+export interface ColorSchemeOptions<T extends AnyColor> extends SchemeOptions {
   /**
    * 计算模式
    *
@@ -36,9 +36,9 @@ export function createScheme<T extends AnyColor>(
   options?: ColorSchemeOptions<ColorToColorType<T>>
 ): Scheme<ColorToColorType<T>> {
   const primaryColorType = getColorType(main)
+  const { formula, angle, customColorScheme, ...schemeOptions } = options || {}
   // 创建基本配色方案
-  const colorsScheme = Scheme.createBaseColorScheme(main, options?.formula, options?.angle)
-  const customColorScheme = options?.customColorScheme
+  const colorsScheme = Scheme.createBaseColorScheme(main, formula, angle)
   // 合并自定义配色方案
   if (typeof customColorScheme === 'object' && !Array.isArray(customColorScheme)) {
     for (const colorsKey in customColorScheme) {
@@ -57,5 +57,5 @@ export function createScheme<T extends AnyColor>(
       colorsScheme[colorsKey as keyof ColorScheme<T>] = value
     }
   }
-  return new Scheme(colorsScheme)
+  return new Scheme(colorsScheme, schemeOptions)
 }
