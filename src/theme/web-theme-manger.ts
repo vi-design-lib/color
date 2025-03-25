@@ -162,7 +162,7 @@ export class WebThemeManger {
    * @returns {Brightness} 系统主题
    */
   get systemBright(): Brightness {
-    if (!this._isBrowser) return this.config.ssr === 'light' ? 'light' : 'dark'
+    if (!this._isBrowser) return this.config.ssr === 'dark' ? 'dark' : 'light'
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
   }
 
