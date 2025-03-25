@@ -120,29 +120,29 @@ export type ColorSchemePalettes<T extends AnyColor = AnyColor> = Record<ColorSch
  * 调色板提取颜色规则
  */
 export type PaletteExtractionColorRules = {
-  // 主色的亮度和饱和度调整
+  /** 亮度和饱和度调整 */
   source: number
-  // 悬停状态下的主色：增加亮度，稍微增强饱和度
+  /** 阴影色 */
+  sourceShadow: number
+  /** 悬停状态下的主色 */
   sourceHover: number
-  // 激活状态下的主色：减少亮度，减少饱和度，模拟按下效果
+  /** 激活状态下的主色 */
   sourceActive: number
-  // 禁用状态下的主色：大幅降低亮度和饱和度
+  /** 禁用状态下的主色 */
   sourceDisabled: number
-  // 主色背景上的文本颜色：白色
+  /** 背景上的文本颜色 */
   onSource: number
-  // 主色悬停状态上的文本颜色：增加对比度
+  /** 悬停状态上的文本颜色 */
   onSourceHover: number
-  // 主色激活状态上的文本颜色：更深的文本颜色
+  /** 激活状态上的文本颜色 */
   onSourceActive: number
-  // 主色禁用状态上的文本颜色：灰色
+  /** 禁用状态上的文本颜色 */
   onSourceDisabled: number
-  // 主色容器背景
+  /** 容器背景 */
   container: number
-  // 容器上的文本颜色：深色
+  /** 容器上的文本颜色 */
   onContainer: number
-  /**
-   * 中性色基准配色方案
-   */
+  /** 中性色基准配色方案 */
   base: NeutralColorRoles<number>
 }
 
@@ -297,6 +297,7 @@ export interface NeutralColorRoles<T> {
    * 阴影颜色，通常需要降低透明度使用。
    */
   shadow: T
+
   /**
    * 遮罩颜色，通常需要降低透明度使用。
    */
