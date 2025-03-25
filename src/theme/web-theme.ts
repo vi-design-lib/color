@@ -259,7 +259,7 @@ export class WebTheme<
  *
  * > 注意：此函数创建的主题实例仅兼容浏览器端，非浏览器端会抛出异常！
  *
- * @param { AnyColor } primary - 主色
+ * @param { AnyColor } mainColor - 主色
  * @param { WebThemeOptions } [options] - 选项
  * @param { Object } options.customColorScheme - 自定义基准配色
  * @param { string } [options.varPrefix=--color-] - css变量前缀
@@ -271,8 +271,8 @@ export class WebTheme<
  * @returns {WebTheme} - 主题实例
  */
 export function createWebTheme<T extends AnyColor, CustomKeys extends string>(
-  primary: T,
+  mainColor: T,
   options?: WebThemeOptions<T, CustomKeys>
 ): WebTheme<T, CustomKeys> {
-  return new WebTheme(primary, options)
+  return new WebTheme(mainColor, options)
 }
