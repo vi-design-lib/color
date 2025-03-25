@@ -189,19 +189,19 @@ export default class Scheme<T extends AnyColor> {
    * 根据主色创建基准颜色配色方案
    *
    * @template T - 颜色类型
-   * @param {AnyColor} primary - 主色
+   * @param {AnyColor} mainColor - 主色
    * @param {ComputeFormula} mode - 颜色模式
    * @param {number} [angle] - 色相角度
    * @returns {ColorScheme<T>} - 基准颜色配色方案
    */
   static createBaseColorScheme<T extends AnyColor>(
-    primary: T,
+    mainColor: T,
     mode: ComputeFormula = 'triadic',
     angle?: number
   ): ColorScheme<ColorToColorType<T>> {
-    const outType = getColorType(primary)
+    const outType = getColorType(mainColor)
     // 获取主色的 HSL 对象
-    const primaryHsl = anyColorToHslObject(primary, outType)
+    const primaryHsl = anyColorToHslObject(mainColor, outType)
     // 应用感知均匀性调整
     const adjustedPrimaryHsl = HslFormula.perceptuallyUniform(
       primaryHsl.h,
@@ -254,11 +254,11 @@ export default class Scheme<T extends AnyColor> {
     } while (attempts < maxAttempts)
 
     const auxHue = splitCompHues[1]
-    const minorHue = splitCompHues[2]
+    const extraHue = splitCompHues[2]
 
     // 确保辅色和三级辅色的饱和度低于主色，并应用感知均匀性调整
     const auxHsl = HslFormula.perceptuallyUniform(auxHue, s, l)
-    const minorHsl = HslFormula.perceptuallyUniform(minorHue, s, l)
+    const extraHsl = HslFormula.perceptuallyUniform(extraHue, s, l)
 
     // 应用功能色
     const successHsl = HslFormula.perceptuallyUniform(successHue, s, l) // 动态绿色范围
@@ -270,9 +270,9 @@ export default class Scheme<T extends AnyColor> {
 
     // 创建 HSL 配色方案
     const hslScheme: ColorScheme<HSLObject> = {
-      primary: primaryHsl,
+      main: primaryHsl,
       aux: auxHsl,
-      minor: minorHsl,
+      extra: extraHsl,
       success: successHsl,
       warning: warningHsl,
       error: errorHsl,
