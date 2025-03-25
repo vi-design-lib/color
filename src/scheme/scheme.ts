@@ -54,7 +54,7 @@ export default class Scheme<T extends AnyColor> {
   static readonly darkRoleRule: PaletteExtractionColorRules = {
     source: 70,
     onSource: 10,
-    sourceShadow: 20,
+    sourceShadow: 30,
     sourceHover: 80,
     onSourceHover: 20,
     sourceActive: 64,
@@ -79,7 +79,7 @@ export default class Scheme<T extends AnyColor> {
       surfaceContainerHighest: 24,
       outline: 40,
       outlineVariant: 20,
-      shadow: 0,
+      shadow: 30,
       scrim: 0,
       background: 6,
       onBackground: 90
@@ -90,7 +90,7 @@ export default class Scheme<T extends AnyColor> {
    */
   static readonly lightRoleRule: PaletteExtractionColorRules = {
     source: 44,
-    sourceShadow: 20,
+    sourceShadow: 10,
     onSource: 100,
     sourceHover: 60,
     onSourceHover: 100,
@@ -116,7 +116,7 @@ export default class Scheme<T extends AnyColor> {
       onSurfaceVariant: 30,
       outline: 50,
       outlineVariant: 90,
-      shadow: 0,
+      shadow: 10,
       scrim: 0,
       background: 98,
       onBackground: 10
