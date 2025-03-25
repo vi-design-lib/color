@@ -42,13 +42,6 @@ export class VueTheme<
  * @alias ThemePlugin
  * @param {Object} app - Vue应用实例
  * @param { VueThemePluginOptions } options - 选项
- * @param { AnyColor } [options.main=#1677ff] - 主色
- * @param { Object } options.customColorScheme - 自定义基准配色
- * @param { string } [options.varPrefix=--color-] - css变量前缀
- * @param { string } [options.varSuffix] - css变量后缀
- * @param { string } [options.cacheKey=_CACHE_THEME_MODE] - 自定义缓存名称
- * @param { ComputeFormula } [options.formula=triadic] - 配色方案算法
- * @param { number } [options.angle] - 色相偏移角度
  * @returns {void}
  * @throws {Error} - 如果非浏览器端调用，则会抛出异常
  */
@@ -72,12 +65,6 @@ export { theme as ThemePlugin }
  *
  * @param { AnyColor } mainColor - 主色
  * @param { WebThemeOptions } [options] - 选项
- * @param { Object } options.customColorScheme - 自定义基准配色
- * @param { string } [options.varPrefix=--color-] - css变量前缀
- * @param { string } [options.varSuffix] - css变量后缀
- * @param { string } [options.cacheKey=_CACHE_THEME_MODE] - 自定义缓存名称
- * @param { ComputeFormula } [options.formula=triadic] - 配色方案算法
- * @param { number } [options.angle] - 色相偏移角度
  * @returns {VueTheme} - 主题实例
  */
 export function createVueTheme<T extends AnyColor, CustomKeys extends string>(
