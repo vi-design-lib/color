@@ -39,6 +39,16 @@ export interface WebThemeOptions<T extends AnyColor, CustomKeys extends string>
    * @default 'theme'
    */
   attribute?: string
+  /**
+   * 服务端渲染时的系统主题亮度
+   *
+   * 由于服务端调用浏览器端的api，所以需要设置一个默认的主题亮度，可以是`light`或`dark`
+   *
+   * 默认为false，代表着不在浏览器端渲染
+   *
+   * @default false
+   */
+  ssr?: Brightness | false
 }
 
 /**
@@ -80,6 +90,10 @@ export class WebTheme<
    */
   protected _isBrowser = typeof window === 'object' && typeof document === 'object'
   /**
+   * 服务端渲染时的系统主题亮度
+   */
+  protected readonly ssr: Brightness | false
+  /**
    * Theme构造函数
    *
    * @constructor
@@ -95,18 +109,20 @@ export class WebTheme<
    */
   constructor(mainColor: T, options?: WebThemeOptions<T, CustomKeys>) {
     super(mainColor, options)
-    if (!this._isBrowser) throw new Error('当前环境非浏览器环境，请使用浏览器环境运行！')
     this.attribute = options?.attribute || 'theme'
     this.varPrefix = options?.varPrefix || '--color-'
     this.varSuffix = options?.varSuffix || ''
-    document.documentElement.setAttribute(options?.attribute || 'theme', this.bright)
-    this._sheet = WebTheme.createStyleSheet()
-    this.updateStyles()
-    // 监听系统主题变化
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-      // 如果是system模式，则切换主题
-      if (this.mode === 'system') this.setMode(e.matches ? 'dark' : 'light')
-    })
+    this.ssr = options?.ssr || false
+    if (!this._isBrowser) {
+      document.documentElement.setAttribute(options?.attribute || 'theme', this.bright)
+      this._sheet = WebTheme.createStyleSheet()
+      this.updateStyles()
+      // 监听系统主题变化
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+        // 如果是system模式，则切换主题
+        if (this.mode === 'system') this.setMode(e.matches ? 'dark' : 'light')
+      })
+    }
   }
 
   /**
@@ -134,6 +150,7 @@ export class WebTheme<
    * @inheritDoc
    */
   protected override setCacheThemeMode(mode: ThemeMode) {
+    if (!this._isBrowser) return
     localStorage.setItem(this.cacheKey, mode)
   }
 
@@ -188,7 +205,7 @@ export class WebTheme<
    * 非浏览器环境，不会更新样式表！
    */
   protected updateStyles() {
-    if (!this._isBrowser || !this._sheet) return
+    if (!this._sheet) return
     while (this._sheet.cssRules.length > 0) {
       this._sheet.deleteRule(0)
     }
@@ -221,6 +238,7 @@ export class WebTheme<
    * @inheritDoc
    */
   override get systemBright(): Brightness {
+    if (!this._isBrowser) return this.ssr === 'dark' ? 'dark' : 'light'
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
   }
 
@@ -229,7 +247,7 @@ export class WebTheme<
    */
   public override setMode(mode: ThemeMode): boolean {
     const result = super.setMode(mode)
-    if (result) {
+    if (result && this._isBrowser) {
       document.documentElement.setAttribute(this.attribute, this.bright)
       this.updateStyles()
     }
@@ -240,6 +258,7 @@ export class WebTheme<
    * @inheritDoc
    */
   public override getCacheThemeMode(): ThemeMode | null {
+    if (!this._isBrowser) return null
     return localStorage.getItem(this.cacheKey) as ThemeMode
   }
 
@@ -247,6 +266,7 @@ export class WebTheme<
    * @inheritDoc
    */
   public override clearCache() {
+    if (!this._isBrowser) return
     localStorage.removeItem(this.cacheKey)
   }
 }
@@ -254,20 +274,19 @@ export class WebTheme<
 /**
  * 创建WEB主题实例
  *
- * 如果你使用的是 `Vitarx` 或 `Vue3` 框架，则指定 `options.refProxy` 为框架提供的 `ref` 函数，
+ * 如果你使用的是 `Vitarx` 或 `Vue3` 框架，则指定 `options.refFactory` 为框架提供的 `ref` 函数，
  * 这样可以让 role 和 tonal 获取的颜色具有响应性
- *
- * > 注意：此函数创建的主题实例仅兼容浏览器端，非浏览器端会抛出异常！
  *
  * @param { AnyColor } mainColor - 主色
  * @param { WebThemeOptions } [options] - 选项
  * @param { Object } options.customColorScheme - 自定义基准配色
  * @param { string } [options.varPrefix=--color-] - css变量前缀
  * @param { string } [options.varSuffix] - css变量后缀
- * @param { function } [options.refProxy] - 自定义ref函数
+ * @param { function } [options.refFactory] - 自定义ref函数
  * @param { string } [options.cacheKey=_CACHE_THEME_MODE] - 自定义缓存名称
  * @param { ComputeFormula } [options.formula=triadic] - 配色方案算法
  * @param { number } [options.angle] - 色相偏移角度
+ * @param { Brightness|boolean } [options.ssr] - 服务端渲染时的系统主题亮度
  * @returns {WebTheme} - 主题实例
  */
 export function createWebTheme<T extends AnyColor, CustomKeys extends string>(
