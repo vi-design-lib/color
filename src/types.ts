@@ -147,7 +147,7 @@ export type PaletteExtractionColorRules = {
 }
 
 /**
- * 基准配色方案
+ * 基本配色方案
  */
 export type ColorScheme<T extends AnyColor = AnyColor> = Record<ColorSchemeKeys, T>
 
@@ -340,4 +340,8 @@ export type ThemePluginOptions<T extends AnyColor, CustomKeys extends string> = 
    * @default '#1677ff'
    */
   mainColor?: T
+}
+
+export type DeepPartial<T> = {
+  [P in keyof T]?: T[P] extends Record<string | symbol, any> ? DeepPartial<T[P]> : T[P]
 }
