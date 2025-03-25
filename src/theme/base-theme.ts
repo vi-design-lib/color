@@ -91,12 +91,13 @@ export abstract class BaseTheme<T extends AnyColor, CustomKeys extends string> {
    *
    * @constructor
    * @param mainColor - 主色
-   * @param [options] - 选项
+   * @param [options] - 配置选项
    * @param [options.customColorScheme] - 自定义基准配色
-   * @param [options.varPrefix] - css变量前缀
-   * @param [options.varSuffix] - css变量后缀
-   * @param [options.refProxy] - 自定义ref函数
-   * @param [options.cacheKey] - 自定义缓存名称
+   * @param [options.refFactory] - 自定义ref函数
+   * @param [options.cacheKey=_CACHE_THEME_MODE] - 自定义缓存名称
+   * @param [options.defaultMode=system] - 默认主题模式
+   * @param [options.formula=triadic] - 配色算法
+   * @param [options.angle] - 色相偏移角度
    */
   protected constructor(mainColor: T, options?: BaseThemeOptions<T, CustomKeys>) {
     this.cacheKey = options?.cacheKey || '_CACHE_THEME_MODE'
