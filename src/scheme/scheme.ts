@@ -158,30 +158,6 @@ export class Scheme<OutColorTag extends ColorTag = 'hex', CustomKeys extends str
   }
 
   /**
-   * 深度合并规则
-   *
-   * @template T - 对象类型
-   * @param {T} defaultRules - 默认的规则
-   * @param {DeepPartial<T>} custom - 自定义的规则
-   * @returns {T} - 合并后的对象
-   */
-  private static deepMergeRules<T extends Record<string, any>>(
-    defaultRules: T,
-    custom?: DeepPartial<T>
-  ): T {
-    if (!custom) return defaultRules
-    const result = JSON.parse(JSON.stringify(defaultRules))
-    for (const key in custom) {
-      const value = custom[key]
-      if (value && typeof value === 'object' && !Array.isArray(value)) {
-        result[key] = this.deepMergeRules(defaultRules[key], value)
-      } else if (value !== undefined) {
-        result[key] = value as T[typeof key]
-      }
-    }
-    return result
-  }
-  /**
    * 获取主题配色方案
    */
   get light() {
@@ -354,6 +330,31 @@ export class Scheme<OutColorTag extends ColorTag = 'hex', CustomKeys extends str
       attempts++
     } while (attempts < maxAttempts)
     return splitCompHues
+  }
+
+  /**
+   * 深度合并规则
+   *
+   * @template T - 对象类型
+   * @param {T} defaultRules - 默认的规则
+   * @param {DeepPartial<T>} custom - 自定义的规则
+   * @returns {T} - 合并后的对象
+   */
+  private static deepMergeRules<T extends Record<string, any>>(
+    defaultRules: T,
+    custom?: DeepPartial<T>
+  ): T {
+    if (!custom) return defaultRules
+    const result = JSON.parse(JSON.stringify(defaultRules))
+    for (const key in custom) {
+      const value = custom[key]
+      if (value && typeof value === 'object' && !Array.isArray(value)) {
+        result[key] = this.deepMergeRules(defaultRules[key], value)
+      } else if (value !== undefined) {
+        result[key] = value as T[typeof key]
+      }
+    }
+    return result
   }
 
   /**
