@@ -55,10 +55,8 @@ export function makePaletteArray<OutColorTag extends ColorTag = 'hex'>(
   options?: PaletteOptions<OutColorTag>
 ): Array<ColorTagToColorType<OutColorTag>> {
   const palette: Array<ColorTagToColorType<OutColorTag>> = []
-  const type: OutColorTag = options?.outType ?? ('hex' as OutColorTag)
-  const source = anyColorToHslObject(sourceColor, type)
   for (let i = 0; i < size; i++) {
-    palette.push(getPaletteColor(i, source, size, options))
+    palette.push(getPaletteColor(i, sourceColor, size, options))
   }
   return palette
 }
