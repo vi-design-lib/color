@@ -1,4 +1,4 @@
-import { anyColorToHslObject, getColorType } from '../utils/index.js'
+import { anyColorToHslObject, anyColorToTargetColor, getColorType } from '../utils/index.js'
 import { getPaletteColor } from './helper.js'
 import type { AnyColor, ColorTag, ColorTagToColorType, HSLObject } from '../types.js'
 
@@ -33,38 +33,35 @@ export type PaletteOptions<OutColorTag extends ColorTag = 'hex'> = {
  *
  * 该类实现了`Symbol.iterator`方法，支持迭代。
  *
- * @template SourceColor - sourceColor的类型
  * @template OutColorTag - 调色板输出的颜色标签
- * @template OutColorType - 调色板输出的颜色类型，根据`OutColorTag`类型自动转换，无需手动传入！
  */
-export class Palette<
-  SourceColor extends AnyColor = AnyColor,
-  OutColorTag extends ColorTag = 'hex',
-  OutColorType extends AnyColor = ColorTagToColorType<OutColorTag>
-> {
+export class Palette<OutColorTag extends ColorTag = 'hex'> {
   // 源色RGB对象
   private readonly _sourceHsl: HSLObject
   // 缓存色阶颜色
-  private readonly _cacheColors: Array<OutColorType> = []
+  private readonly _cacheColors: Array<ColorTagToColorType<OutColorTag>> = []
   // 色阶数量
   private readonly _size: number
   // 源色
-  private readonly _sourceColor: SourceColor
+  private readonly _sourceColor: ColorTagToColorType<OutColorTag>
   // 输出类型
   private readonly _options: Required<PaletteOptions<OutColorTag>>
   /**
-   * @param {SourceColor} sourceColor - 源色
+   * @param {AnyColor} sourceColor - 源色
    * @param {number} size - 色阶数量，不能小于9
    * @param {PaletteOptions} [options] - 可选的配置项
    * @param {OutColorTag} [options.outType=hex] - 调色板输出的颜色类型，默认为sourceColor的类型
    * @param {number} [options.min] - 调色板最小亮度，默认为0
    * @param {number} [options.max] - 调色板最大亮度，默认为1
    */
-  constructor(sourceColor: SourceColor, size: number, options?: PaletteOptions<OutColorTag>) {
+  constructor(sourceColor: AnyColor, size: number, options?: PaletteOptions<OutColorTag>) {
     if (typeof size !== 'number' || size < 9) {
       throw new Error('size must be a number and greater than 9')
     }
-    this._sourceColor = sourceColor
+    this._sourceColor = anyColorToTargetColor(
+      sourceColor,
+      options?.outType || ('hex' as OutColorTag)
+    )
     this._size = size
     this._sourceHsl = anyColorToHslObject(sourceColor)
     this._cacheColors.length = size
@@ -81,7 +78,7 @@ export class Palette<
   /**
    * 源色
    */
-  get source(): SourceColor {
+  get source(): ColorTagToColorType<OutColorTag> {
     return this._sourceColor
   }
 
@@ -113,14 +110,9 @@ export class Palette<
    *
    * @param {number} i - 色阶索引，必须小于色阶数量
    */
-  get(i: number): OutColorType {
+  get(i: number): ColorTagToColorType<OutColorTag> {
     if (!this._cacheColors[i]) {
-      this._cacheColors[i] = getPaletteColor(
-        i,
-        this._sourceHsl,
-        this.size,
-        this._options
-      ) as unknown as OutColorType
+      this._cacheColors[i] = getPaletteColor(i, this._sourceHsl, this.size, this._options)
     }
     return this._cacheColors[i]
   }
@@ -128,21 +120,21 @@ export class Palette<
   /**
    * 获取所有色阶颜色
    *
-   * @returns {Array<OutColorType>} - 所有色阶颜色
+   * @returns {Array<ColorTagToColorType<OutColorTag>>} - 所有色阶颜色
    */
-  all(): Array<OutColorType> {
-    return Array.from(this) as unknown as Array<OutColorType>
+  all(): Array<ColorTagToColorType<OutColorTag>> {
+    return Array.from(this) as unknown as Array<ColorTagToColorType<OutColorTag>>
   }
 
   /**
    * 迭代器方法
    */
-  [Symbol.iterator](): { next(): IteratorResult<OutColorType> } {
+  [Symbol.iterator](): { next(): IteratorResult<ColorTagToColorType<OutColorTag>> } {
     let index = 0
     const length = this.size
     // 返回一个迭代器对象
     return {
-      next: (): IteratorResult<OutColorType> => {
+      next: (): IteratorResult<ColorTagToColorType<OutColorTag>> => {
         if (index < length) {
           return { value: this.get(index++), done: false }
         } else {
@@ -155,18 +147,17 @@ export class Palette<
   /**
    * 创建调色板
    *
-   * @template SourceColor - 源色类型
    * @template OutColorTag - 调色板输出的颜色标签类型，默认为hex
    * @param {AnyColor} sourceColor - 源色
    * @param {number} size - 色阶数量
    * @param {PaletteOptions<OutColorTag>} [options] - 可选的配置项
-   * @returns {Palette<SourceColor, OutColorTag>} - 调色板实例
+   * @returns {Palette<OutColorTag>} - 调色板实例
    */
-  static create<SourceColor extends AnyColor, OutColorTag extends ColorTag = 'hex'>(
-    sourceColor: SourceColor,
+  static create<OutColorTag extends ColorTag = 'hex'>(
+    sourceColor: AnyColor,
     size: number,
     options?: PaletteOptions<OutColorTag>
-  ): Palette<SourceColor, OutColorTag> {
+  ): Palette<OutColorTag> {
     return new Palette(sourceColor, size, options)
   }
 }
