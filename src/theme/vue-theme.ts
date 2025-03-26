@@ -1,17 +1,8 @@
 // @ts-ignore
 import { ref } from 'vue'
-import type { AnyColor, HexColor, ThemePluginOptions } from '../types.js'
+import type { AnyColor, ColorTag } from '../types.js'
 import { WebTheme, type WebThemeOptions } from './web-theme.js'
-
-export type VitarxThemeOptions<T extends AnyColor, CustomKeys extends string> = Omit<
-  WebThemeOptions<T, CustomKeys>,
-  'refFactory'
->
-
-export type VueThemePluginOptions<
-  T extends AnyColor,
-  CustomKeys extends string
-> = ThemePluginOptions<T, CustomKeys>
+import type { ThemePluginOptions } from './vitarx-theme.js'
 
 /**
  * Vue 框架主题插件
@@ -21,15 +12,14 @@ export type VueThemePluginOptions<
  * @extends WebTheme
  */
 export class VueTheme<
-  T extends AnyColor = HexColor,
+  OutColorTag extends ColorTag,
   CustomKeys extends string = never
-> extends WebTheme<T, CustomKeys> {
+> extends WebTheme<OutColorTag, CustomKeys> {
   /**
    * @inheritDoc
    */
-  constructor(mainColor: T, options: VitarxThemeOptions<T, CustomKeys> = {}) {
-    // @ts-ignore
-    options.refProxy = ref
+  constructor(mainColor: AnyColor, options: WebThemeOptions<OutColorTag, CustomKeys> = {}) {
+    options.refFactory ??= ref
     super(mainColor, options)
   }
 }
@@ -41,13 +31,13 @@ export class VueTheme<
  *
  * @alias ThemePlugin
  * @param {Object} app - Vue应用实例
- * @param { VueThemePluginOptions } options - 选项
+ * @param { ThemePluginOptions } options - 选项
  * @returns {void}
  * @throws {Error} - 如果非浏览器端调用，则会抛出异常
  */
-export function theme<T extends AnyColor, CustomKeys extends string>(
+export function theme<OutColorTag extends ColorTag, CustomKeys extends string>(
   app: any,
-  options?: VueThemePluginOptions<T, CustomKeys>
+  options?: ThemePluginOptions<OutColorTag, CustomKeys>
 ): void {
   if (typeof app?.provide === 'function') {
     const { mainColor = '#1677ff', ...config } = options || {}
@@ -67,9 +57,9 @@ export { theme as ThemePlugin }
  * @param { WebThemeOptions } [options] - 选项
  * @returns {VueTheme} - 主题实例
  */
-export function createVueTheme<T extends AnyColor, CustomKeys extends string>(
-  mainColor: T,
-  options?: VueThemePluginOptions<T, CustomKeys>
-): VueTheme<T, CustomKeys> {
+export function createVueTheme<OutColorTag extends ColorTag, CustomKeys extends string>(
+  mainColor: AnyColor,
+  options?: ThemePluginOptions<OutColorTag, CustomKeys>
+): VueTheme<OutColorTag, CustomKeys> {
   return new VueTheme(mainColor, options)
 }
