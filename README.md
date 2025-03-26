@@ -1,10 +1,18 @@
 # @vi-design/color
-@vi-design/color是使用TS编写的配色方案库，帮助开发者快速创建主题配色方案。
-___________________________________________________________________
+
+@vi-design/color是使用TypeScript编写的配色方案库，帮助开发者快速创建主题配色方案。
+
+---
 
 ## 安装
 ```shell
 npm install @vi-design/color
+```
+
+或者使用yarn：
+
+```shell
+yarn add @vi-design/color
 ```
 ## 文档
 
@@ -19,7 +27,7 @@ npm install @vi-design/color
     ```js
     // main.js
     
-    import { theme } from '@vi-design/color/vitarx-theme'; // 注意包路径！
+    import { theme } from '@vi-design/color/theme/vitarx'; // 正确的包路径
     import { createApp } from 'vitarx'
     import App from './App.js'
     
@@ -59,8 +67,8 @@ npm install @vi-design/color
 ```js
 // main.js
 
-import { theme } from '@vi-design/color/theme/vue'; // 注意包路径！
-import { createApp } from 'vitarx'
+import { theme } from '@vi-design/color/theme/vue'; // 正确的包路径
+import { createApp } from 'vue'
 import App from './App.vue'
 
 const app = createApp(App).use(theme,{ mainColor:'#1677ff' }).mount('#app')
@@ -75,7 +83,7 @@ const app = createApp(App).use(theme,{ mainColor:'#1677ff' }).mount('#app')
   // App.vue
   
   // 导入 theme
-  import { createUniTheme } from '@vi-design/color/theme/uniapp'; // 注意包路径！
+  import { createUniTheme } from '@vi-design/color/theme/uniapp'; // 正确的包路径
   
   export default {
     onLaunch(){
@@ -93,7 +101,7 @@ TypeScript类型支持：
 
 interface Uni {
   // 如果有自定义主题色，可以传入第二个泛型参数，指定主题色名称的联合类型
-  $theme: import('@vi-design/color/theme/uniapp').UniAppTheme<`#${string}`>
+  $theme: import('@vi-design/color/theme/uniapp').UniAppTheme<'hex', string>
 }
 ```
 
@@ -110,8 +118,8 @@ interface Uni {
     // ❌ 错误做法，主题模式变化时 背景颜色并不会更新
     document.body.style.backgroundColor = theme.role('background');
     
-    // ✅ 正确的做法应该是
-    document.body.style.backgroundColor = theme.cssVar('background') // 赋值的则是 var(--color-background)
+    // ✅ 正确的做法应该
+    document.body.style.backgroundColor = theme.cssVar('background') // var(--color-background)
     ```
 
 2. CDN导入方式：
@@ -131,9 +139,9 @@ interface Uni {
     </html>
     ```
 
-### 在css中使用主题配色
+### 在CSS中使用主题配色
 
-仅 `VitarxTheme` 、`VueTheme` 、 `WebTheme` 支持在css中使用主题变量，`UniAppTheme` 不被支持！
+仅 `VitarxTheme`、`VueTheme` 和 `WebTheme` 支持在CSS中使用主题变量，`UniAppTheme` 不支持此功能！
 
 ```css
 body{
@@ -147,14 +155,14 @@ body{
 ```css
 :root {
   --color-background: #f9fafa;
-  --color-on-Background: #171a1c;
+  --color-on-background: #171a1c;
   /*...更多变量*/
 }
 ```
 
 可以前往 [在线工具](https://color.visdev.cn/) 创建一个默认的主题颜色变量文件，并放入项目中。
 
-## 性能优化：
+## 性能优化
 
 1. 在 `Vitarx` 和 `Vue` 中使用时，为了避免首页黑白闪烁，可以在index.html中加入如下脚本：
 
@@ -164,7 +172,9 @@ body{
     ```
 2. 如果不需要动态切换主题配色方案，建议使用主题css文件 + `WebThemeManger` 进行管理主题
 
-## 实例方法
+## API参考
+
+以下是主题实例提供的方法和属性：
 
 ### mode
 主题模式，支持`light`、`dark`和`system`三种模式。
