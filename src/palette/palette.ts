@@ -1,6 +1,6 @@
 import { anyColorToHslObject, anyColorToTargetColor, getColorType } from '../utils/index.js'
 import { getPaletteColor } from './helper.js'
-import type { AnyColor, ColorTag, ColorTagToColorType, HSLObject } from '../scheme/types/types.js'
+import type { AnyColor, ColorTag, ColorTagToColorType, HSLObject } from '../types.js'
 
 /**
  * 调色板可选配置
