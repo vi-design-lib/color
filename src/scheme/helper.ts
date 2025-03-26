@@ -3,18 +3,22 @@ import { Scheme } from './scheme.js'
 import type { SchemeOptions } from './types/index.js'
 
 /**
- * 创建主题
+ * 创建配色方案
  *
- * @template OutColorTag - 输出颜色类型标签
- * @template CustomKeys - 自定义颜色键
- * @param {AnyColor} mainColor - 主色
- * @param {SchemeOptions<OutColorTag, CustomKeys>} [options] - 可选的配置项
- * @param {SchemeOptions} [options] - 配置选项
- * @param {Object} [options.darkRoleRule=Scheme.darkRoleRule] - 暗色模式调色板取色规则
- * @param {Object} [options.lightRoleRule=Scheme.lightRoleRule] - 亮色模式调色板取色规则
- * @param {Object} [options.customColorScheme] - 自定义颜色方案
- * @param {string} [options.outType] - 调试板要使用的目标类型
- * @returns {Scheme} - 主题实例
+ * 根据提供的主色创建一个完整的配色方案实例，支持自定义颜色和亮暗色模式。
+ * 该函数是Scheme类的工厂函数，提供了一种便捷的方式来创建配色方案。
+ *
+ * @template OutColorTag - 输出的颜色标签类型，默认为'hex'
+ * @template CustomKeys - 自定义颜色键类型，用于扩展基础配色方案
+ * @param {AnyColor} mainColor - 主色，作为整个配色方案的基础
+ * @param {SchemeOptions<OutColorTag, CustomKeys>} [options] - 配置选项
+ * @param {DeepPartial<PaletteExtractionColorRules>} [options.darkRoleRule=Scheme.darkRoleRule] - 暗色模式调色板取色规则
+ * @param {DeepPartial<PaletteExtractionColorRules>} [options.lightRoleRule=Scheme.lightRoleRule] - 亮色模式调色板取色规则
+ * @param {Record<CustomKeys, AnyColor>} [options.customColor] - 自定义颜色配置
+ * @param {OutColorTag} [options.outType='hex'] - 调色板输出的颜色类型
+ * @param {ComputeFormula} [options.formula='triadic'] - 计算辅助色的公式
+ * @param {number} [options.angle] - 色相偏移角度
+ * @returns {Scheme<OutColorTag, CustomKeys>} - 配色方案实例，包含完整的亮色/暗色模式配色
  */
 export function createScheme<
   OutColorTag extends ColorTag = 'hex',
