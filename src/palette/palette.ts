@@ -21,7 +21,9 @@ export type PaletteOptions<OutColorTag extends ColorTag = 'hex'> = {
    */
   max?: number
   /**
-   * 调试板要使用的目标类型
+   * 调色板要使用的目标类型
+   *
+   * @default hex
    */
   outType?: OutColorTag
 }
