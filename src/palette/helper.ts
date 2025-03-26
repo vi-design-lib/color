@@ -9,7 +9,7 @@ import type { AnyColor, ColorTag, ColorTagToColorType } from '../types.js'
  * @param {number} i - 色阶索引，0~${size-1}
  * @param {AnyColor} sourceColor - 源色
  * @param {number} size - 色阶数量
- * @param options
+ * @param {PaletteOptions<OutColorTag>} [options] - 调色板选项
  * @returns {ColorTagToColorType<OutColorTag>} - 调色板颜色，和源色类型一致
  */
 export function getPaletteColor<OutColorTag extends ColorTag = 'hex'>(
@@ -46,7 +46,7 @@ export function getPaletteColor<OutColorTag extends ColorTag = 'hex'>(
  * @template OutColorTag - 输出的颜色标签类型，默认为hex
  * @param {AnyColor} sourceColor - 源颜色
  * @param {number} size - 色阶的数量
- * @param {Object} options - 调色板选项
+ * @param {PaletteOptions<OutColorTag>} [options] - 调色板选项
  * @returns {Array<ColorTagToColorType<OutColorTag>>} - 调色板色阶数组(黑->源->白)，色阶总数为奇数时最中间的色阶为源色
  */
 export function makePaletteArray<OutColorTag extends ColorTag = 'hex'>(
