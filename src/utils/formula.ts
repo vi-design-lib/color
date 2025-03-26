@@ -212,10 +212,9 @@ export class HslFormula {
    * 调整HSL颜色以获得更好的感知均匀性
    *
    * @param { HSLObject } hsl - HSL颜色对象
-   * @param {boolean} adjustLightness - 是否调整亮度
    * @returns { HSLObject } - 调整后的HSL颜色对象
    */
-  static perceptuallyUniform(hsl: HSLObject, adjustLightness: boolean = true): HSLObject {
+  static perceptuallyUniform(hsl: HSLObject): HSLObject {
     // 动态调整饱和度
     const s = this.dynamicSaturation(hsl.h, hsl.s)
 

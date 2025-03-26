@@ -1,7 +1,7 @@
 import type { AnyColor, ColorTag, ColorToColorType, RGBObject } from '../types.js'
 import { anyColorToHslObject, anyColorToRgbObject, anyColorToTargetColor } from './conversion.js'
 import { capitalize, getColorType } from './tools.js'
-import type { ColorSchemeRoles } from '../scheme/types/index.js'
+import type { ColorSchemeRoles } from '../scheme/index.js'
 
 /**
  * 将RGB颜色值转换为标准化颜色值

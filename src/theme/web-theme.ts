@@ -1,8 +1,11 @@
-import { Scheme } from '../scheme/index.js'
+import {
+  type ColorSchemeRoles,
+  Scheme,
+  type SchemeOptions,
+  type TonalKeys
+} from '../scheme/index.js'
 import { anyColorToHexColor, camelToKebab } from '../utils/index.js'
 import { BaseTheme, type BaseThemeOptions, type Brightness, type ThemeMode } from './base-theme.js'
-import type { ColorSchemeRoles } from '../scheme/types/index.js'
-import type { SchemeOptions, TonalKeys } from '../scheme/types.js'
 import type { AnyColor, ColorTag } from '../types.js'
 
 export interface WebThemeOptions<OutColorTag extends ColorTag, CustomKeys extends string>

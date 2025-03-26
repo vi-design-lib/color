@@ -1,6 +1,6 @@
 import type { AnyColor, ColorTag } from '../types.js'
 import { Scheme } from './scheme.js'
-import type { SchemeOptions } from './types.js'
+import type { SchemeOptions } from './types/index.js'
 
 /**
  * 创建主题

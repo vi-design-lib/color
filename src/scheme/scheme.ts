@@ -10,19 +10,17 @@ import {
 } from '../utils/index.js'
 import { Palette } from '../palette/index.js'
 import type {
-  ColorSchemePalettes,
-  ColorSchemeRoles,
-  NeutralColorRoles,
-  PaletteExtractionColorRules
-} from './types/index.js'
-import type {
   BaseColorScheme,
   BaseSchemeOptions,
   BrightnessScheme,
+  ColorSchemePalettes,
+  ColorSchemeRoles,
   ColorSchemeTonal,
+  NeutralColorRoles,
+  PaletteExtractionColorRules,
   SchemeOptions,
   Tone
-} from './types.js'
+} from './types/index.js'
 
 /**
  * 配色方案

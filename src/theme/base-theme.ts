@@ -1,8 +1,14 @@
 import type { AnyColor, ColorTag, ColorTagToColorType } from '../types.js'
-import { createScheme, Scheme } from '../scheme/index.js'
+import type { ColorSchemeRoles } from '../scheme/index.js'
+import {
+  createScheme,
+  type InherentColorKeys,
+  Scheme,
+  type SchemeOptions,
+  type TonalKeys,
+  type Tone
+} from '../scheme/index.js'
 import { ref, type Ref, type RefFactory } from './common.js'
-import type { InherentColorKeys, SchemeOptions, TonalKeys, Tone } from '../scheme/types.js'
-import type { ColorSchemeRoles } from '../scheme/types/index.js'
 
 /**
  * 亮度

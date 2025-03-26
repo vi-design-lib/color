@@ -1,5 +1,5 @@
-import type { InherentColorKeys } from '../types.js'
 import type { AnyColor, ColorTag, ColorTagToColorType } from '../../types.js'
+import type { InherentColorKeys } from './scheme.js'
 
 /**
  * 中性调色板生成的角色
