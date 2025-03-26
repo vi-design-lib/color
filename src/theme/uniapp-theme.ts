@@ -1,12 +1,7 @@
 // @ts-ignore
 import { ref } from 'vue'
 import { BaseTheme, type BaseThemeOptions, type Brightness, type ThemeMode } from './base-theme.js'
-import type { AnyColor, HexColor } from '../types.js'
-
-export type UniAppThemeOptions<T extends AnyColor, CustomKeys extends string> = Omit<
-  BaseThemeOptions<T, CustomKeys>,
-  'refFactory'
->
+import type { AnyColor, ColorTag } from '../types.js'
 
 /**
  * uni-app主题
@@ -33,20 +28,15 @@ export type UniAppThemeOptions<T extends AnyColor, CustomKeys extends string> = 
  * </view>
  * ```
  */
-export class UniAppTheme<
-  T extends AnyColor = HexColor,
-  CustomKeys extends string = never
-> extends BaseTheme<T, CustomKeys> {
-  /**
-   * 单例
-   */
-  static readonly instance: UniAppTheme | undefined
+export class UniAppTheme<OutColorTag extends ColorTag, CustomKeys extends string> extends BaseTheme<
+  OutColorTag,
+  CustomKeys
+> {
   /**
    * @inheritDoc
    */
-  constructor(mainColor: T, options: UniAppThemeOptions<T, CustomKeys> = {}) {
-    // @ts-ignore
-    options.refProxy = ref
+  constructor(mainColor: AnyColor, options: BaseThemeOptions<OutColorTag, CustomKeys> = {}) {
+    options.refFactory ??= ref
     super(mainColor, options)
     uni.onThemeChange(({ theme }) => {
       // 如果是system模式，则切换主题
@@ -89,16 +79,16 @@ export class UniAppTheme<
  * 仅支持 vue3 模式，兼容微信小程序 和 App vue
  *
  * @param { AnyColor } mainColor - 主色
- * @param { UniAppThemeOptions } [options] - 选项
+ * @param { BaseThemeOptions } [options] - 可选配置选项
  * @param { Object } options.customColorScheme - 自定义基准配色
  * @param { string } [options.cacheKey=_CACHE_THEME_MODE] - 自定义缓存名称
  * @param { ComputeFormula } [options.formula=triadic] - 配色方案算法
  * @param { number } [options.angle] - 色相偏移角度
  * @returns {UniAppTheme} - 主题实例
  */
-export function createUniTheme<T extends AnyColor, CustomKeys extends string>(
-  mainColor: T,
-  options?: UniAppThemeOptions<T, CustomKeys>
-): UniAppTheme<T, CustomKeys> {
-  return new UniAppTheme(mainColor, options as UniAppThemeOptions<T, CustomKeys>)
+export function createUniTheme<OutColorTag extends ColorTag, CustomKeys extends string>(
+  mainColor: AnyColor,
+  options?: BaseThemeOptions<OutColorTag, CustomKeys>
+): UniAppTheme<OutColorTag, CustomKeys> {
+  return new UniAppTheme(mainColor, options as BaseThemeOptions<OutColorTag, CustomKeys>)
 }
