@@ -3,12 +3,13 @@ import type {
   ColorSchemeKeys,
   ColorSchemeRoles,
   ColorToColorType,
-  ExpandColorSchemeRoles,
+  DeepPartial,
+  ExpandColorRoles,
+  PaletteExtractionColorRules,
   TonalKeys,
   Tone
 } from '../types.js'
-import { createScheme, Scheme } from '../scheme/index.js'
-import type { ComputeFormula } from '../utils/index.js'
+import { type ColorSchemeOptions, createScheme, Scheme } from '../scheme/index.js'
 import { ref, type Ref, type RefFactory } from './common.js'
 
 /**
@@ -19,15 +20,8 @@ export type Brightness = 'light' | 'dark'
  * 主题模式
  */
 export type ThemeMode = Brightness | 'system'
-export interface BaseThemeOptions<T extends AnyColor, CustomKeys extends string> {
-  /**
-   * 自定义颜色方案
-   *
-   * 如果和{@linkcode ColorSchemeKeys}配色重名，则可以覆盖配色方案
-   *
-   * @default {}
-   */
-  customColorScheme?: Record<CustomKeys, ColorToColorType<T>>
+export interface BaseThemeOptions<T extends AnyColor, CustomKeys extends string>
+  extends ColorSchemeOptions<T, CustomKeys> {
   /**
    * 缓存主题模式的key
    *
@@ -42,16 +36,6 @@ export interface BaseThemeOptions<T extends AnyColor, CustomKeys extends string>
    * @default ref
    */
   refFactory?: RefFactory
-  /**
-   * 配色算法
-   *
-   * @default 'triadic'
-   */
-  formula?: ComputeFormula
-  /**
-   * 色相偏移角度
-   */
-  angle?: number
   /**
    * 默认主题模式
    */
@@ -74,7 +58,7 @@ export abstract class BaseTheme<T extends AnyColor, CustomKeys extends string> {
   // 主题模式
   private _mode: Ref<ThemeMode>
   // 颜色方案
-  private _scheme: Ref<Scheme<ColorToColorType<T>>>
+  private _scheme: Ref<Scheme<T>>
   /**
    * 缓存名称
    */
@@ -85,6 +69,14 @@ export abstract class BaseTheme<T extends AnyColor, CustomKeys extends string> {
    * @private
    */
   public readonly defaultMode: 'system'
+  /**
+   * 暗色模式配色方案规则
+   */
+  public readonly darkRoleRule: DeepPartial<PaletteExtractionColorRules> | undefined
+  /**
+   * 亮色模式配色方案规则
+   */
+  public readonly lightRoleRule: DeepPartial<PaletteExtractionColorRules> | undefined
 
   /**
    * Theme构造函数
@@ -102,13 +94,17 @@ export abstract class BaseTheme<T extends AnyColor, CustomKeys extends string> {
   protected constructor(mainColor: T, options?: BaseThemeOptions<T, CustomKeys>) {
     this.cacheKey = options?.cacheKey || '_CACHE_THEME_MODE'
     this.defaultMode = options?.defaultMode || 'system'
+    this.darkRoleRule = options?.darkRoleRule
+    this.lightRoleRule = options?.lightRoleRule
     const refProxy = options?.refFactory || ref
     this._mode = refProxy(this.getCacheThemeMode() || this.defaultMode)
     this._scheme = refProxy(
       createScheme(mainColor, {
         customColorScheme: options?.customColorScheme,
         formula: options?.formula,
-        angle: options?.angle
+        angle: options?.angle,
+        darkRoleRule: options?.darkRoleRule,
+        lightRoleRule: options?.lightRoleRule
       })
     )
   }
@@ -176,7 +172,7 @@ export abstract class BaseTheme<T extends AnyColor, CustomKeys extends string> {
   /**
    * 配色方案实例
    */
-  get scheme(): Readonly<Scheme<ColorToColorType<T>>> {
+  get scheme(): Readonly<Scheme<T>> {
     return this._scheme.value
   }
 
@@ -186,7 +182,7 @@ export abstract class BaseTheme<T extends AnyColor, CustomKeys extends string> {
    * @param role
    */
   role(
-    role: keyof ColorSchemeRoles<T> | keyof ExpandColorSchemeRoles<ColorToColorType<T>, CustomKeys>
+    role: keyof ColorSchemeRoles<T> | keyof ExpandColorRoles<T, CustomKeys>
   ): ColorToColorType<T> {
     return this.scheme[this.bright].roles[role as keyof ColorSchemeRoles<T>]
   }
