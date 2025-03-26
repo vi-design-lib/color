@@ -1,18 +1,12 @@
-import type {
-  AnyColor,
-  ColorSchemeRoles,
-  ColorToColorType,
-  ExpandColorSchemeRoles,
-  HexColor,
-  TonalKeys,
-  Tone
-} from '../types.js'
 import { Scheme } from '../scheme/index.js'
 import { anyColorToHexColor, camelToKebab } from '../utils/index.js'
 import { BaseTheme, type BaseThemeOptions, type Brightness, type ThemeMode } from './base-theme.js'
+import type { ColorSchemeRoles } from '../scheme/types/index.js'
+import type { SchemeOptions, TonalKeys } from '../scheme/types.js'
+import type { AnyColor, ColorTag } from '../types.js'
 
-export interface WebThemeOptions<T extends AnyColor, CustomKeys extends string>
-  extends BaseThemeOptions<T, CustomKeys> {
+export interface WebThemeOptions<OutColorTag extends ColorTag, CustomKeys extends string>
+  extends BaseThemeOptions<OutColorTag, CustomKeys> {
   /**
    * css变量前缀
    *
@@ -60,9 +54,9 @@ export interface WebThemeOptions<T extends AnyColor, CustomKeys extends string>
  * @template CustomKeys - 自定义配色名称
  */
 export class WebTheme<
-  T extends AnyColor = HexColor,
+  OutColorTag extends ColorTag,
   CustomKeys extends string = never
-> extends BaseTheme<T, CustomKeys> {
+> extends BaseTheme<OutColorTag, CustomKeys> {
   // 样式表
   private readonly _sheet: CSSStyleSheet | undefined
   /**
@@ -107,12 +101,19 @@ export class WebTheme<
    * @param { ComputeFormula } [options.formula=triadic] - 配色方案算法
    * @param { number } [options.angle] - 色相偏移角度
    */
-  constructor(mainColor: T, options?: WebThemeOptions<T, CustomKeys>) {
-    super(mainColor, options)
-    this.attribute = options?.attribute || 'theme'
-    this.varPrefix = options?.varPrefix || '--color-'
-    this.varSuffix = options?.varSuffix || ''
-    this.ssr = options?.ssr || false
+  constructor(mainColor: AnyColor, options?: WebThemeOptions<OutColorTag, CustomKeys>) {
+    const {
+      attribute = 'theme',
+      varPrefix = '--color-',
+      varSuffix = '',
+      ssr = false,
+      ...rest
+    } = options || {}
+    super(mainColor, rest)
+    this.attribute = attribute
+    this.varPrefix = varPrefix
+    this.varSuffix = varSuffix
+    this.ssr = ssr
     if (!this._isBrowser) {
       document.documentElement.setAttribute(options?.attribute || 'theme', this.bright)
       this._sheet = WebTheme.createStyleSheet()
@@ -158,10 +159,10 @@ export class WebTheme<
    * @inheritDoc
    */
   public override changeColorScheme(
-    primary: ColorToColorType<T>,
-    customColorScheme?: Record<CustomKeys, ColorToColorType<T>>
+    mainColor: AnyColor,
+    options?: SchemeOptions<OutColorTag, CustomKeys>
   ) {
-    super.changeColorScheme(primary, customColorScheme)
+    super.changeColorScheme(mainColor, options)
     this.updateStyles()
   }
 
@@ -179,13 +180,7 @@ export class WebTheme<
    * @param {string} key - 配色角色key、调色板key
    * @return {string} css变量，已包含var(...)
    */
-  cssVar(
-    key:
-      | keyof ColorSchemeRoles<T>
-      | keyof ExpandColorSchemeRoles<T, CustomKeys>
-      | TonalKeys
-      | `${CustomKeys}-${Tone}`
-  ): `var(${string})` {
+  cssVar(key: keyof ColorSchemeRoles<CustomKeys, never> | TonalKeys<CustomKeys>): `var(${string})` {
     return `var(${this.varName(key)})`
   }
 
@@ -209,7 +204,10 @@ export class WebTheme<
     while (this._sheet.cssRules.length > 0) {
       this._sheet.deleteRule(0)
     }
-    const generateRoleStyles = (scheme: Scheme<AnyColor>, theme: 'dark' | 'light') => {
+    const generateRoleStyles = (
+      scheme: Scheme<OutColorTag, CustomKeys>,
+      theme: 'dark' | 'light'
+    ) => {
       return Object.keys(scheme[theme].roles)
         .map((rule) => {
           const color = scheme[theme].roles[rule as 'main']
@@ -218,7 +216,10 @@ export class WebTheme<
         .join('\n')
     }
 
-    const generateTonalStyles = (scheme: Scheme<AnyColor>, theme: 'dark' | 'light') => {
+    const generateTonalStyles = (
+      scheme: Scheme<OutColorTag, CustomKeys>,
+      theme: 'dark' | 'light'
+    ) => {
       return Object.entries(scheme[theme].tonal)
         .map(([key, value]) => {
           return `${this.varName(key)}: ${anyColorToHexColor(value)};`
@@ -289,9 +290,9 @@ export class WebTheme<
  * @param { Brightness|boolean } [options.ssr] - 服务端渲染时的系统主题亮度
  * @returns {WebTheme} - 主题实例
  */
-export function createWebTheme<T extends AnyColor, CustomKeys extends string>(
-  mainColor: T,
-  options?: WebThemeOptions<T, CustomKeys>
-): WebTheme<T, CustomKeys> {
+export function createWebTheme<OutColorTag extends ColorTag, CustomKeys extends string>(
+  mainColor: AnyColor,
+  options?: WebThemeOptions<OutColorTag, CustomKeys>
+): WebTheme<OutColorTag, CustomKeys> {
   return new WebTheme(mainColor, options)
 }
