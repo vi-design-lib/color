@@ -117,6 +117,12 @@ type ExpandColorRoles<KS extends string, ColorType extends AnyColor> = {
 } & {
   [K in `on${Capitalize<KS>}`]: ColorType
 } & {
+  [K in `${KS}Hover`]: ColorType
+} & {
+  [K in `${KS}Active`]: ColorType
+} & {
+  [K in `${KS}Disabled`]: ColorType
+} & {
   [K in `${KS}Container`]: ColorType
 } & {
   [K in `on${Capitalize<KS>}Container`]: ColorType
@@ -129,7 +135,7 @@ export type ColorSchemeRoles<
   CustomKeys extends string,
   OutColorTag extends ColorTag
 > = ExpandColorRoles<
-  CustomKeys | Exclude<InherentColorKeys, 'neutral'>,
+  Exclude<CustomKeys, 'neutral'> | Exclude<InherentColorKeys, 'neutral'>,
   ColorTagToColorType<OutColorTag>
 > &
   NeutralColorRoles<ColorTagToColorType<OutColorTag>>
