@@ -1,6 +1,7 @@
-import type { AnyColor, ColorSchemeRoles, ColorToColorType, RGBObject } from '../types.js'
+import type { AnyColor, ColorTag, ColorToColorType, RGBObject } from '../types.js'
 import { anyColorToHslObject, anyColorToRgbObject, anyColorToTargetColor } from './conversion.js'
 import { capitalize, getColorType } from './tools.js'
+import type { ColorSchemeRoles } from '../scheme/types/index.js'
 
 /**
  * 将RGB颜色值转换为标准化颜色值
@@ -58,32 +59,32 @@ export function contrastRatio(color1: AnyColor, color2: AnyColor): number {
  * @param {Record<string, number>} scheme - 颜色方案
  * @param {string[]} [customColorKeys] - 自定义颜色的键，没有则不传入
  */
-export function schemeContrastRation<T extends ColorSchemeRoles<AnyColor>>(
-  scheme: T,
+export function schemeContrastRation(
+  scheme: ColorSchemeRoles<string, ColorTag>,
   customColorKeys: string[] = []
 ): Record<string, number> {
   const roles: string[] = ['main', 'aux', 'extra', 'warning', 'error'].concat(customColorKeys)
   const result: Record<string, number> = {}
   for (const role of roles) {
     const caseRole = capitalize(role)
-    const roleColor = scheme[role as keyof T] as AnyColor
-    const onRoleColor = scheme[`on${caseRole}` as keyof T] as AnyColor
+    const roleColor = scheme[role]
+    const onRoleColor = scheme[`on${caseRole}`]
     result[role] = contrastRatio(roleColor, onRoleColor)
 
-    const roleHoverColor = scheme[`${role}Hover` as keyof T] as AnyColor
-    const onRoleHoverColor = scheme[`on${caseRole}Hover` as keyof T] as AnyColor
+    const roleHoverColor = scheme[`${role}Hover`]
+    const onRoleHoverColor = scheme[`on${caseRole}Hover`]
     result[`${role}Hover`] = contrastRatio(roleHoverColor, onRoleHoverColor)
 
-    const roleActiveColor = scheme[`${role}Active` as keyof T] as AnyColor
-    const onRoleActiveColor = scheme[`on${caseRole}Active` as keyof T] as AnyColor
+    const roleActiveColor = scheme[`${role}Active`]
+    const onRoleActiveColor = scheme[`on${caseRole}Active`]
     result[`${role}Active`] = contrastRatio(roleActiveColor, onRoleActiveColor)
 
-    const roleDisabledColor = scheme[`${role}Disabled` as keyof T] as AnyColor
-    const onRoleDisabledColor = scheme[`on${caseRole}Disabled` as keyof T] as AnyColor
+    const roleDisabledColor = scheme[`${role}Disabled`]
+    const onRoleDisabledColor = scheme[`on${caseRole}Disabled`]
     result[`${role}Disabled`] = contrastRatio(roleDisabledColor, onRoleDisabledColor)
 
-    const containerColor = scheme[`${role}Container` as keyof T] as AnyColor
-    const onContainerColor = scheme[`on${caseRole}Container` as keyof T] as AnyColor
+    const containerColor = scheme[`${role}Container`]
+    const onContainerColor = scheme[`on${caseRole}Container`]
     result[`${role}Container`] = contrastRatio(containerColor, onContainerColor)
   }
   return result
@@ -145,5 +146,5 @@ export function adjustForContrast<T extends AnyColor>(
     }
   }
 
-  return anyColorToTargetColor(fgHSL, type, 'HSL') as any
+  return anyColorToTargetColor(fgHSL, type) as any
 }
