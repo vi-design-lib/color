@@ -170,6 +170,7 @@ export class Scheme<OutColorTag extends ColorTag = 'hex', CustomKeys extends str
   get dark() {
     return this.bright.dark
   }
+
   /**
    * 获取浅色模式下的颜色角色
    */
