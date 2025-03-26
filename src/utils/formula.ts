@@ -1,6 +1,6 @@
 import type { HSLObject } from '../types.js'
 
-type Hues = [number, number, number]
+export type Hues = [number, number, number]
 /**
  * 计算公式：
  * - triadic：三分色，默认偏移为60度
@@ -211,16 +211,28 @@ export class HslFormula {
    *
    * 调整HSL颜色以获得更好的感知均匀性
    *
-   * @param h - 色相
-   * @param s - 饱和度
-   * @param l - 亮度
+   * @param { HSLObject } hsl - HSL颜色对象
+   * @param {boolean} adjustLightness - 是否调整亮度
+   * @returns { HSLObject } - 调整后的HSL颜色对象
    */
-  static perceptuallyUniform(h: number, s: number, l: number): HSLObject {
-    // 调整亮度以获得更好的感知均匀性
-    // 中间亮度区域(0.4-0.6)需要更精细的调整
+  static perceptuallyUniform(hsl: HSLObject, adjustLightness: boolean = true): HSLObject {
     // 动态调整饱和度
-    s = this.dynamicSaturation(h, s)
+    const s = this.dynamicSaturation(hsl.h, hsl.s)
 
+    // 调整亮度以获得更好的感知均匀性
+    const l = this.dynamicLightness(hsl.l)
+
+    return { h: hsl.h, s, l }
+  }
+
+  /**
+   * 动态调整亮度
+   *
+   * @param { number } l - 亮度值
+   * @returns { number }
+   */
+  static dynamicLightness(l: number): number {
+    // 中间亮度区域(0.4-0.6)需要更精细的调整
     // 亮度感知调整
     if (l > 0.4 && l < 0.6) {
       // 中间亮度区域使用更精细的调整
@@ -232,7 +244,6 @@ export class HslFormula {
       // 亮色区域压缩亮度范围，避免过亮
       l = 0.6 + (l - 0.6) * 0.8
     }
-
-    return { h, s, l }
+    return l
   }
 }
