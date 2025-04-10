@@ -22,7 +22,7 @@ import type { SchemeOptions } from './types/index.js'
  */
 export function createScheme<
   OutColorTag extends ColorTag = 'hex',
-  CustomKeys extends string = never
+  CustomKeys extends string = string
 >(
   mainColor: AnyColor,
   options?: SchemeOptions<OutColorTag, CustomKeys>
