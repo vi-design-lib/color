@@ -13,6 +13,7 @@ import type {
   BaseColorScheme,
   BaseSchemeOptions,
   BrightnessScheme,
+  ColorScheme,
   ColorSchemePalettes,
   ColorSchemeRoles,
   ColorSchemeTonal,
@@ -168,7 +169,7 @@ export class Scheme<OutColorTag extends ColorTag = 'hex', CustomKeys extends str
    *
    * @returns {ColorScheme<CustomKeys, OutColorTag>} 亮色模式下的配色方案
    */
-  get light() {
+  get light(): ColorScheme<CustomKeys, OutColorTag> {
     return this.bright.light
   }
 
@@ -177,7 +178,7 @@ export class Scheme<OutColorTag extends ColorTag = 'hex', CustomKeys extends str
    *
    * @returns {ColorScheme<CustomKeys, OutColorTag>} 暗色模式下的配色方案
    */
-  get dark() {
+  get dark(): ColorScheme<CustomKeys, OutColorTag> {
     return this.bright.dark
   }
 
@@ -186,7 +187,7 @@ export class Scheme<OutColorTag extends ColorTag = 'hex', CustomKeys extends str
    *
    * @returns {ColorSchemeRoles<CustomKeys, OutColorTag>} 亮色模式下的颜色角色配置
    */
-  get lightRoles() {
+  get lightRoles(): ColorSchemeRoles<CustomKeys, OutColorTag> {
     return this.bright.light.roles
   }
 
@@ -195,7 +196,7 @@ export class Scheme<OutColorTag extends ColorTag = 'hex', CustomKeys extends str
    *
    * @returns {ColorSchemeRoles<CustomKeys, OutColorTag>} 暗色模式下的颜色角色配置
    */
-  get darkRoles() {
+  get darkRoles(): ColorSchemeRoles<CustomKeys, OutColorTag> {
     return this.bright.dark.roles
   }
 
@@ -204,7 +205,7 @@ export class Scheme<OutColorTag extends ColorTag = 'hex', CustomKeys extends str
    *
    * @returns {ColorSchemeTonal<CustomKeys, OutColorTag>} 亮色模式下的色调配色方案
    */
-  get lightTonal() {
+  get lightTonal(): ColorSchemeTonal<CustomKeys, OutColorTag> {
     return this.bright.light.tonal
   }
 
@@ -213,7 +214,7 @@ export class Scheme<OutColorTag extends ColorTag = 'hex', CustomKeys extends str
    *
    * @returns {ColorSchemeTonal<CustomKeys, OutColorTag>} 暗色模式下的色调配色方案
    */
-  get darkTonal() {
+  get darkTonal(): ColorSchemeTonal<CustomKeys, OutColorTag> {
     return this.bright.dark.tonal
   }
 
@@ -502,7 +503,7 @@ export class Scheme<OutColorTag extends ColorTag = 'hex', CustomKeys extends str
    * @template CustomKeys - 自定义颜色键类型
    * @template OutColorTag - 输出的颜色标签类型
    * @param {ColorSchemePalettes<CustomKeys, OutColorTag>} palettes - 色调调色板集合
-   * @param {'light' | 'dark'} mode - 主题模式，'light'表示亮色模式，'dark'表示暗色模式
+   * @param {'light' | 'dark'} mode - 主题模式，'light' 表示亮色模式，'dark' 表示暗色模式
    * @returns {ColorSchemeTonal<CustomKeys, OutColorTag>} 生成的色调配色方案
    */
   static createColorSchemeTonal<CustomKeys extends string, OutColorTag extends ColorTag>(
