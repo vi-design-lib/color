@@ -70,7 +70,7 @@ export interface StaticThemeOptions {
  *
  * @see https://color.visdev.cn 主题色生成器
  */
-export class WebThemeManger {
+export class StaticThemeManger {
   /**
    * 主题模式
    *
@@ -171,7 +171,7 @@ export class WebThemeManger {
    * @description 获取当前设置的主题模式
    * @returns {ThemeMode} 当前的主题模式
    */
-  get mode() {
+  get mode(): ThemeMode {
     return this._mode.value
   }
 
@@ -181,7 +181,7 @@ export class WebThemeManger {
    * @description 获取在HTML根元素上设置的属性名
    * @returns {string} HTML属性名
    */
-  get attribute() {
+  get attribute(): string {
     return this.config.attribute
   }
 
@@ -191,7 +191,7 @@ export class WebThemeManger {
    * @description 获取用于在本地存储中保存主题模式的键名
    * @returns {string} 缓存键名
    */
-  get cacheKey() {
+  get cacheKey(): string {
     return this.config.cacheKey
   }
 
@@ -201,7 +201,7 @@ export class WebThemeManger {
    * @description 获取当未设置主题模式时使用的默认值
    * @returns {ThemeMode} 默认的主题模式
    */
-  get defaultMode() {
+  get defaultMode(): ThemeMode {
     return this.config.defaultMode
   }
 
@@ -252,7 +252,7 @@ export class WebThemeManger {
 }
 
 /**
- * 创建Web主题管理器
+ * 创建静态主题管理器
  *
  * @description 创建一个Web环境下的主题管理器实例，支持服务端渲染
  * 管理器只具备管理主题模式的功能，不具备生成主题样式的功能，需搭配主题CSS样式配合使用
@@ -263,12 +263,12 @@ export class WebThemeManger {
  * @param {RefFactory} [options.refFactory] - 自定义ref函数，用于创建响应式数据
  * @param {ThemeMode} [options.defaultMode] - 默认主题模式，当未设置主题模式时使用
  * @param {Brightness|false} [options.ssr] - 服务端渲染时的系统主题亮度
- * @returns {WebThemeManger} 主题管理器实例
+ * @returns {StaticThemeManger} 主题管理器实例
  * @param {string} [options.attribute] - 自定义属性名
  * @param {RefFactory} [options.refFactory] - 自定义ref函数
  * @param {ThemeMode} [options.defaultMode] - 默认主题模式
- * @returns {WebThemeManger} - 主题管理器实例
+ * @returns {StaticThemeManger} - 主题管理器实例
  */
-export function createStaticTheme(options?: StaticThemeOptions): WebThemeManger {
-  return new WebThemeManger(options)
+export function createStaticTheme(options?: StaticThemeOptions): StaticThemeManger {
+  return new StaticThemeManger(options)
 }
