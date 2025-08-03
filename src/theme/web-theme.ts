@@ -247,14 +247,6 @@ export class WebTheme<
   /**
    * @inheritDoc
    */
-  /**
-   * 获取系统亮度
-   *
-   * @description 获取当前系统的亮度模式设置，在非浏览器环境下返回ssr配置的值
-   * @inheritDoc
-   * @override
-   * @returns {Brightness} 系统的亮度模式
-   */
   override get systemBright(): Brightness {
     if (!this._isBrowser) return this.ssr === 'dark' ? 'dark' : 'light'
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
@@ -262,15 +254,6 @@ export class WebTheme<
 
   /**
    * @inheritDoc
-   */
-  /**
-   * 设置主题模式
-   *
-   * @description 设置当前主题的模式，并在浏览器环境下更新HTML属性和样式表
-   * @inheritDoc
-   * @override
-   * @param {ThemeMode} mode - 要设置的主题模式
-   * @returns {boolean} 是否成功更新了主题模式
    */
   public override setMode(mode: ThemeMode): boolean {
     const result = super.setMode(mode)
@@ -284,14 +267,6 @@ export class WebTheme<
   /**
    * @inheritDoc
    */
-  /**
-   * 获取缓存的主题模式
-   *
-   * @description 从localStorage中获取之前缓存的主题模式
-   * @inheritDoc
-   * @override
-   * @returns {ThemeMode | null} 缓存的主题模式，如果没有缓存或非浏览器环境则返回null
-   */
   public override getCacheThemeMode(): ThemeMode | null {
     if (!this._isBrowser) return null
     return localStorage.getItem(this.cacheKey) as ThemeMode
@@ -299,13 +274,6 @@ export class WebTheme<
 
   /**
    * @inheritDoc
-   */
-  /**
-   * 清除缓存
-   *
-   * @description 清除localStorage中的主题模式缓存
-   * @inheritDoc
-   * @override
    */
   public override clearCache() {
     if (!this._isBrowser) return
