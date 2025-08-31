@@ -53,7 +53,7 @@ export interface WebThemeOptions<OutColorTag extends ColorTag, CustomKeys extend
  *
  * 依赖浏览器端`CSSStyleSheet`和`matchMedia`特性，自动生成css变量样式表，支持动态切换主题。
  *
- * @template T - 主题色类型
+ * @template OutColorTag - 输出颜色类型
  * @template CustomKeys - 自定义配色名称
  */
 export class WebTheme<
@@ -288,6 +288,8 @@ export class WebTheme<
  * 如果你使用的是 `Vitarx` 或 `Vue3` 框架，则指定 `options.refFactory` 为框架提供的 `ref` 函数，
  * 这样可以让 role 和 tonal 获取的颜色具有响应性
  *
+ * @template OutColorTag - 输出的颜色类型
+ * @template CustomKeys - 自定义配色角色key
  * @param {AnyColor} mainColor - 主色
  * @param {WebThemeOptions<OutColorTag, CustomKeys>} [options] - 配置选项
  * @param {Record<CustomKeys, AnyColor>} [options.customColor] - 自定义基准配色
