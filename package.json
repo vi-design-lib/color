@@ -1,6 +1,6 @@
 {
   "name": "@vi-design/color",
-  "version": "2.0.0-beta.3",
+  "version": "2.0.0-beta.4",
   "description": "@vi-design/color是用TS编写的配色方案库，帮助开发者快速创建主题配色方案。",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -12,8 +12,8 @@
     "theme"
   ],
   "license": "MIT",
-  "unpkg": "dist/color.umd.js",
-  "jsdelivr": "dist/color.umd.js",
+  "unpkg": "./dist/color.umd.js",
+  "jsdelivr": "./dist/color.umd.js",
   "exports": {
     ".": {
       "require": {
@@ -48,7 +48,7 @@
     "@dcloudio/types": "^3.4.14",
     "prettier": "^3.3.3",
     "typescript": "^5.5.3",
-    "vite": "^6.2.3"
+    "vite": "6.3.4"
   },
   "files": [
     "dist",
