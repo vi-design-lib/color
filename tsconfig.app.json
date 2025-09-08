@@ -1,6 +1,11 @@
 {
   "compilerOptions": {
     "useDefineForClassFields": true,
+    "lib": [
+      "ES2020",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "declaration": true,           // 生成 .d.ts 文件
     "declarationMap": false,        // 生成 .d.ts 的映射文件（可选）
     "outDir": "./dist",            // 输出目录
