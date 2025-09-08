@@ -43,7 +43,7 @@
     "./jsdelivr": "./dist/color.umd.js"
   },
   "scripts": {
-    "build": "rimraf dist && pnpm run test && tsc && vite build",
+    "build": "rimraf dist && pnpm run test && tsc -p tsconfig.app.json && vite build",
     "prepublishOnly": "npm run build",
     "push": "tsx scripts/release.ts",
     "test": "vitest run"
