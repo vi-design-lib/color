@@ -43,12 +43,16 @@
     "./jsdelivr": "./dist/color.umd.js"
   },
   "scripts": {
-    "build": "rimraf dist && vite build && tsc",
+    "build": "rimraf dist && pnpm run test && tsc && vite build",
     "prepublishOnly": "npm run build",
-    "push": "npm publish --access=public"
+    "push": "tsx scripts/release.ts",
+    "test": "vitest run"
   },
   "devDependencies": {
     "@dcloudio/types": "^3.4.14",
+    "@types/node": "^24.3.1",
+    "conventional-changelog": "^7.1.1",
+    "conventional-changelog-angular": "^8.0.0",
     "jsdom": "^26.1.0",
     "prettier": "^3.3.3",
     "typescript": "^5.5.3",
