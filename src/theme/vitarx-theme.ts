@@ -18,7 +18,7 @@ export interface ThemePluginOptions<OutColorTag extends ColorTag, CustomKeys ext
    * @description 作为整个配色方案的基础颜色
    * @default '#1677ff'
    */
-  mainColor?: AnyColor
+  primaryColor?: AnyColor
 }
 
 /**
@@ -71,9 +71,9 @@ export function theme<OutColorTag extends ColorTag, CustomKeys extends string>(
   options?: ThemePluginOptions<OutColorTag, CustomKeys>
 ): void {
   if (typeof app?.provide === 'function') {
-    const { mainColor = '#1677ff', ...config } = options || {}
-    if (!mainColor) throw new Error('main color is required')
-    const theme = new VitarxTheme(mainColor, config)
+    const { primaryColor = '#1677ff', ...config } = options || {}
+    if (!primaryColor) throw new Error('primaryColor is required')
+    const theme = new VitarxTheme(primaryColor, config)
     // 注入到应用中
     app.provide('theme', theme)
     app.register('theme', theme)

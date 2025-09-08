@@ -15,7 +15,7 @@ export interface WebThemeOptions<OutColorTag extends ColorTag, CustomKeys extend
    *
    * 默认是 `--color-`，生成的变量名会自动转换为`kebab-case`格式。
    *
-   * 例如：`--color-main: #ffffff;`
+   * 例如：`--color-primary: #ffffff;`
    *
    * > 注意：如果不需要前缀也必须传入`--`，因为css变量定义必须以`--`开头
    *
@@ -181,8 +181,8 @@ export class WebTheme<
    * 如果仅需要获取变量名，请使用`varName`方法
    *
    * @example
-   * theme.cssVar('main')
-   * theme.cssVar('main-10')
+   * theme.cssVar('primary')
+   * theme.cssVar('primary-10')
    * theme.cssVar('customColor')
    * theme.cssVar('customColor-10')
    *
@@ -219,7 +219,7 @@ export class WebTheme<
     ) => {
       return Object.keys(scheme[theme].roles)
         .map((rule) => {
-          const color = scheme[theme].roles[rule as 'main']
+          const color = scheme[theme].roles[rule as 'primary']
           return `${this.varName(rule)}: ${color};`
         })
         .join('\n')

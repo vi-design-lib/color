@@ -132,7 +132,7 @@ export class Scheme<OutColorTag extends ColorTag = 'hex', CustomKeys extends str
    * 根据提供的主色和配置选项创建一个完整的配色方案实例。
    * 构造过程会自动生成基准配色、调色板、色调调色板以及亮色/暗色模式下的角色配色。
    *
-   * @param {AnyColor} mainColor - 主色，作为整个配色方案的基础
+   * @param {AnyColor} primaryColor - 主色，作为整个配色方案的基础
    * @param {SchemeOptions<OutColorTag, CustomKeys>} [options] - 配置选项
    * @param {DeepPartial<PaletteExtractionColorRules>} [options.darkRoleRule=Scheme.darkRoleRule] - 暗色模式调色板取色规则
    * @param {DeepPartial<PaletteExtractionColorRules>} [options.lightRoleRule=Scheme.lightRoleRule] - 亮色模式调色板取色规则
@@ -141,10 +141,10 @@ export class Scheme<OutColorTag extends ColorTag = 'hex', CustomKeys extends str
    * @param {ComputeFormula} [options.formula='triadic'] - 计算辅助色的公式
    * @param {number} [options.angle] - 色相偏移角度
    */
-  constructor(mainColor: AnyColor, options?: SchemeOptions<OutColorTag, CustomKeys>) {
+  constructor(primaryColor: AnyColor, options?: SchemeOptions<OutColorTag, CustomKeys>) {
     const { darkRoleRule, lightRoleRule, ...rest } = options || {}
     // 创建基本配色方案
-    this.colors = Scheme.createBaseColorScheme(mainColor, rest)
+    this.colors = Scheme.createBaseColorScheme(primaryColor, rest)
     this.palettes = Scheme.colorSchemeToPalettes(this.colors)
     this.tonalPalettes = Scheme.colorSchemeToTonalPalettes(this.colors)
 
@@ -248,7 +248,7 @@ export class Scheme<OutColorTag extends ColorTag = 'hex', CustomKeys extends str
       colorScheme[colorSchemeKey as CustomKeys] = anyColorToHslObject(color)
     }
     // 获取主色的 HSL 对象
-    const primaryHsl = colorScheme.main || anyColorToHslObject(mainColor)
+    const primaryHsl = colorScheme.primary || anyColorToHslObject(mainColor)
     // 获取调整后的 HSL 值
     const { h, s, l } = primaryHsl
 
@@ -261,8 +261,8 @@ export class Scheme<OutColorTag extends ColorTag = 'hex', CustomKeys extends str
     const errorHue = colorScheme.error?.h || HslFormula.smartFunctionalHue('error', h)
 
     // 创建辅色和三级色
-    const auxHsl = { h: colorScheme.aux?.h, s, l } as HSLObject
-    const extraHsl = { h: colorScheme.extra?.h, s, l } as HSLObject
+    const auxHsl = { h: colorScheme.secondary?.h, s, l } as HSLObject
+    const extraHsl = { h: colorScheme.tertiary?.h, s, l } as HSLObject
     if (!auxHsl.h || !extraHsl.h) {
       const splitCompHues = this.computeAuxAndExtra(h, formula, angle, [
         successHue,
@@ -283,9 +283,9 @@ export class Scheme<OutColorTag extends ColorTag = 'hex', CustomKeys extends str
 
     // 合并配色方案
     Object.assign(colorScheme, {
-      main: primaryHsl,
-      aux: auxHsl,
-      extra: extraHsl,
+      primary: primaryHsl,
+      secondary: auxHsl,
+      tertiary: extraHsl,
       success: successHsl,
       warning: warningHsl,
       error: errorHsl,

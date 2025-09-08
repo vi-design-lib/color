@@ -54,9 +54,9 @@ export function theme<OutColorTag extends ColorTag, CustomKeys extends string>(
   options?: ThemePluginOptions<OutColorTag, CustomKeys>
 ): void {
   if (typeof app?.provide === 'function') {
-    const { mainColor = '#1677ff', ...config } = options || {}
-    if (!mainColor) throw new Error('main color is required')
-    const theme = new VueTheme(mainColor, config)
+    const { primaryColor = '#1677ff', ...config } = options || {}
+    if (!primaryColor) throw new Error('primaryColor is required')
+    const theme = new VueTheme(primaryColor, config)
     // 注入到应用中
     app.provide('theme', theme)
     app.config.globalProperties.$theme = theme

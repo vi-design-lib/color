@@ -56,7 +56,7 @@ yarn add @vi-design/color
     
     function App() {
       // 如果主题模式变化，或主题颜色变化，都会自动更新视图
-      return <div style={{color:theme.role('main')}}>Hello World</div>
+      return <div style={{color:theme.role('primary')}}>Hello World</div>
     }
     ```
 
@@ -210,7 +210,7 @@ const scheme = theme.scheme
 
 ```js
 // 获取主色
-const main = theme.role('main')
+const primary = theme.role('primary')
 // 获取背景色
 const background = theme.role('background')
 // 获取文本色
@@ -222,7 +222,7 @@ const text = theme.role('text')
 
 ```js
 // 获取主色的色调颜色
-const primary5 = theme.tonal('main', 5)
+const primary5 = theme.tonal('primary', 5)
 // 获取自定义颜色的色调
 const myColor3 = theme.tonal('myColor', 3)
 ```

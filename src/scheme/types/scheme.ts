@@ -104,18 +104,23 @@ export interface SchemeOptions<
 /**
  * 基准的配色方案键
  *
- * - `main`: 主要颜色
- * - `aux`: 辅助颜色
- * - `extra`: 额外的颜色
+ * 基础颜色层级：
+ * - `primary`: 主要颜色（一级颜色）
+ * - `secondary`: 次要颜色（二级颜色）
+ * - `tertiary`: 辅助颜色（三级颜色）
+ *
+ * 状态颜色：
  * - `success`: 成功颜色
  * - `warning`: 警告颜色
  * - `error`: 危险颜色
+ *
+ * 中性颜色：
  * - `neutral`: 中性颜色
  */
 export type InherentColorKeys =
-  | 'main'
-  | 'aux'
-  | 'extra'
+  | 'primary'
+  | 'secondary'
+  | 'tertiary'
   | 'success'
   | 'warning'
   | 'error'

@@ -63,7 +63,9 @@ export function schemeContrastRation(
   scheme: ColorSchemeRoles<string, ColorTag>,
   customColorKeys: string[] = []
 ): Record<string, number> {
-  const roles: string[] = ['main', 'aux', 'extra', 'warning', 'error'].concat(customColorKeys)
+  const roles: string[] = ['primary', 'secondary', 'tertiary', 'warning', 'error'].concat(
+    customColorKeys
+  )
   const result: Record<string, number> = {}
   for (const role of roles) {
     const caseRole = capitalize(role)

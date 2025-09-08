@@ -24,8 +24,8 @@ import type { AnyColor, ColorTag } from '../types.js'
  *
  * // 在模板中使用
  * <view :style="{
- *      backgroundColor: uni.$theme.role('main-container'),
- *      color: uni.$theme.role('on-main-container')
+ *      backgroundColor: uni.$theme.role('primary-container'),
+ *      color: uni.$theme.role('on-primary-container')
  *    }">
  *   主题色
  * </view>
