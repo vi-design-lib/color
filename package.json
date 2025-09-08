@@ -46,9 +46,11 @@
   },
   "devDependencies": {
     "@dcloudio/types": "^3.4.14",
+    "jsdom": "^26.1.0",
     "prettier": "^3.3.3",
     "typescript": "^5.5.3",
-    "vite": "6.3.4"
+    "vite": "6.3.4",
+    "vitest": "^3.2.4"
   },
   "files": [
     "dist",
