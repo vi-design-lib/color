@@ -16,6 +16,7 @@ pnpm-lock.yaml
 # Test
 test.ts
 test.html
+__snapshots__
 
 # Editor directories and files
 .vscode/*
