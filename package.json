@@ -9,7 +9,8 @@
   "keywords": [
     "vi-design-color",
     "@vi-design/color",
-    "theme"
+    "theme",
+    "color"
   ],
   "license": "MIT",
   "unpkg": "./dist/color.umd.js",
@@ -37,7 +38,9 @@
     "./theme/vue": {
       "types": "./dist/theme/vue-theme.d.ts",
       "default": "./dist/theme/vue-theme.js"
-    }
+    },
+    "./unpkg": "./dist/color.umd.js",
+    "./jsdelivr": "./dist/color.umd.js"
   },
   "scripts": {
     "build": "rimraf dist && vite build && tsc",
