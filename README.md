@@ -5,6 +5,7 @@
 ---
 
 ## 安装
+
 ```shell
 npm install @vi-design/color
 ```
@@ -14,6 +15,7 @@ npm install @vi-design/color
 ```shell
 yarn add @vi-design/color
 ```
+
 ## 文档
 
 [文档和主题生成器](https://color.visdev.cn/)
@@ -31,7 +33,7 @@ yarn add @vi-design/color
     import { createApp } from 'vitarx'
     import App from './App.js'
     
-    const app = createApp('#root').use(theme,{ mainColor:'#1677ff' }).render(App)
+    const app = createApp('#root').use(theme,{ pirmaryColor:'#1677ff' }).render(App)
     ```
 
 2. 通过es模块直接导出：
@@ -42,7 +44,10 @@ yarn add @vi-design/color
     import { createVitarxTheme } from '@vi-design/color/theme/vitarx';
     
     const theme = createVitarxTheme('#1677ff',{
-      myColor:'#ff5500'
+      customColor:{
+        myColor:'#ff5500'
+      },
+     // ...
     })
     
     export default theme
@@ -71,7 +76,7 @@ import { theme } from '@vi-design/color/theme/vue'; // 正确的包路径
 import { createApp } from 'vue'
 import App from './App.vue'
 
-const app = createApp(App).use(theme,{ mainColor:'#1677ff' }).mount('#app')
+const app = createApp(App).use(theme, { mainColor: '#1677ff' }).mount('#app')
 ```
 
 ### 在 [UniApp](https://uniapp.dcloud.net.cn/) 中使用
@@ -79,14 +84,15 @@ const app = createApp(App).use(theme,{ mainColor:'#1677ff' }).mount('#app')
 创建和挂载主题：
 
 ```vue
+
 <script>
   // App.vue
-  
+
   // 导入 theme
   import { createUniTheme } from '@vi-design/color/theme/uniapp'; // 正确的包路径
-  
+
   export default {
-    onLaunch(){
+    onLaunch() {
       // 在应用启动钩子中创建主题，并将其挂载到 uni.$theme 上
       uni.$theme = createUniTheme('#1677ff');
     }
@@ -110,7 +116,7 @@ interface Uni {
 ### 在任意运行在浏览器端的网页应用中使用
 
 1. es 模块方式：
-    
+
     ```js
     import { createWebTheme } from '@vi-design/color';
     const theme = createWebTheme('#1677ff');
@@ -144,7 +150,7 @@ interface Uni {
 仅 `VitarxTheme`、`VueTheme` 和 `WebTheme` 支持在CSS中使用主题变量，`UniAppTheme` 不支持此功能！
 
 ```css
-body{
+body {
   background-color: var(--color-background);
   color: var(--color-on-background);
 }
@@ -177,6 +183,7 @@ body{
 以下是主题实例提供的方法和属性：
 
 ### mode
+
 主题模式，支持`light`、`dark`和`system`三种模式。
 
 ```js
@@ -190,6 +197,7 @@ theme.setMode('dark')
 ```
 
 ### bright
+
 获取当前主题的亮度，返回`light`或`dark`。
 
 ```js
@@ -198,6 +206,7 @@ const bright = theme.bright
 ```
 
 ### scheme
+
 获取当前主题的配色方案实例。
 
 ```js
@@ -206,6 +215,7 @@ const scheme = theme.scheme
 ```
 
 ### role
+
 获取角色颜色，如主色、背景色、文本色等。
 
 ```js
@@ -218,6 +228,7 @@ const text = theme.role('text')
 ```
 
 ### tonal
+
 获取色调颜色，色调值范围为1-10。
 
 ```js
@@ -228,6 +239,7 @@ const myColor3 = theme.tonal('myColor', 3)
 ```
 
 ### changeColorScheme
+
 动态切换颜色方案。
 
 ```js
