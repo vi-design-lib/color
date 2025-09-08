@@ -6,14 +6,5 @@ mode.forEach((m) => {
   // 打印所有颜色的 HEX 值
   logColorsWithLabels(scheme as any)
 
-  console.log('')
+  console.log('-----------------------')
 })
-
-const s = {
-  primary: '#451FA8',
-  aux: '#BA0F8A',
-  minor: '#B04319',
-  warning: '#A46525',
-  error: '#B01919',
-  neutral: '#5D5573'
-}
