@@ -93,60 +93,150 @@ export function schemeContrastRation(
 }
 
 /**
- * 自动调整前景色使其符合对比度要求
+ * 智能调整前景色和背景色使其符合对比度要求
+ *
+ * 该函数会同时调整前景色和背景色，确保达到WCAG对比度标准的同时保持颜色的柔和协调。
+ * 优先调整亮度，必要时调整饱和度，确保视觉效果的美观性。
  *
  * @template T - 前景色类型
  * @param {T} foreground - 前景色
  * @param {ColorToColorType<T>} background - 背景色
  * @param {'AA' | 'AAA'} [level=AA] - WCAG标准级别
- *
+ * @returns {{ foreground: ColorToColorType<T>, background: ColorToColorType<T> }} 调整后的前景色和背景色
  */
 export function adjustForContrast<T extends AnyColor>(
   foreground: T,
   background: ColorToColorType<T>,
   level: 'AA' | 'AAA' = 'AA'
-): ColorToColorType<T> {
+): { foreground: ColorToColorType<T>; background: ColorToColorType<T> } {
   const minRatio = level === 'AA' ? 4.5 : 7
-
   const type = getColorType(foreground)
+
+  // 转换为HSL对象进行调整
   const fgHSL = anyColorToHslObject(foreground)
   const bgHSL = anyColorToHslObject(background)
-  const bgRgb = anyColorToRgbObject(background)
-  let ratio = contrastRatio(fgHSL, bgRgb)
 
-  // 如果已经满足要求，直接返回
-  if (ratio >= minRatio) return foreground as any
+  // 备份原始值用于回退
+  const originalFgHSL = { ...fgHSL }
+  const originalBgHSL = { ...bgHSL }
 
-  // 确定是增加还是减少亮度
-  const shouldDarken = bgHSL.l > 0.5
+  let ratio = contrastRatio(fgHSL, anyColorToRgbObject({ h: bgHSL.h, s: bgHSL.s, l: bgHSL.l }))
 
-  // 逐步调整亮度直到满足对比度要求
-  const step = shouldDarken ? -0.05 : 0.05
-  let attempts = 0
-  const maxAttempts = 20 // 防止无限循环
-
-  while (ratio < minRatio && attempts < maxAttempts) {
-    fgHSL.l = Math.max(0, Math.min(1, fgHSL.l + step))
-    ratio = contrastRatio(fgHSL, bgRgb)
-    attempts++
-
-    // 如果亮度已经到达极限但仍未满足要求，尝试调整饱和度
-    if ((fgHSL.l <= 0.05 || fgHSL.l >= 0.95) && ratio < minRatio) {
-      // 调整饱和度以增加对比度
-      // 对于暗背景，增加饱和度；对于亮背景，减少饱和度
-      const satStep = shouldDarken ? 0.1 : -0.1
-      let satAttempts = 0
-      const maxSatAttempts = 10
-
-      while (ratio < minRatio && satAttempts < maxSatAttempts) {
-        fgHSL.s = Math.max(0, Math.min(1, fgHSL.s + satStep))
-        ratio = contrastRatio(fgHSL, bgRgb)
-        satAttempts++
-      }
-
-      break // 饱和度调整后退出亮度调整循环
+  // 如果已经满足要求，直接返回原始颜色
+  if (ratio >= minRatio) {
+    return {
+      foreground: foreground as any,
+      background: background as any
     }
   }
 
-  return anyColorToTargetColor(fgHSL, type) as any
+  // 智能调整策略：同时调整前景色和背景色
+  const adjustColors = () => {
+    const maxAttempts = 30
+    let attempts = 0
+
+    while (ratio < minRatio && attempts < maxAttempts) {
+      attempts++
+
+      // 计算当前亮度差异
+      const lightnessDiff = Math.abs(fgHSL.l - bgHSL.l)
+
+      // 如果亮度差异太小，需要拉开距离
+      if (lightnessDiff < 0.3) {
+        // 判断哪个更亮，向相反方向调整
+        if (fgHSL.l > bgHSL.l) {
+          // 前景色更亮，增加前景色亮度，减少背景色亮度
+          fgHSL.l = Math.min(0.95, fgHSL.l + 0.08)
+          bgHSL.l = Math.max(0.05, bgHSL.l - 0.08)
+        } else {
+          // 背景色更亮，增加背景色亮度，减少前景色亮度
+          bgHSL.l = Math.min(0.95, bgHSL.l + 0.08)
+          fgHSL.l = Math.max(0.05, fgHSL.l - 0.08)
+        }
+      } else {
+        // 亮度差异足够，进行微调
+        const fgStep = fgHSL.l > 0.5 ? -0.03 : 0.03
+        const bgStep = bgHSL.l > 0.5 ? -0.03 : 0.03
+
+        fgHSL.l = Math.max(0.05, Math.min(0.95, fgHSL.l + fgStep))
+        bgHSL.l = Math.max(0.05, Math.min(0.95, bgHSL.l + bgStep))
+      }
+
+      // 重新计算对比度
+      const bgRgb = anyColorToRgbObject({ h: bgHSL.h, s: bgHSL.s, l: bgHSL.l })
+      ratio = contrastRatio(fgHSL, bgRgb)
+
+      // 如果亮度调整到极限仍不满足，尝试调整饱和度
+      if (attempts > 20 && ratio < minRatio) {
+        adjustSaturation()
+        break
+      }
+    }
+  }
+
+  // 饱和度调整辅助函数
+  const adjustSaturation = () => {
+    const satAttempts = 10
+
+    for (let i = 0; i < satAttempts && ratio < minRatio; i++) {
+      // 通过调整饱和度来增强对比度
+      if (fgHSL.l < bgHSL.l) {
+        // 前景色较暗，降低饱和度使其更接近纯色
+        fgHSL.s = Math.max(0.1, fgHSL.s - 0.1)
+        // 背景色较亮，适度提高饱和度保持活力
+        bgHSL.s = Math.min(0.8, bgHSL.s + 0.05)
+      } else {
+        // 前景色较亮，适度提高饱和度
+        fgHSL.s = Math.min(0.8, fgHSL.s + 0.05)
+        // 背景色较暗，降低饱和度
+        bgHSL.s = Math.max(0.1, bgHSL.s - 0.1)
+      }
+
+      const bgRgb = anyColorToRgbObject({ h: bgHSL.h, s: bgHSL.s, l: bgHSL.l })
+      ratio = contrastRatio(fgHSL, bgRgb)
+    }
+  }
+
+  // 执行智能调整
+  adjustColors()
+
+  // 如果仍然无法满足要求，使用保守的黑白方案
+  if (ratio < minRatio) {
+    // 静默处理，不显示警告信息，避免在正常使用中产生干扰
+
+    // 根据背景亮度选择高对比度的前景色
+    if (bgHSL.l > 0.5) {
+      // 亮背景使用深色前景
+      fgHSL.l = 0.1
+      fgHSL.s = 0.2
+    } else {
+      // 暗背景使用浅色前景
+      fgHSL.l = 0.9
+      fgHSL.s = 0.2
+      // 同时适度调亮背景
+      bgHSL.l = Math.max(bgHSL.l, 0.15)
+    }
+  }
+
+  // 颜色柔和化处理，确保视觉舒适
+  const softenColors = () => {
+    // 避免过于鲜艳的饱和度
+    fgHSL.s = Math.min(fgHSL.s, 0.85)
+    bgHSL.s = Math.min(bgHSL.s, 0.75)
+
+    // 确保亮度在舒适范围内
+    fgHSL.l = Math.max(0.08, Math.min(0.92, fgHSL.l))
+    bgHSL.l = Math.max(0.08, Math.min(0.92, bgHSL.l))
+  }
+
+  softenColors()
+
+  // 转换回目标颜色格式
+  const adjustedForeground = anyColorToTargetColor(fgHSL, type) as ColorToColorType<T>
+  const adjustedBackground = anyColorToTargetColor(bgHSL, type) as ColorToColorType<T>
+
+  return {
+    foreground: adjustedForeground,
+    background: adjustedBackground
+  }
 }

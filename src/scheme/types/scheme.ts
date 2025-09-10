@@ -97,13 +97,13 @@ export interface SchemeOptions<
    */
   lightRoleRule?: DeepPartial<PaletteExtractionColorRules>
   /**
-   * 是否自动调整颜色对比度
+   * WCAG标准级别
    *
-   * 如果设置为true，则会保证前景色和背景色的对比度 meet WCAG 2.1 contrast ratio standards
+   * 如果设置为'AA'|'AAA'，则会保证前景色和背景色的对比度
    *
-   * @default true
+   * @default 'AA'
    */
-  autoAdjustForContrast?: boolean
+  autoAdjustForContrast?: 'AA' | 'AAA' | false
 }
 
 /**

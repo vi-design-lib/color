@@ -142,7 +142,7 @@ export class Scheme<OutColorTag extends ColorTag = 'hex', CustomKeys extends str
    * @param {number} [options.angle] - 色相偏移角度
    */
   constructor(primaryColor: AnyColor, options?: SchemeOptions<OutColorTag, CustomKeys>) {
-    const { darkRoleRule, lightRoleRule, autoAdjustForContrast = true, ...rest } = options || {}
+    const { darkRoleRule, lightRoleRule, autoAdjustForContrast = 'AA', ...rest } = options || {}
     // 创建基本配色方案
     this.colors = Scheme.createBaseColorScheme(primaryColor, rest)
     this.palettes = Scheme.colorSchemeToPalettes(this.colors)
@@ -367,7 +367,7 @@ export class Scheme<OutColorTag extends ColorTag = 'hex', CustomKeys extends str
   static createColorSchemeRoles<CustomKeys extends string, OutColorTag extends ColorTag>(
     palettes: ColorSchemePalettes<CustomKeys, OutColorTag>,
     rules: PaletteExtractionColorRules,
-    autoAdjustForContrast: boolean = true
+    autoAdjustForContrast: false | 'AA' | 'AAA' = false
   ): ColorSchemeRoles<CustomKeys, OutColorTag> {
     const roles: Record<string, any> = {}
 
@@ -390,43 +390,27 @@ export class Scheme<OutColorTag extends ColorTag = 'hex', CustomKeys extends str
         onContainer: palette.get(rules.onContainer)
       }
 
-      // 统一的对比度调整函数，消除重复判断
-      const getAdjustedTextColor = (
-        textColor: AnyColor,
-        backgroundColor: AnyColor,
-        forceAdjust = false
-      ) => {
-        return forceAdjust || autoAdjustForContrast
-          ? adjustForContrast(textColor, backgroundColor)
-          : textColor
-      }
-
       // 角色定义配置，统一处理逻辑
       const roleConfigs = [
-        { suffix: '', bg: colors.source, text: colors.onSource, forceAdjust: false },
-        { suffix: 'Hover', bg: colors.sourceHover, text: colors.onSourceHover, forceAdjust: false },
-        {
-          suffix: 'Active',
-          bg: colors.sourceActive,
-          text: colors.onSourceActive,
-          forceAdjust: true
-        },
-        {
-          suffix: 'Disabled',
-          bg: colors.sourceDisabled,
-          text: colors.onSourceDisabled,
-          forceAdjust: false
-        },
-        { suffix: 'Container', bg: colors.container, text: colors.onContainer, forceAdjust: false }
+        { suffix: '', bg: colors.source, text: colors.onSource },
+        { suffix: 'Hover', bg: colors.sourceHover, text: colors.onSourceHover },
+        { suffix: 'Active', bg: colors.sourceActive, text: colors.onSourceActive },
+        { suffix: 'Disabled', bg: colors.sourceDisabled, text: colors.onSourceDisabled },
+        { suffix: 'Container', bg: colors.container, text: colors.onContainer }
       ]
 
       // 批量生成角色颜色
-      for (const { suffix, bg, text, forceAdjust } of roleConfigs) {
+      for (const { suffix, bg, text } of roleConfigs) {
         const bgKey = suffix ? `${key}${suffix}` : key
         const textKey = suffix ? `${onKey}${suffix}` : onKey
-
-        roles[bgKey] = bg
-        roles[textKey] = getAdjustedTextColor(text, bg, forceAdjust)
+        const color = autoAdjustForContrast
+          ? adjustForContrast(bg, text, autoAdjustForContrast)
+          : {
+              foreground: text,
+              background: bg
+            }
+        roles[bgKey] = color.background
+        roles[textKey] = color.foreground
       }
     }
 
