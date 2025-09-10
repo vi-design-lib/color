@@ -265,3 +265,102 @@ theme.changeColorScheme('#ff5500', {
 })
 ```
 
+## 主题可选配置
+
+### 通用配置选项
+
+所有主题类型都支持以下基础配置选项：
+
+| 配置项                     | 类型                                           | 默认值                    | 描述                                  |
+|-------------------------|----------------------------------------------|------------------------|-------------------------------------|
+| `customColor`           | `Record<string, AnyColor>`                   | `{}`                   | 自定义颜色配置，如果和固有配色方案重名，会覆盖固有配色方案       |
+| `outType`               | `'hex' \| 'rgb' \| 'hsl' \| 'RGB' \| 'HSL'`  | `'hex'`                | 输出的颜色格式类型                           |
+| `formula`               | `'triadic' \| 'adjacent' \| 'complementary'` | `'triadic'`            | 颜色计算公式，用于生成协调的辅助色                   |
+| `angle`                 | `number`                                     | -                      | 色相起始角度，用于调整颜色生成的偏移                  |
+| `darkRoleRule`          | `DeepPartial<PaletteExtractionColorRules>`   | `Scheme.darkRoleRule`  | 暗色模式调色板取色规则                         |
+| `lightRoleRule`         | `DeepPartial<PaletteExtractionColorRules>`   | `Scheme.lightRoleRule` | 亮色模式调色板取色规则                         |
+| `autoAdjustForContrast` | `'AA' \| 'AAA' \| false`                     | `AA`                   | WCAG标准级别，保证前景色和背景色的对比度              |
+| `cacheKey`              | `string`                                     | `'_CACHE_THEME_MODE'`  | 用于在本地存储中保存主题模式的键名                   |
+| `refFactory`            | `RefFactory`                                 | `ref`                  | 自定义ref函数，支持`vitarx`和`vue3`框架中的ref函数 |
+| `defaultMode`           | `'system'`                                   | `'system'`             | 当未设置主题模式时使用的默认值                     |
+
+### Web主题特有配置
+
+适用于 `WebTheme`、`VueTheme`、`VitarxTheme`：
+
+| 配置项         | 类型                           | 默认值          | 描述                                 |
+|-------------|------------------------------|--------------|------------------------------------|
+| `varPrefix` | `string`                     | `'--color-'` | CSS变量前缀，生成的变量名会自动转换为`kebab-case`格式 |
+| `varSuffix` | `string`                     | `''`         | CSS变量后缀，通常以 `-` 开头                 |
+| `attribute` | `string`                     | `'theme'`    | HTML根元素用于记录主题亮度的属性名                |
+| `ssr`       | `'light' \| 'dark' \| false` | `false`      | 服务端渲染时的系统主题亮度，false表示不在服务端渲染       |
+
+### 静态主题管理器配置
+
+适用于 `StaticThemeManager`：
+
+| 配置项           | 类型                           | 默认值                   | 描述                  |
+|---------------|------------------------------|-----------------------|---------------------|
+| `attribute`   | `string`                     | `'theme'`             | HTML根元素用于记录主题亮度的属性名 |
+| `cacheKey`    | `string`                     | `'_CACHE_THEME_MODE'` | 缓存主题模式的key          |
+| `defaultMode` | `ThemeMode`                  | `'system'`            | 默认主题模式              |
+| `refFactory`  | `RefFactory`                 | `ref`                 | ref工厂函数，用于创建响应式数据   |
+| `ssr`         | `'light' \| 'dark' \| false` | `false`               | 服务端渲染时的系统主题亮度       |
+
+### 插件配置选项
+
+适用于 Vue 和 Vitarx 插件方式：
+
+| 配置项            | 类型         | 默认值         | 描述               |
+|----------------|------------|-------------|------------------|
+| `primaryColor` | `AnyColor` | `'#1677ff'` | 主色，作为整个配色方案的基础颜色 |
+
+### 配置示例
+
+```js
+// 基础配置
+const theme = createWebTheme('#1677ff', {
+  customColor: {
+    brand: '#ff5500',
+    accent: '#00ff55'
+  },
+  outType: 'hsl',
+  formula: 'complementary',
+  autoAdjustForContrast: 'AAA'
+})
+
+// Web主题配置
+const webTheme = createWebTheme('#1677ff', {
+  varPrefix: '--my-theme-',
+  varSuffix: '-color',
+  attribute: 'data-theme',
+  ssr: 'light'
+})
+
+// Vue插件配置
+app.use(theme, {
+  primaryColor: '#1677ff',
+  customColor: {
+    success: '#00ff00',
+    warning: '#ffaa00'
+  },
+  varPrefix: '--ui-',
+  defaultMode: 'system'
+})
+```
+
+### 颜色格式说明
+
+`AnyColor` 支持以下颜色格式：
+
+- **十六进制**: `'#1677ff'`、`'#fff'`
+- **RGB字符串**: `'rgb(22, 119, 255)'`
+- **HSL字符串**: `'hsl(225, 100%, 54%)'`
+- **RGB对象**: `{ r: 22, g: 119, b: 255 }`
+- **HSL对象**: `{ h: 225, s: 1, l: 0.54 }`
+
+### 配色算法说明
+
+- **triadic**: 三分色，生成120度色相差的协调配色
+- **adjacent**: 邻近色，生成相近色相的和谐配色
+- **complementary**: 互补色，生成180度色相差的对比配色
