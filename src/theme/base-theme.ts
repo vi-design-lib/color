@@ -71,10 +71,6 @@ export interface BaseThemeOptions<OutColorTag extends ColorTag, CustomKeys exten
  * @template CustomKeys - 自定义颜色键类型，用于扩展基础配色方案
  */
 export abstract class BaseTheme<OutColorTag extends ColorTag, CustomKeys extends string> {
-  // 主题模式
-  private _mode: Ref<ThemeMode>
-  // 颜色方案
-  private _scheme: Ref<Scheme<OutColorTag, CustomKeys>>
   /**
    * 缓存名称
    */
@@ -100,12 +96,25 @@ export abstract class BaseTheme<OutColorTag extends ColorTag, CustomKeys extends
       refFactory = ref,
       cacheKey = '_CACHE_THEME_MODE',
       defaultMode = 'system',
-      ...SchemeOptions
+      ...schemeOptions
     } = options || {}
     this.cacheKey = cacheKey
     this.defaultMode = defaultMode
     this._mode = refFactory(this.getCacheThemeMode() || this.defaultMode)
-    this._scheme = refFactory(createScheme(mainColor, SchemeOptions))
+    this._scheme = refFactory(createScheme(mainColor, schemeOptions))
+  }
+
+  // 主题模式
+  private _mode: Ref<ThemeMode>
+
+  /**
+   * 获取主题模式
+   *
+   * @description 获取当前设置的主题模式
+   * @returns {ThemeMode} 当前的主题模式
+   */
+  get mode(): ThemeMode {
+    return this._mode.value
   }
 
   /**
@@ -117,6 +126,39 @@ export abstract class BaseTheme<OutColorTag extends ColorTag, CustomKeys extends
   set mode(mode: ThemeMode) {
     this.setMode(mode)
   }
+
+  // 颜色方案
+  private _scheme: Ref<Scheme<OutColorTag, CustomKeys>>
+
+  /**
+   * 配色方案实例
+   *
+   * @description 获取当前主题的配色方案实例
+   * @returns {Readonly<Scheme<OutColorTag, CustomKeys>>} 只读的配色方案实例
+   */
+  get scheme(): Readonly<Scheme<OutColorTag, CustomKeys>> {
+    return this._scheme.value
+  }
+
+  /**
+   * 获取当前主题的亮度
+   *
+   * @description 根据当前主题模式返回对应的亮度，如果是system模式则返回系统亮度
+   * @returns {Brightness} 当前的亮度模式
+   */
+  get bright(): Brightness {
+    const mode = this.mode
+    return mode === 'system' ? this.systemBright : mode
+  }
+
+  /**
+   * 获取系统亮度
+   *
+   * @description 获取当前系统的亮度模式设置
+   * @returns {Brightness} 系统的亮度模式
+   * @abstract
+   */
+  abstract get systemBright(): Brightness
 
   /**
    * 设置主题模式
@@ -135,25 +177,6 @@ export abstract class BaseTheme<OutColorTag extends ColorTag, CustomKeys extends
   }
 
   /**
-   * 缓存主题模式
-   *
-   * @description 将当前主题模式保存到持久化存储中
-   * @param {ThemeMode} mode - 要缓存的主题模式
-   * @protected
-   */
-  protected abstract setCacheThemeMode(mode: ThemeMode): void
-
-  /**
-   * 获取主题模式
-   *
-   * @description 获取当前设置的主题模式
-   * @returns {ThemeMode} 当前的主题模式
-   */
-  get mode() {
-    return this._mode.value
-  }
-
-  /**
    * 动态切换颜色方案
    *
    * @description 根据新的主色和选项重新创建颜色方案
@@ -162,27 +185,6 @@ export abstract class BaseTheme<OutColorTag extends ColorTag, CustomKeys extends
    */
   public changeColorScheme(mainColor: AnyColor, options?: SchemeOptions<OutColorTag, CustomKeys>) {
     this._scheme.value = createScheme(mainColor, options)
-  }
-
-  /**
-   * 获取当前主题的亮度
-   *
-   * @description 根据当前主题模式返回对应的亮度，如果是system模式则返回系统亮度
-   * @returns {Brightness} 当前的亮度模式
-   */
-  get bright(): Brightness {
-    const mode = this.mode
-    return mode === 'system' ? this.systemBright : mode
-  }
-
-  /**
-   * 配色方案实例
-   *
-   * @description 获取当前主题的配色方案实例
-   * @returns {Readonly<Scheme<OutColorTag, CustomKeys>>} 只读的配色方案实例
-   */
-  get scheme(): Readonly<Scheme<OutColorTag, CustomKeys>> {
-    return this._scheme.value
   }
 
   /**
@@ -218,15 +220,6 @@ export abstract class BaseTheme<OutColorTag extends ColorTag, CustomKeys extends
   }
 
   /**
-   * 获取系统亮度
-   *
-   * @description 获取当前系统的亮度模式设置
-   * @returns {Brightness} 系统的亮度模式
-   * @abstract
-   */
-  abstract get systemBright(): Brightness
-
-  /**
    * 获取缓存的主题模式
    *
    * @description 从持久化存储中获取之前缓存的主题模式
@@ -242,4 +235,13 @@ export abstract class BaseTheme<OutColorTag extends ColorTag, CustomKeys extends
    * @abstract
    */
   public abstract clearCache(): void
+
+  /**
+   * 缓存主题模式
+   *
+   * @description 将当前主题模式保存到持久化存储中
+   * @param {ThemeMode} mode - 要缓存的主题模式
+   * @protected
+   */
+  protected abstract setCacheThemeMode(mode: ThemeMode): void
 }
