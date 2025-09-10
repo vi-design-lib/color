@@ -1,6 +1,5 @@
 import type { AnyColor, ColorTag, ColorTagToColorType, DeepPartial, HSLObject } from '../types.js'
 import {
-  adjustForContrast,
   anyColorToHslObject,
   anyColorToTargetColor,
   capitalize,
@@ -142,7 +141,7 @@ export class Scheme<OutColorTag extends ColorTag = 'hex', CustomKeys extends str
    * @param {number} [options.angle] - 色相偏移角度
    */
   constructor(primaryColor: AnyColor, options?: SchemeOptions<OutColorTag, CustomKeys>) {
-    const { darkRoleRule, lightRoleRule, autoAdjustForContrast = 'AA', ...rest } = options || {}
+    const { darkRoleRule, lightRoleRule, ...rest } = options || {}
     // 创建基本配色方案
     this.colors = Scheme.createBaseColorScheme(primaryColor, rest)
     this.palettes = Scheme.colorSchemeToPalettes(this.colors)
@@ -154,11 +153,11 @@ export class Scheme<OutColorTag extends ColorTag = 'hex', CustomKeys extends str
 
     this.bright = {
       light: {
-        roles: Scheme.createColorSchemeRoles(this.palettes, mergedLightRule, autoAdjustForContrast),
+        roles: Scheme.createColorSchemeRoles(this.palettes, mergedLightRule),
         tonal: Scheme.createColorSchemeTonal(this.tonalPalettes, 'light')
       },
       dark: {
-        roles: Scheme.createColorSchemeRoles(this.palettes, mergedDarkRule, autoAdjustForContrast),
+        roles: Scheme.createColorSchemeRoles(this.palettes, mergedDarkRule),
         tonal: Scheme.createColorSchemeTonal(this.tonalPalettes, 'dark')
       }
     }
@@ -361,13 +360,11 @@ export class Scheme<OutColorTag extends ColorTag = 'hex', CustomKeys extends str
    * @template OutColorTag - 输出的颜色标签类型
    * @param {ColorSchemePalettes<CustomKeys, OutColorTag>} palettes - 基准配色调色板集合
    * @param {PaletteExtractionColorRules} rules - 配色方案提取规则，定义从调色板中提取各角色颜色的亮度级别
-   * @param {boolean} autoAdjustForContrast - 是否自动调整对比度
    * @returns {ColorSchemeRoles<CustomKeys, OutColorTag>} 生成的角色配色方案
    */
   static createColorSchemeRoles<CustomKeys extends string, OutColorTag extends ColorTag>(
     palettes: ColorSchemePalettes<CustomKeys, OutColorTag>,
-    rules: PaletteExtractionColorRules,
-    autoAdjustForContrast: false | 'AA' | 'AAA' = false
+    rules: PaletteExtractionColorRules
   ): ColorSchemeRoles<CustomKeys, OutColorTag> {
     const roles: Record<string, any> = {}
 
@@ -403,14 +400,8 @@ export class Scheme<OutColorTag extends ColorTag = 'hex', CustomKeys extends str
       for (const { suffix, bg, text } of roleConfigs) {
         const bgKey = suffix ? `${key}${suffix}` : key
         const textKey = suffix ? `${onKey}${suffix}` : onKey
-        const color = autoAdjustForContrast
-          ? adjustForContrast(bg, text, autoAdjustForContrast)
-          : {
-              foreground: text,
-              background: bg
-            }
-        roles[bgKey] = color.background
-        roles[textKey] = color.foreground
+        roles[bgKey] = bg
+        roles[textKey] = text
       }
     }
 

@@ -96,14 +96,6 @@ export interface SchemeOptions<
    * @default Scheme.lightRoleRule
    */
   lightRoleRule?: DeepPartial<PaletteExtractionColorRules>
-  /**
-   * WCAG标准级别
-   *
-   * 如果设置为'AA'|'AAA'，则会保证前景色和背景色的对比度
-   *
-   * @default 'AA'
-   */
-  autoAdjustForContrast?: 'AA' | 'AAA' | false
 }
 
 /**

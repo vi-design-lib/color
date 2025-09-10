@@ -271,18 +271,17 @@ theme.changeColorScheme('#ff5500', {
 
 所有主题类型都支持以下基础配置选项：
 
-| 配置项                     | 类型                                           | 默认值                    | 描述                                  |
-|-------------------------|----------------------------------------------|------------------------|-------------------------------------|
-| `customColor`           | `Record<string, AnyColor>`                   | `{}`                   | 自定义颜色配置，如果和固有配色方案重名，会覆盖固有配色方案       |
-| `outType`               | `'hex' \| 'rgb' \| 'hsl' \| 'RGB' \| 'HSL'`  | `'hex'`                | 输出的颜色格式类型                           |
-| `formula`               | `'triadic' \| 'adjacent' \| 'complementary'` | `'triadic'`            | 颜色计算公式，用于生成协调的辅助色                   |
-| `angle`                 | `number`                                     | -                      | 色相起始角度，用于调整颜色生成的偏移                  |
-| `darkRoleRule`          | `DeepPartial<PaletteExtractionColorRules>`   | `Scheme.darkRoleRule`  | 暗色模式调色板取色规则                         |
-| `lightRoleRule`         | `DeepPartial<PaletteExtractionColorRules>`   | `Scheme.lightRoleRule` | 亮色模式调色板取色规则                         |
-| `autoAdjustForContrast` | `'AA' \| 'AAA' \| false`                     | `AA`                   | WCAG标准级别，保证前景色和背景色的对比度              |
-| `cacheKey`              | `string`                                     | `'_CACHE_THEME_MODE'`  | 用于在本地存储中保存主题模式的键名                   |
-| `refFactory`            | `RefFactory`                                 | `ref`                  | 自定义ref函数，支持`vitarx`和`vue3`框架中的ref函数 |
-| `defaultMode`           | `'system'`                                   | `'system'`             | 当未设置主题模式时使用的默认值                     |
+| 配置项             | 类型                                           | 默认值                    | 描述                                  |
+|-----------------|----------------------------------------------|------------------------|-------------------------------------|
+| `customColor`   | `Record<string, AnyColor>`                   | `{}`                   | 自定义颜色配置，如果和固有配色方案重名，会覆盖固有配色方案       |
+| `outType`       | `'hex' \| 'rgb' \| 'hsl' \| 'RGB' \| 'HSL'`  | `'hex'`                | 输出的颜色格式类型                           |
+| `formula`       | `'triadic' \| 'adjacent' \| 'complementary'` | `'triadic'`            | 颜色计算公式，用于生成协调的辅助色                   |
+| `angle`         | `number`                                     | -                      | 色相起始角度，用于调整颜色生成的偏移                  |
+| `darkRoleRule`  | `DeepPartial<PaletteExtractionColorRules>`   | `Scheme.darkRoleRule`  | 暗色模式调色板取色规则                         |
+| `lightRoleRule` | `DeepPartial<PaletteExtractionColorRules>`   | `Scheme.lightRoleRule` | 亮色模式调色板取色规则                         |
+| `cacheKey`      | `string`                                     | `'_CACHE_THEME_MODE'`  | 用于在本地存储中保存主题模式的键名                   |
+| `refFactory`    | `RefFactory`                                 | `ref`                  | 自定义ref函数，支持`vitarx`和`vue3`框架中的ref函数 |
+| `defaultMode`   | `'system'`                                   | `'system'`             | 当未设置主题模式时使用的默认值                     |
 
 ### Web主题特有配置
 
@@ -325,8 +324,7 @@ const theme = createWebTheme('#1677ff', {
     accent: '#00ff55'
   },
   outType: 'hsl',
-  formula: 'complementary',
-  autoAdjustForContrast: 'AAA'
+  formula: 'complementary'
 })
 
 // Web主题配置
