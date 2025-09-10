@@ -55,11 +55,11 @@ export interface BaseSchemeOptions<
    */
   customColor?: Record<CustomKeys, AnyColor>
   /**
-   * 调试板要使用的目标类型
+   * 输出的颜色目标类型
    */
   outType?: OutColorTag
   /**
-   * 计算模式
+   * 颜色计算公式
    *
    * @default 'triadic'
    */
@@ -67,12 +67,11 @@ export interface BaseSchemeOptions<
   /**
    * 色相偏移角度
    *
-   * - triadic：三分色，默认偏移为60度
-   * - adjacent：相邻色，默认偏移为±45度
-   * - complementary：分裂互补色，默认偏移为30度
+   * 优先级高于 `formula`
    */
   angle?: number
 }
+
 /**
  * 配色方案选项
  *
