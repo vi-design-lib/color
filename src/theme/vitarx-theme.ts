@@ -51,20 +51,18 @@ export class VitarxTheme<
 /**
  * Vitarx主题插件
  *
- * @description 为Vitarx应用提供主题管理功能的插件，会自动注入主题实例
- * 依赖Vitarx的ref函数，仅支持Vitarx框架
+ * @description 为Vitarx应用提供主题管理能力的插件，会自动注入主题实例
  *
  * @alias ThemePlugin
  * @template OutColorTag - 输出的颜色标签类型
  * @template CustomKeys - 自定义颜色键类型
  * @param {Object} app - Vitarx应用实例
  * @param {ThemePluginOptions<OutColorTag, CustomKeys>} [options] - 配置选项
- * @param {AnyColor} [options.mainColor=#1677ff] - 主色
+ * @param {AnyColor} [options.primaryColor=#1677ff] - 主色
  * @param {string} [options.varPrefix=--color-] - CSS变量前缀
  * @param {string} [options.varSuffix] - CSS变量后缀
  * @param {string} [options.attribute=theme] - HTML属性名
  * @returns {void}
- * @throws {Error} 如果未提供mainColor或非浏览器环境调用，则会抛出异常
  */
 export function theme<OutColorTag extends ColorTag, CustomKeys extends string>(
   app: any,
@@ -72,13 +70,12 @@ export function theme<OutColorTag extends ColorTag, CustomKeys extends string>(
 ): void {
   if (typeof app?.provide === 'function') {
     const { primaryColor = '#1677ff', ...config } = options || {}
-    if (!primaryColor) throw new Error('primaryColor is required')
     const theme = new VitarxTheme(primaryColor, config)
     // 注入到应用中
     app.provide('theme', theme)
-    app.register('theme', theme)
   }
 }
+
 export { theme as ThemePlugin }
 
 /**
