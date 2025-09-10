@@ -1,6 +1,7 @@
-import type { AnyColor, ColorTag, ColorTagToColorType, DeepPartial, HSLObject } from '../types.js'
+import type { AnyColor, ColorTag, DeepPartial, HSLObject } from '../types.js'
 import {
   anyColorToHslObject,
+  anyColorToRgbObject,
   anyColorToTargetColor,
   capitalize,
   type ComputeFormula,
@@ -16,7 +17,6 @@ import type {
   ColorSchemePalettes,
   ColorSchemeRoles,
   ColorSchemeTonal,
-  NeutralColorRoles,
   PaletteExtractionColorRules,
   SchemeOptions,
   Tone
@@ -401,7 +401,9 @@ export class Scheme<OutColorTag extends ColorTag = 'hex', CustomKeys extends str
         const bgKey = suffix ? `${key}${suffix}` : key
         const textKey = suffix ? `${onKey}${suffix}` : onKey
         roles[bgKey] = bg
+        roles[`${bgKey}Rgb`] = Object.values(anyColorToRgbObject(bg)).join(', ')
         roles[textKey] = text
+        roles[`${textKey}Rgb`] = Object.values(anyColorToRgbObject(text)).join(', ')
       }
     }
 
@@ -413,10 +415,10 @@ export class Scheme<OutColorTag extends ColorTag = 'hex', CustomKeys extends str
 
     // 优化：批量处理中性色基础角色
     const neutral = palettes.neutral
-    const baseRoles = {} as NeutralColorRoles<ColorTagToColorType<OutColorTag>>
+    const baseRoles = {} as Record<string, any>
     for (const [key, value] of Object.entries(rules.base)) {
-      baseRoles[key as keyof NeutralColorRoles<ColorTagToColorType<OutColorTag>>] =
-        neutral.get(value)
+      baseRoles[key] = neutral.get(value)
+      baseRoles[`${key}Rgb`] = Object.values(anyColorToRgbObject(neutral.get(value))).join(', ')
     }
 
     Object.assign(roles, baseRoles)
