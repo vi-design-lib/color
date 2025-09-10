@@ -1,10 +1,24 @@
-# [2.0.0-beta.7](https://gitee.com/vi-design/color/compare/v2.0.0-beta.6...v2.0.0-beta.7) (2025-09-10)
+# [2.0.0-beta.8](https://gitee.com/vi-design/color/compare/v2.0.0-beta.7...v2.0.0-beta.8) (2025-09-10)
+
+
+### Bug Fixes
+
+* **theme:** 修复服务端判断错误BUG ([6facf36](https://gitee.com/vi-design/color/commits/6facf36d74795ff48dea51fa550dcbe7f505f5ad))
+
+
+### Features
+
+* **example:** 添加智能对比度调整算法示例 ([b3a46c9](https://gitee.com/vi-design/color/commits/b3a46c9adf768c558c2490b77dffb2f0a653a9ad))
+* **utils:** 智能调整颜色对比度以满足WCAG标准 ([e9152fc](https://gitee.com/vi-design/color/commits/e9152fcfb05e8bbb7acb2cefbb6af42811e17dcb))
+
+
+
+# [2.0.0-beta.6](https://gitee.com/vi-design/color/compare/v2.0.0-beta.5...v2.0.0-beta.6) (2025-09-10)
 
 
 ### Bug Fixes
 
 * **theme:** 修复 Vitarx 主题插件报错 ([4293d39](https://gitee.com/vi-design/color/commits/4293d3942353aae8fa0230eb29b8056641ced92b))
-* **theme:** 修复服务端判断错误BUG ([6facf36](https://gitee.com/vi-design/color/commits/6facf36d74795ff48dea51fa550dcbe7f505f5ad))
 
 
 
