@@ -365,65 +365,87 @@ export class Scheme<OutColorTag extends ColorTag = 'hex', CustomKeys extends str
    * @returns {ColorSchemeRoles<CustomKeys, OutColorTag>} 生成的角色配色方案
    */
   static createColorSchemeRoles<CustomKeys extends string, OutColorTag extends ColorTag>(
-    palettes: ColorSchemePalettes<CustomKeys, OutColorTag>, // 基准配色调色板集合，包含所有基础颜色
-    rules: PaletteExtractionColorRules, // 配色方案提取规则，定义如何从调色板中提取各角色颜色
-    autoAdjustForContrast: boolean = true // 是否自动调整对比度以确保文本可读性，默认为true
+    palettes: ColorSchemePalettes<CustomKeys, OutColorTag>,
+    rules: PaletteExtractionColorRules,
+    autoAdjustForContrast: boolean = true
   ): ColorSchemeRoles<CustomKeys, OutColorTag> {
-    // 返回生成的角色配色方案
-    const roles: Record<string, any> = {} // 初始化角色颜色对象
+    const roles: Record<string, any> = {}
+
+    // 优化：预计算所有需要的键名和操作，减少重复计算
+    const createRoles = (key: string, palette: any) => {
+      const capitalizedKey = capitalize(key)
+      const onKey = `on${capitalizedKey}`
+
+      // 批量获取颜色，减少方法调用
+      const colors = {
+        source: palette.get(rules.source),
+        onSource: palette.get(rules.onSource),
+        sourceHover: palette.get(rules.sourceHover),
+        onSourceHover: palette.get(rules.onSourceHover),
+        sourceActive: palette.get(rules.sourceActive),
+        onSourceActive: palette.get(rules.onSourceActive),
+        sourceDisabled: palette.get(rules.sourceDisabled),
+        onSourceDisabled: palette.get(rules.onSourceDisabled),
+        container: palette.get(rules.container),
+        onContainer: palette.get(rules.onContainer)
+      }
+
+      // 统一的对比度调整函数，消除重复判断
+      const getAdjustedTextColor = (
+        textColor: AnyColor,
+        backgroundColor: AnyColor,
+        forceAdjust = false
+      ) => {
+        return forceAdjust || autoAdjustForContrast
+          ? adjustForContrast(textColor, backgroundColor)
+          : textColor
+      }
+
+      // 角色定义配置，统一处理逻辑
+      const roleConfigs = [
+        { suffix: '', bg: colors.source, text: colors.onSource, forceAdjust: false },
+        { suffix: 'Hover', bg: colors.sourceHover, text: colors.onSourceHover, forceAdjust: false },
+        {
+          suffix: 'Active',
+          bg: colors.sourceActive,
+          text: colors.onSourceActive,
+          forceAdjust: true
+        },
+        {
+          suffix: 'Disabled',
+          bg: colors.sourceDisabled,
+          text: colors.onSourceDisabled,
+          forceAdjust: false
+        },
+        { suffix: 'Container', bg: colors.container, text: colors.onContainer, forceAdjust: false }
+      ]
+
+      // 批量生成角色颜色
+      for (const { suffix, bg, text, forceAdjust } of roleConfigs) {
+        const bgKey = suffix ? `${key}${suffix}` : key
+        const textKey = suffix ? `${onKey}${suffix}` : onKey
+
+        roles[bgKey] = bg
+        roles[textKey] = getAdjustedTextColor(text, bg, forceAdjust)
+      }
+    }
+
+    // 遍历所有非中性色调色板
     for (const [key, palette] of Object.entries(palettes)) {
-      // 遍历所有配色调色板
-      // 跳过中性色，中性色由surface代替
       if (key === 'neutral') continue
-      const onKey = `on${capitalize(key)}` // 生成文本颜色键名
-
-      // 设置基础颜色和对应的文本颜色
-      roles[key] = palette.get(rules.source) // 获取基础颜色
-      roles[onKey] = autoAdjustForContrast // 根据是否自动调整对比度获取文本颜色
-        ? adjustForContrast(palette.get(rules.onSource), roles[key]) // 自动调整对比度
-        : palette.get(rules.onSource) // 使用原始颜色
-
-      // 设置悬停状态颜色
-      const hoverKey = `${key}Hover` // 生成悬停状态颜色键名
-      roles[hoverKey] = palette.get(rules.sourceHover) // 获取悬停状态背景色
-      roles[`${onKey}Hover`] = autoAdjustForContrast // 根据是否自动调整对比度获取悬停状态文本颜色
-        ? adjustForContrast(palette.get(rules.onSourceHover), roles[hoverKey]) // 自动调整对比度
-        : palette.get(rules.onSourceHover) // 使用原始颜色
-
-      // 设置激活状态颜色
-      const activeKey = `${key}Active` // 生成激活状态颜色键名
-      roles[activeKey] = palette.get(rules.sourceActive) // 获取激活状态背景色
-      roles[`${onKey}Active`] = adjustForContrast(
-        // 激活状态文本颜色总是自动调整对比度
-        palette.get(rules.onSourceActive),
-        roles[activeKey]
-      )
-
-      // 设置禁用状态颜色
-      const disabledKey = `${key}Disabled` // 生成禁用状态颜色键名
-      roles[disabledKey] = palette.get(rules.sourceDisabled) // 获取禁用状态背景色
-      roles[`${onKey}Disabled`] = autoAdjustForContrast // 根据是否自动调整对比度获取禁用状态文本颜色
-        ? adjustForContrast(palette.get(rules.onSourceDisabled), roles[disabledKey]) // 自动调整对比度
-        : palette.get(rules.onSourceDisabled) // 使用原始颜色
-
-      // 设置容器颜色
-      const containerKey = `${key}Container` // 生成容器颜色键名
-      roles[containerKey] = palette.get(rules.container) // 获取容器背景色
-      roles[`${onKey}Container`] = autoAdjustForContrast // 根据是否自动调整对比度获取容器文本颜色
-        ? adjustForContrast(palette.get(rules.onContainer), roles[containerKey]) // 自动调整对比度
-        : palette.get(rules.onContainer) // 使用原始颜色
+      createRoles(key, palette)
     }
 
-    // 设置基础角色颜色（中性色相关）
-    const baseRoles = {} as NeutralColorRoles<ColorTagToColorType<OutColorTag>> // 初始化基础角色颜色对象
-    const neutral = palettes.neutral // 获取中性色调色板
+    // 优化：批量处理中性色基础角色
+    const neutral = palettes.neutral
+    const baseRoles = {} as NeutralColorRoles<ColorTagToColorType<OutColorTag>>
     for (const [key, value] of Object.entries(rules.base)) {
-      // 遍历基础颜色规则
       baseRoles[key as keyof NeutralColorRoles<ColorTagToColorType<OutColorTag>>] =
-        neutral.get(value) // 从中性色调色板获取基础颜色
+        neutral.get(value)
     }
-    Object.assign(roles, baseRoles) // 将基础角色颜色合并到主角色颜色对象中
-    return roles as ColorSchemeRoles<CustomKeys, OutColorTag> // 返回最终的角色配色方案
+
+    Object.assign(roles, baseRoles)
+    return roles as ColorSchemeRoles<CustomKeys, OutColorTag>
   }
 
   /**
