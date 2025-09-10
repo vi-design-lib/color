@@ -39,7 +39,7 @@ export interface WebThemeOptions<OutColorTag extends ColorTag, CustomKeys extend
   /**
    * 服务端渲染时的系统主题亮度
    *
-   * 由于服务端调用浏览器端的api，所以需要设置一个默认的主题亮度，可以是`light`或`dark`
+   * 由于服务端不能调用浏览器端的api，所以需要设置一个默认的主题亮度，可以是`light`或`dark`
    *
    * 默认为false，代表着不在浏览器端渲染
    *
@@ -60,8 +60,6 @@ export class WebTheme<
   OutColorTag extends ColorTag,
   CustomKeys extends string = never
 > extends BaseTheme<OutColorTag, CustomKeys> {
-  // 样式表
-  private readonly _sheet: CSSStyleSheet | undefined
   /**
    * css变量后缀
    *
@@ -90,6 +88,9 @@ export class WebTheme<
    * 服务端渲染时的系统主题亮度
    */
   protected readonly ssr: Brightness | false
+  // 样式表
+  private readonly _sheet: CSSStyleSheet | undefined
+
   /**
    * Theme构造函数
    *
@@ -151,31 +152,6 @@ export class WebTheme<
   }
 
   /**
-   * @inheritDoc
-   */
-  protected override setCacheThemeMode(mode: ThemeMode) {
-    if (!this._isBrowser) return
-    localStorage.setItem(this.cacheKey, mode)
-  }
-
-  /**
-   * 动态切换颜色方案
-   *
-   * @description 根据新的主色和选项重新创建颜色方案，并更新CSS变量
-   * @inheritDoc
-   * @override
-   * @param {AnyColor} mainColor - 新的主色
-   * @param {SchemeOptions<OutColorTag, CustomKeys>} [options] - 可选的配色选项
-   */
-  public override changeColorScheme(
-    mainColor: AnyColor,
-    options?: SchemeOptions<OutColorTag, CustomKeys>
-  ) {
-    super.changeColorScheme(mainColor, options)
-    this.updateStyles()
-  }
-
-  /**
    * 获取css变量
    *
    * 如果仅需要获取变量名，请使用`varName`方法
@@ -201,6 +177,67 @@ export class WebTheme<
    */
   varName(key: string): `--${string}` {
     return `${this.varPrefix}${camelToKebab(key)}${this.varSuffix}` as `--${string}`
+  }
+
+  /**
+   * @inheritDoc
+   */
+  public override setMode(mode: ThemeMode): boolean {
+    const result = super.setMode(mode)
+    if (result && this._isBrowser) {
+      document.documentElement.setAttribute(this.attribute, this.bright)
+      this.updateStyles()
+    }
+    return result
+  }
+
+  /**
+   * @inheritDoc
+   */
+  protected override setCacheThemeMode(mode: ThemeMode) {
+    if (!this._isBrowser) return
+    localStorage.setItem(this.cacheKey, mode)
+  }
+
+  /**
+   * 动态切换颜色方案
+   *
+   * @description 根据新的主色和选项重新创建颜色方案，并更新CSS变量
+   * @inheritDoc
+   * @override
+   * @param {AnyColor} mainColor - 新的主色
+   * @param {SchemeOptions<OutColorTag, CustomKeys>} [options] - 可选的配色选项
+   */
+  public override changeColorScheme(
+    mainColor: AnyColor,
+    options?: SchemeOptions<OutColorTag, CustomKeys>
+  ) {
+    super.changeColorScheme(mainColor, options)
+    this.updateStyles()
+  }
+
+  /**
+   * @inheritDoc
+   */
+  override get systemBright(): Brightness {
+    if (!this._isBrowser) return this.ssr === 'dark' ? 'dark' : 'light'
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  }
+
+  /**
+   * @inheritDoc
+   */
+  public override getCacheThemeMode(): ThemeMode | null {
+    if (!this._isBrowser) return null
+    return localStorage.getItem(this.cacheKey) as ThemeMode
+  }
+
+  /**
+   * @inheritDoc
+   */
+  public override clearCache() {
+    if (!this._isBrowser) return
+    localStorage.removeItem(this.cacheKey)
   }
 
   /**
@@ -242,42 +279,6 @@ export class WebTheme<
       generateRoleStyles(this.scheme, 'dark') + generateTonalStyles(this.scheme, 'dark')
     this._sheet.insertRule(`html[${this.attribute}="light"]{${lightStyles}}`, 0)
     this._sheet.insertRule(`html[${this.attribute}="dark"]{${darkStyles}}`, 1)
-  }
-
-  /**
-   * @inheritDoc
-   */
-  override get systemBright(): Brightness {
-    if (!this._isBrowser) return this.ssr === 'dark' ? 'dark' : 'light'
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-  }
-
-  /**
-   * @inheritDoc
-   */
-  public override setMode(mode: ThemeMode): boolean {
-    const result = super.setMode(mode)
-    if (result && this._isBrowser) {
-      document.documentElement.setAttribute(this.attribute, this.bright)
-      this.updateStyles()
-    }
-    return result
-  }
-
-  /**
-   * @inheritDoc
-   */
-  public override getCacheThemeMode(): ThemeMode | null {
-    if (!this._isBrowser) return null
-    return localStorage.getItem(this.cacheKey) as ThemeMode
-  }
-
-  /**
-   * @inheritDoc
-   */
-  public override clearCache() {
-    if (!this._isBrowser) return
-    localStorage.removeItem(this.cacheKey)
   }
 }
 
