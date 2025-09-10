@@ -7,12 +7,11 @@
 ## 安装
 
 ```shell
+# npm
 npm install @vi-design/color
-```
-
-或者使用yarn：
-
-```shell
+# pnpm
+pnpm add @vi-design/color
+# yarn
 yarn add @vi-design/color
 ```
 
@@ -53,7 +52,6 @@ yarn add @vi-design/color
     export default theme
     
     // ---------------------
-    
     
     // 在组件中使用
     
@@ -149,14 +147,29 @@ interface Uni {
 
 仅 `VitarxTheme`、`VueTheme` 和 `WebTheme` 支持在CSS中使用主题变量，`UniAppTheme` 不支持此功能！
 
-```css
-body {
-  background-color: var(--color-background);
-  color: var(--color-on-background);
-}
-```
+1. 在html标签中添加 `theme` 属性，指定主题模式：
+   ```html
+   <!doctype html>
+   <html lang="en" theme="dark">
+   <head>
+     <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+     <title>测试</title>
+   </head>
+   <body>
+   <div id="root"></div>
+   </body>
+   </html>
+   ```
+2. 在css文件中使用主题变量：
+   ```css
+   body {
+     background-color: var(--color-background);
+     color: var(--color-on-background);
+   }
+   ```
 
-为了能够在css中有智能提示，我们应该在项目下添加一个默认的主题变量文件，如：
+为了能够在css中有ide智能提示，我们可以在项目下添加一个css文件，但无需挂载到页面，如：
 
 ```css
 :root {
