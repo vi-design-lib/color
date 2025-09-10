@@ -65,9 +65,7 @@ export interface BaseSchemeOptions<
    */
   formula?: ComputeFormula
   /**
-   * 色相偏移角度
-   *
-   * 优先级高于 `formula`
+   * 色相起始角度
    */
   angle?: number
 }

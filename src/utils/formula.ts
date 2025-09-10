@@ -1,11 +1,16 @@
 import type { HSLObject } from '../types.js'
 
+/**
+ * 色相数组
+ *
+ * 三色：[主色, 二级色, 三级色]
+ */
 export type Hues = [number, number, number]
 /**
  * 计算公式：
  * - triadic：三分色，默认偏移为60度
  * - adjacent：相邻色，默认偏移为±45度
- * - complementary：分裂互补色，默认偏移为30度
+ * - complementary：分裂互补色，默认偏移为±30度
  */
 export type ComputeFormula = 'triadic' | 'adjacent' | 'complementary'
 

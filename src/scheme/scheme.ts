@@ -261,16 +261,16 @@ export class Scheme<OutColorTag extends ColorTag = 'hex', CustomKeys extends str
     const errorHue = colorScheme.error?.h || HslFormula.smartFunctionalHue('error', h)
 
     // 创建辅色和三级色
-    const auxHsl = { h: colorScheme.secondary?.h, s, l } as HSLObject
-    const extraHsl = { h: colorScheme.tertiary?.h, s, l } as HSLObject
-    if (!auxHsl.h || !extraHsl.h) {
-      const splitCompHues = this.computeAuxAndExtra(h, formula, angle, [
+    const secondaryHsl = { h: colorScheme.secondary?.h, s, l } as HSLObject
+    const tertiaryHsl = { h: colorScheme.tertiary?.h, s, l } as HSLObject
+    if (!secondaryHsl.h || !tertiaryHsl.h) {
+      const splitCompHues = this.computeSchemeHues(h, formula, angle, [
         successHue,
         warningHue,
         errorHue
       ])
-      auxHsl.h ??= splitCompHues[1]
-      extraHsl.h ??= splitCompHues[2]
+      secondaryHsl.h ??= splitCompHues[1]
+      tertiaryHsl.h ??= splitCompHues[2]
     }
 
     // 应用功能色
@@ -284,8 +284,8 @@ export class Scheme<OutColorTag extends ColorTag = 'hex', CustomKeys extends str
     // 合并配色方案
     Object.assign(colorScheme, {
       primary: primaryHsl,
-      secondary: auxHsl,
-      tertiary: extraHsl,
+      secondary: secondaryHsl,
+      tertiary: tertiaryHsl,
       success: successHsl,
       warning: warningHsl,
       error: errorHsl,
@@ -307,89 +307,6 @@ export class Scheme<OutColorTag extends ColorTag = 'hex', CustomKeys extends str
     }
 
     return colorScheme as BaseColorScheme<CustomKeys, OutColorTag>
-  }
-
-  /**
-   * 计算辅色和三级辅色的色相值
-   *
-   * 该方法根据主色色相、计算公式和偏移角度，计算出协调的辅色和三级辅色色相值。
-   * 会自动检测并避免与功能色色相冲突，确保生成的配色方案协调美观。
-   *
-   * @param {number} hue - 主色色相值，范围0-360
-   * @param {ComputeFormula} formula - 计算模式，可选值：'triadic'|'adjacent'|'splitComplementary'
-   * @param {number} [angle] - 色相偏移角度，不同计算模式有不同的默认值
-   * @param {number[]} functionalHues - 功能色色相值数组，用于检测色相冲突
-   * @returns {Hues} 包含主色、辅色和三级辅色色相值的数组
-   * @private
-   */
-  private static computeAuxAndExtra(
-    hue: number,
-    formula: ComputeFormula,
-    angle: number | undefined,
-    functionalHues: number[]
-  ): Hues {
-    // 检查色相距离的辅助函数
-    const checkHueDistance = (hue1: number, hue2: number): number => {
-      const dist1 = Math.abs(hue1 - hue2)
-      const dist2 = 360 - dist1
-      return Math.min(dist1, dist2)
-    }
-
-    // 检查一组色相是否与功能色冲突
-    const hasColorConflict = (hues: number[]): boolean => {
-      for (const hue of hues) {
-        for (const funcHue of functionalHues) {
-          if (checkHueDistance(hue, funcHue) < 30) {
-            return true
-          }
-        }
-      }
-      return false
-    }
-
-    // 根据色相冲突调整angle参数
-    let adjustedAngle = angle || (formula === 'triadic' ? 60 : formula === 'adjacent' ? 45 : 30)
-    let splitCompHues: Hues
-    let attempts = 0
-    const maxAttempts = 3
-
-    do {
-      splitCompHues = HslFormula.computeHues(formula, hue, adjustedAngle)
-      if (!hasColorConflict(splitCompHues)) break
-      // 增加角度以尝试避免冲突
-      adjustedAngle = adjustedAngle + 30
-      attempts++
-    } while (attempts < maxAttempts)
-    return splitCompHues
-  }
-
-  /**
-   * 深度合并规则对象
-   *
-   * 将自定义规则与默认规则进行深度合并，支持嵌套对象的合并。
-   * 如果自定义规则中的某个属性值为undefined，则使用默认规则中的对应值。
-   *
-   * @template T - 规则对象类型
-   * @param {T} defaultRules - 默认的规则对象
-   * @param {DeepPartial<T>} [custom] - 自定义的规则对象，可选
-   * @returns {T} 合并后的规则对象
-   * @private
-   */
-  private static deepMergeRules<T extends Record<string, any>>(
-    defaultRules: T,
-    custom?: DeepPartial<T>
-  ): T {
-    if (!custom) return defaultRules
-    const result = JSON.parse(JSON.stringify(defaultRules))
-    for (const key in custom) {
-      const value = custom[key]
-      if (value && typeof value === 'object' && !Array.isArray(value)) {
-        result[key] = this.deepMergeRules(defaultRules[key], value)
-      } else if (value !== undefined) {
-        result[key] = value as T[typeof key]
-      }
-    }
-    return result
   }
 
   /**
@@ -519,5 +436,78 @@ export class Scheme<OutColorTag extends ColorTag = 'hex', CustomKeys extends str
       }
     }
     return tonal
+  }
+
+  /**
+   * 计算辅色和三级辅色的色相值
+   *
+   * 该方法根据主色色相、计算公式和偏移角度，计算出协调的辅色和三级辅色色相值。
+   * 会自动检测并避免与功能色色相冲突，确保生成的配色方案协调美观。
+   *
+   * @param {number} hue - 主色色相值，范围0-360
+   * @param {ComputeFormula} formula - 计算模式，可选值：'triadic'|'adjacent'|'splitComplementary'
+   * @param {number} [angle] - 色相偏移角度，不同计算模式有不同的默认值
+   * @param {number[]} functionalHues - 功能色色相值数组，用于检测色相冲突
+   * @returns {Hues} 包含主色、辅色和三级辅色色相值的数组
+   * @private
+   */
+  private static computeSchemeHues(
+    hue: number, // 主色色相值，范围0-360
+    formula: ComputeFormula, // 计算模式，可选值：'triadic'|'adjacent'|'splitComplementary'
+    angle: number | undefined, // 色相偏移角度，不同计算模式有不同的默认值
+    functionalHues: number[] // 功能色色相值数组，用于检测色相冲突
+  ): Hues {
+    // 检查一组色相是否与功能色冲突
+    const hasColorConflict = (hues: number[]): boolean => {
+      // 内部函数：检测色相冲突
+      for (const hue of hues) {
+        // 遍历当前色相数组
+        for (const funcHue of functionalHues) {
+          // 遍历功能色色相数组
+          const dist1 = Math.abs(hue - funcHue) // 计算直接色相差
+          const dist2 = 360 - dist1 // 计算环绕色相差
+          if (Math.min(dist1, dist2) < 30) return true // 判断是否小于安全阈值30度
+        }
+      }
+      return false // 无冲突则返回false
+    }
+
+    // 根据色相冲突调整angle参数
+    let adjustedAngle = angle || (formula === 'triadic' ? 60 : formula === 'adjacent' ? 45 : 30) // 设置默认角度值
+    let splitCompHues = HslFormula.computeHues(formula, hue, adjustedAngle) // 计算初始色相值
+    if (!hasColorConflict(splitCompHues)) {
+      // 检查初始色相是否冲突
+      splitCompHues = HslFormula.computeHues(formula, hue, adjustedAngle + 50) // 若无冲突，增加50度重新计算
+    }
+    return splitCompHues // 返回计算后的色相值
+  }
+
+  /**
+   * 深度合并规则对象
+   *
+   * 将自定义规则与默认规则进行深度合并，支持嵌套对象的合并。
+   * 如果自定义规则中的某个属性值为undefined，则使用默认规则中的对应值。
+   *
+   * @template T - 规则对象类型
+   * @param {T} defaultRules - 默认的规则对象
+   * @param {DeepPartial<T>} [custom] - 自定义的规则对象，可选
+   * @returns {T} 合并后的规则对象
+   * @private
+   */
+  private static deepMergeRules<T extends Record<string, any>>(
+    defaultRules: T,
+    custom?: DeepPartial<T>
+  ): T {
+    if (!custom) return defaultRules
+    const result = JSON.parse(JSON.stringify(defaultRules))
+    for (const key in custom) {
+      const value = custom[key]
+      if (value && typeof value === 'object' && !Array.isArray(value)) {
+        result[key] = this.deepMergeRules(defaultRules[key], value)
+      } else if (value !== undefined) {
+        result[key] = value as T[typeof key]
+      }
+    }
+    return result
   }
 }
