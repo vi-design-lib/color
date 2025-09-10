@@ -157,7 +157,7 @@ export interface NeutralColorRoles<T> {
  * @template KS - 颜色键类型，表示基础颜色的名称
  * @template ColorType - 颜色值类型
  */
-type ExpandColorRoles<KS extends string, ColorType extends AnyColor> = {
+type BaseColorRole<KS extends string, ColorType extends AnyColor> = {
   [K in KS]: ColorType
 } & {
   [K in `on${Capitalize<KS>}`]: ColorType
@@ -172,7 +172,30 @@ type ExpandColorRoles<KS extends string, ColorType extends AnyColor> = {
 } & {
   [K in `on${Capitalize<KS>}Container`]: ColorType
 }
+/**
+ * 配色方案角色
+ *
+ * 将基础颜色扩展为多个颜色角色，包括基础色、悬停色、激活色等状态变体。
+ *
+ * @template CustomKeys - 自定义颜色键类型
+ * @template OutColorTag - 输出颜色标签类型
+ */
+type ColorSchemeRole<CustomKeys extends string, OutColorTag extends ColorTag> = BaseColorRole<
+  Exclude<CustomKeys, 'neutral'> | Exclude<InherentColorKeys, 'neutral'>,
+  ColorTagToColorType<OutColorTag>
+> &
+  NeutralColorRoles<ColorTagToColorType<OutColorTag>>
 
+/**
+ * 配色方案对应的RGB颜色角色
+ *
+ * 将自定义颜色和固有颜色扩展rgb角色
+ *
+ * @template T - 自定义颜色键类型
+ */
+type ColorSchemeRgbRole<T extends string> = {
+  [K in `${T}Rgb`]: string
+}
 /**
  * 配色方案对应的颜色角色
  *
@@ -184,8 +207,5 @@ type ExpandColorRoles<KS extends string, ColorType extends AnyColor> = {
 export type ColorSchemeRoles<
   CustomKeys extends string,
   OutColorTag extends ColorTag
-> = ExpandColorRoles<
-  Exclude<CustomKeys, 'neutral'> | Exclude<InherentColorKeys, 'neutral'>,
-  ColorTagToColorType<OutColorTag>
-> &
-  NeutralColorRoles<ColorTagToColorType<OutColorTag>>
+> = ColorSchemeRole<CustomKeys, OutColorTag> &
+  ColorSchemeRgbRole<keyof ColorSchemeRole<CustomKeys, OutColorTag>>
