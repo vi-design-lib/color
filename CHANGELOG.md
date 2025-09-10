@@ -1,10 +1,11 @@
-# [2.0.0-beta.5](https://gitee.com/vi-design/color/compare/v1.0.0...v2.0.0-beta.5) (2025-09-08)
+# [2.0.0-beta.6](https://gitee.com/vi-design/color/compare/v2.0.0-beta.5...v2.0.0-beta.6) (2025-09-10)
 
 
 ### Bug Fixes
 
 * **theme:** 优化主题模式切换逻辑 ([c3cbaaa](https://gitee.com/vi-design/color/commits/c3cbaaae6f8a7ee22b4245294e1b45ed73a41642))
 * **theme:** 修复 SSR 模式下系统主题选择逻辑 ([1718a2c](https://gitee.com/vi-design/color/commits/1718a2c1c37f468c8cec3111b358f94d476eaed3))
+* **theme:** 修复 Vitarx 主题插件报错 ([4293d39](https://gitee.com/vi-design/color/commits/4293d3942353aae8fa0230eb29b8056641ced92b))
 * **theme:** 修复主题设置和缓存相关问题 ([d56d684](https://gitee.com/vi-design/color/commits/d56d6843b5d2d517c99faab4f6712897481fa249))
 * **theme:** 修复色调颜色获取逻辑并增加参数校验 ([6432049](https://gitee.com/vi-design/color/commits/643204955315a66ff0b0c348d4acdc91a6671c45))
 
