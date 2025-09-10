@@ -118,7 +118,7 @@ export class WebTheme<
     this.varPrefix = varPrefix
     this.varSuffix = varSuffix
     this.ssr = ssr
-    if (!this._isBrowser) {
+    if (this._isBrowser) {
       document.documentElement.setAttribute(options?.attribute || 'theme', this.bright)
       this._sheet = WebTheme.createStyleSheet()
       this.updateStyles()
