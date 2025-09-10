@@ -2,6 +2,24 @@ import type { AnyColor, ColorTag } from '../types.js'
 import { anyColorToHexColor } from './conversion.js'
 
 /**
+ * 将十六进制颜色代码转换为最接近的 ANSI 颜色代码
+ * @param hex - 十六进制颜色代码，格式为 #RRGGBB
+ * @returns ANSI 转义码字符串，可用于终端颜色显示
+ */
+export function hexToAnsi(hex: string): string {
+  // 去除 '#' 符号并解析 RGB
+  const r = parseInt(hex.slice(1, 3), 16) // 提取红色分量 (0-255)
+  const g = parseInt(hex.slice(3, 5), 16) // 提取绿色分量 (0-255)
+  const b = parseInt(hex.slice(5, 7), 16) // 提取蓝色分量 (0-255)
+
+  // 计算最接近的 ANSI 颜色（0-15）
+  // 将 RGB 值映射到 6 个级别 (0-5)，然后转换为 ANSI 256 色表中的索引
+  const ansiColor =
+    16 + Math.round((r / 255) * 5) * 36 + Math.round((g / 255) * 5) * 6 + Math.round((b / 255) * 5)
+  return `\x1b[38;5;${ansiColor}m` // ANSI 转义码
+}
+
+/**
  * 输出带有颜色的键值对对象到控制台
  *
  * @param {Record<string, string>} colors - 键值对对象，键为颜色名称，值为颜色值（HEX颜色）
@@ -11,22 +29,6 @@ export function logColorsWithLabels(colors: Record<string, AnyColor>): void {
   const isBrowser = typeof window !== 'undefined'
 
   if (!isBrowser) {
-    // 非浏览器环境，使用 ANSI 颜色代码
-    const hexToAnsi = (hex: string): string => {
-      // 去除 '#' 符号并解析 RGB
-      const r = parseInt(hex.slice(1, 3), 16)
-      const g = parseInt(hex.slice(3, 5), 16)
-      const b = parseInt(hex.slice(5, 7), 16)
-
-      // 计算最接近的 ANSI 颜色（0-15）
-      const ansiColor =
-        16 +
-        Math.round((r / 255) * 5) * 36 +
-        Math.round((g / 255) * 5) * 6 +
-        Math.round((b / 255) * 5)
-      return `\x1b[38;5;${ansiColor}m` // ANSI 转义码
-    }
-
     // 在终端中输出颜色
     Object.entries(colors).forEach(([key, color]) => {
       color = anyColorToHexColor(color)
