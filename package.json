@@ -45,7 +45,7 @@
   "scripts": {
     "build": "rimraf dist && pnpm run test && tsc -p tsconfig.app.json && vite build",
     "prepublishOnly": "npm run build",
-    "push": "tsx scripts/release.ts",
+    "push": "release-cli",
     "test": "vitest run"
   },
   "devDependencies": {
