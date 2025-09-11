@@ -393,10 +393,8 @@ const manager = new StaticThemeManager({
   attribute: 'data-theme'
 })
 
-// 监听主题模式变化
-manager.mode.subscribe(mode => {
-  console.log('当前主题模式:', mode)
-})
+// 设置切换主题模式
+manager.setMode('dark')
 ```
 
 ### 性能最佳实践
