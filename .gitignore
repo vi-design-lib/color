@@ -28,4 +28,5 @@ __snapshots__
 *.njsproj
 *.sln
 *.sw?
+.qoder
 
