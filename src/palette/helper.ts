@@ -1,5 +1,5 @@
 import { anyColorToHslObject, anyColorToTargetColor } from '../utils/index.js'
-import { Palette, type PaletteOptions } from './palette.js'
+import { type PaletteOptions } from './palette.js'
 import type { AnyColor, ColorTag, ColorTagToColorType } from '../types.js'
 
 /**

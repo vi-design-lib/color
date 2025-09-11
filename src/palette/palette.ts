@@ -49,6 +49,7 @@ export class Palette<OutColorTag extends ColorTag = 'hex'> {
   private readonly _sourceColor: ColorTagToColorType<OutColorTag>
   // 调色板配置选项
   private readonly _options: Required<PaletteOptions<OutColorTag>>
+
   /**
    * 创建调色板实例
    *
@@ -120,6 +121,25 @@ export class Palette<OutColorTag extends ColorTag = 'hex'> {
   }
 
   /**
+   * 创建调色板的静态工厂方法
+   *
+   * 提供一种便捷的方式来创建调色板实例，无需使用new关键字。
+   *
+   * @template OutColorTag - 调色板输出的颜色标签类型，默认为'hex'
+   * @param {AnyColor} sourceColor - 源色，作为调色板的基准颜色
+   * @param {number} size - 色阶数量，决定调色板的颜色分级数
+   * @param {PaletteOptions<OutColorTag>} [options] - 可选的配置项
+   * @returns {Palette<OutColorTag>} 新创建的调色板实例
+   */
+  static create<OutColorTag extends ColorTag = 'hex'>(
+    sourceColor: AnyColor,
+    size: number,
+    options?: PaletteOptions<OutColorTag>
+  ): Palette<OutColorTag> {
+    return new Palette(sourceColor, size, options)
+  }
+
+  /**
    * 获取指定索引的色阶颜色
    *
    * 根据索引获取对应的色阶颜色，如果该颜色尚未计算，则会计算并缓存。
@@ -166,24 +186,5 @@ export class Palette<OutColorTag extends ColorTag = 'hex'> {
         }
       }
     }
-  }
-
-  /**
-   * 创建调色板的静态工厂方法
-   *
-   * 提供一种便捷的方式来创建调色板实例，无需使用new关键字。
-   *
-   * @template OutColorTag - 调色板输出的颜色标签类型，默认为'hex'
-   * @param {AnyColor} sourceColor - 源色，作为调色板的基准颜色
-   * @param {number} size - 色阶数量，决定调色板的颜色分级数
-   * @param {PaletteOptions<OutColorTag>} [options] - 可选的配置项
-   * @returns {Palette<OutColorTag>} 新创建的调色板实例
-   */
-  static create<OutColorTag extends ColorTag = 'hex'>(
-    sourceColor: AnyColor,
-    size: number,
-    options?: PaletteOptions<OutColorTag>
-  ): Palette<OutColorTag> {
-    return new Palette(sourceColor, size, options)
   }
 }
