@@ -1,10 +1,22 @@
-# [2.0.0-beta.9](https://gitee.com/vi-design/color/compare/v2.0.0-beta.8...v2.0.0-beta.9) (2025-09-10)
+# [2.1.0-alpha.0](https://gitee.com/vi-design/color/compare/v2.0.0-beta.9...v2.1.0-alpha.0) (2025-09-11)
+
+
+### Features
+
+* **conversion:** 添加任意颜色转 ARGB 功能 ([bf385f8](https://gitee.com/vi-design/color/commits/bf385f871ec21816ab32c7724e0094cfe1d07faa))
+* **image-utils:** 为 colorFromImageElement 和 colorFromImage 函数添加默认颜色参数 ([a195503](https://gitee.com/vi-design/color/commits/a19550398e934b79ef23f544484d31014afdf878)), closes [#1677](https://gitee.com/vi-design/color/issues/1677) [#1677](https://gitee.com/vi-design/color/issues/1677)
+* **scheme:** 为颜色角色添加 RGB 值 ([551e3c4](https://gitee.com/vi-design/color/commits/551e3c4847e93143cf2b718af18e4d2df1cf9211))
+* **theme:** 优化 UniApp 主题类并添加颜色提取功能 ([232ea75](https://gitee.com/vi-design/color/commits/232ea758fc76f89f415e7ad3435284f0f47d999b))
+* **utils:** 扩展 rgbColorToObj 函数以支持 RGBA格式 ([671bfc0](https://gitee.com/vi-design/color/commits/671bfc0dddfa48e4fd3493363e036e5a0e48bb34))
+
+
+
+# [2.0.0-beta.8](https://gitee.com/vi-design/color/compare/v2.0.0-beta.7...v2.0.0-beta.8) (2025-09-10)
 
 
 ### Features
 
 * **example:** 添加智能对比度调整算法示例 ([b3a46c9](https://gitee.com/vi-design/color/commits/b3a46c9adf768c558c2490b77dffb2f0a653a9ad))
-* **scheme:** 为颜色角色添加 RGB 值 ([551e3c4](https://gitee.com/vi-design/color/commits/551e3c4847e93143cf2b718af18e4d2df1cf9211))
 * **utils:** 智能调整颜色对比度以满足WCAG标准 ([e9152fc](https://gitee.com/vi-design/color/commits/e9152fcfb05e8bbb7acb2cefbb6af42811e17dcb))
 
 
