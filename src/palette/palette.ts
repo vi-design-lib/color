@@ -144,7 +144,7 @@ export class Palette<OutColorTag extends ColorTag = 'hex'> {
    *
    * 根据索引获取对应的色阶颜色，如果该颜色尚未计算，则会计算并缓存。
    *
-   * @param {number} i - 色阶索引，范围为0~(size-1)
+   * @param {number} i - 色阶索引，范围为0~(size-1)，如果大于size-1，则 i = size-1
    * @returns {ColorTagToColorType<OutColorTag>} 指定索引的色阶颜色
    */
   get(i: number): ColorTagToColorType<OutColorTag> {
