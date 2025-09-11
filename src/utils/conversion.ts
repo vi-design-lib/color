@@ -37,6 +37,7 @@ export function hexToRgbObject(hex: string): RGBObject {
   const b = parseInt(hexBody.slice(4, 6), 16)
   return { r, g, b }
 }
+
 /**
  * HEX 转 HSL
  *
@@ -392,4 +393,19 @@ export function anyColorToTargetColor<T extends ColorTag>(
     default:
       throw new Error(`Invalid target type , ${target}`)
   }
+}
+
+/**
+ * 将任意颜色格式转换为带透明度的RGBA颜色字符串
+ *
+ * @param color - 任意颜色格式的输入值，可以是字符串、数字或对象
+ * @param opacity - 透明度值，范围从0到1
+ * @returns 返回RGBA格式的颜色字符串，例如 "rgba(255, 255, 255, 0.5)"
+ */
+export function anyColorToArgb(
+  color: AnyColor,
+  opacity: number
+): `rgba(${number}, ${number}, ${number}, ${number})` {
+  const rgb = anyColorToRgbObject(color) // 将输入颜色转换为RGB对象
+  return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${Math.max(0, Math.min(1, opacity))})` // 返回RGBA格式的字符串
 }
