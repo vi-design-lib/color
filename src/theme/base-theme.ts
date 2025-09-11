@@ -9,6 +9,7 @@ import {
   type Tone
 } from '../scheme/index.js'
 import { ref, type Ref, type RefFactory } from './common.js'
+import { CACHE_THEME_MODE } from '../constant.js'
 
 /**
  * 亮度模式
@@ -36,7 +37,7 @@ export interface BaseThemeOptions<OutColorTag extends ColorTag, CustomKeys exten
    * 缓存主题模式的key
    *
    * @description 用于在本地存储中保存主题模式的键名
-   * @default '_CACHE_THEME_MODE'
+   * @default CACHE_THEME_MODE
    */
   cacheKey?: string
 
@@ -91,10 +92,9 @@ export abstract class BaseTheme<OutColorTag extends ColorTag, CustomKeys extends
    * @param {BaseThemeOptions<OutColorTag, CustomKeys>} [options] - 配置选项，用于自定义主题行为
    */
   protected constructor(mainColor: AnyColor, options?: BaseThemeOptions<OutColorTag, CustomKeys>) {
-    this.cacheKey = options?.cacheKey || '_CACHE_THEME_MODE'
     const {
       refFactory = ref,
-      cacheKey = '_CACHE_THEME_MODE',
+      cacheKey = CACHE_THEME_MODE,
       defaultMode = 'system',
       ...schemeOptions
     } = options || {}

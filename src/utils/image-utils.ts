@@ -2,6 +2,7 @@ import type { HexColor, RGBObject } from '../types.js'
 import { rgbObjectToHexColor } from './conversion.js'
 import { quantize } from './quantizer.js'
 import { score } from './score.js'
+import { DEFAULT_COLOR } from '../constant.js'
 
 interface Pixel {
   r: number
@@ -49,12 +50,12 @@ const getImageBytes = async (
  * 从图像字节数组中提取主要颜色
  *
  * @param imageBytes - 图像的像素数据，以Uint8ClampedArray形式存储
- * @param defaultColor - 当无法提取有效颜色时返回的默认颜色，默认为'#1677ff'
+ * @param defaultColor - 当无法提取有效颜色时返回的默认颜色，默认为DEFAULT_COLOR
  * @returns {HexColor} 返回图像中最具代表性的颜色，以十六进制格式表示
  */
 export function colorFromImageBytes(
   imageBytes: Uint8ClampedArray<ArrayBufferLike>,
-  defaultColor: HexColor = '#1677ff'
+  defaultColor: HexColor = DEFAULT_COLOR
 ): HexColor {
   // 统计像素颜色
   const colorMap = new Map<string, Pixel>()
@@ -115,12 +116,12 @@ export function colorFromImageBytes(
  * 如果图片是纯黑色或纯白色会返回 `defaultColor` 做为默认颜色
  *
  * @param {HTMLImageElement} image - 图片元素
- * @param {HexColor} [defaultColor='#1677ff'] - 默认颜色，当图片为纯白色或纯黑色会返回此颜色
+ * @param {HexColor} [defaultColor=DEFAULT_COLOR] - 默认颜色，当图片为纯白色或纯黑色会返回此颜色
  * @returns {Promise<HexColor>} - 16进制颜色
  */
 export async function colorFromImageElement(
   image: HTMLImageElement,
-  defaultColor: HexColor = '#1677ff'
+  defaultColor: HexColor = DEFAULT_COLOR
 ): Promise<HexColor> {
   const canvas = document.createElement('canvas')
   const context = canvas.getContext('2d')
@@ -136,10 +137,13 @@ export async function colorFromImageElement(
  * @remarks 只能运行在浏览器环境
  * @alias colorFromImageSrc
  * @param {string} src - 任意可以使用`img`加载的图片src
- * @param {HexColor} [defaultColor='#1677ff'] - 默认颜色，当图片为纯白色或纯黑色会返回此颜色
+ * @param {HexColor} [defaultColor=DEFAULT_COLOR] - 默认颜色，当图片为纯白色或纯黑色会返回此颜色
  * @returns {Promise<HexColor>} 16进制颜色值
  */
-export function colorFromImage(src: string, defaultColor: HexColor = '#1677ff'): Promise<HexColor> {
+export function colorFromImage(
+  src: string,
+  defaultColor: HexColor = DEFAULT_COLOR
+): Promise<HexColor> {
   return new Promise<HexColor>((resolve, reject) => {
     const img = new Image()
     img.onload = () => {

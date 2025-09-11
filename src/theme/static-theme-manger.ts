@@ -1,5 +1,6 @@
 import type { Brightness, ThemeMode } from './base-theme.js'
 import { ref, type Ref, type RefFactory } from './common.js'
+import { CACHE_THEME_MODE } from '../constant.js'
 
 /**
  * 静态主题配置选项接口
@@ -19,7 +20,7 @@ export interface StaticThemeOptions {
    * 缓存主题模式的key
    *
    * @description 用于在本地存储中保存主题模式的键名
-   * @default '_CACHE_THEME_MODE'
+   * @default CACHE_THEME_MODE
    */
   cacheKey?: string
 
@@ -72,21 +73,12 @@ export interface StaticThemeOptions {
  */
 export class StaticThemeManger {
   /**
-   * 主题模式
-   *
-   * @description 存储当前的主题模式，使用Ref包装以支持响应式
-   * @private
-   */
-  private _mode: Ref<ThemeMode>
-
-  /**
    * 静态主题配置
    *
    * @description 存储主题管理器的所有配置选项
    * @protected
    */
   protected config: Required<StaticThemeOptions>
-
   /**
    * 是否为浏览器环境
    *
@@ -111,7 +103,7 @@ export class StaticThemeManger {
     this.config = Object.assign(
       {
         attribute: 'theme',
-        cacheKey: '_CACHE_THEME_MODE',
+        cacheKey: CACHE_THEME_MODE,
         defaultMode: 'system',
         refFactory: ref,
         ssr: false
@@ -129,30 +121,21 @@ export class StaticThemeManger {
   }
 
   /**
-   * 设置主题模式
+   * 主题模式
    *
-   * @description 设置当前主题的模式，并在必要时更新缓存和HTML属性
-   * @param {ThemeMode} mode - 要设置的主题模式
-   * @returns {void}
+   * @description 存储当前的主题模式，使用Ref包装以支持响应式
+   * @private
    */
-  public setMode(mode: ThemeMode): void {
-    if (this.mode !== mode) {
-      this._mode.value = mode
-      this.setCacheThemeMode(mode)
-      if (this._isBrowser) {
-        document.documentElement.setAttribute(this.attribute, this.bright)
-      }
-    }
-  }
+  private _mode: Ref<ThemeMode>
 
   /**
-   * 获取当前主题的亮度
+   * 获取主题模式
    *
-   * @description 根据当前主题模式返回对应的亮度，如果是system模式则返回系统亮度
-   * @returns {Brightness} 当前的亮度模式
+   * @description 获取当前设置的主题模式
+   * @returns {ThemeMode} 当前的主题模式
    */
-  get bright(): Brightness {
-    return this.mode === 'system' ? this.systemBright : this.mode
+  get mode(): ThemeMode {
+    return this._mode.value
   }
 
   /**
@@ -166,13 +149,13 @@ export class StaticThemeManger {
   }
 
   /**
-   * 获取主题模式
+   * 获取当前主题的亮度
    *
-   * @description 获取当前设置的主题模式
-   * @returns {ThemeMode} 当前的主题模式
+   * @description 根据当前主题模式返回对应的亮度，如果是system模式则返回系统亮度
+   * @returns {Brightness} 当前的亮度模式
    */
-  get mode(): ThemeMode {
-    return this._mode.value
+  get bright(): Brightness {
+    return this.mode === 'system' ? this.systemBright : this.mode
   }
 
   /**
@@ -214,6 +197,23 @@ export class StaticThemeManger {
   get systemBright(): Brightness {
     if (!this._isBrowser) return this.config.ssr === 'dark' ? 'dark' : 'light'
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  }
+
+  /**
+   * 设置主题模式
+   *
+   * @description 设置当前主题的模式，并在必要时更新缓存和HTML属性
+   * @param {ThemeMode} mode - 要设置的主题模式
+   * @returns {void}
+   */
+  public setMode(mode: ThemeMode): void {
+    if (this.mode !== mode) {
+      this._mode.value = mode
+      this.setCacheThemeMode(mode)
+      if (this._isBrowser) {
+        document.documentElement.setAttribute(this.attribute, this.bright)
+      }
+    }
   }
 
   /**

@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { BaseTheme, type BaseThemeOptions, type Brightness, type ThemeMode } from './base-theme.js'
 import type { AnyColor, ColorTag, HexColor } from '../types.js'
 import { colorFromImageBytes } from '../utils/image-utils.js'
+import { DEFAULT_COLOR } from '../constant.js'
 
 /**
  * uni-app主题管理类
@@ -143,13 +144,13 @@ export function createUniTheme<OutColorTag extends ColorTag, CustomKeys extends 
  *
  * @param src 图片路径
  * @param context canvas上下文对象，通过uni.createCanvasContext创建
- * @param defaultColor 默认颜色，当无法提取颜色时使用
+ * @param [defaultColor=DEFAULT_COLOR] 默认颜色，当图片颜色过亮或过暗时使用
  * @returns {Promise<HexColor>} 返回一个Promise，解析为提取到的十六进制颜色值
  */
 export function colorFromImage(
   src: string, // 图片源路径
-  context: UniNamespace.CanvasContext, // canvas上下文对象
-  defaultColor: HexColor = '#1677ff' // 默认颜色值，默认为'#1677ff'
+  context: UniNamespace.CanvasContext,
+  defaultColor: HexColor = DEFAULT_COLOR
 ): Promise<HexColor> {
   return new Promise((resolve1, reject1) => {
     // 使用uni.getImageInfo获取图片信息

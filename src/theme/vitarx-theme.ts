@@ -2,6 +2,7 @@
 import { ref } from 'vitarx'
 import { WebTheme, type WebThemeOptions } from './web-theme.js'
 import type { AnyColor, ColorTag } from '../types.js'
+import { DEFAULT_COLOR } from '../constant.js'
 
 /**
  * Vitarx主题插件配置选项接口
@@ -16,7 +17,7 @@ export interface ThemePluginOptions<OutColorTag extends ColorTag, CustomKeys ext
    * 主色
    *
    * @description 作为整个配色方案的基础颜色
-   * @default '#1677ff'
+   * @default DEFAULT_COLOR
    */
   primaryColor?: AnyColor
 }
@@ -58,8 +59,8 @@ export class VitarxTheme<
  * @template CustomKeys - 自定义颜色键类型
  * @param {Object} app - Vitarx应用实例
  * @param {ThemePluginOptions<OutColorTag, CustomKeys>} [options] - 配置选项
- * @param {AnyColor} [options.primaryColor=#1677ff] - 主色
- * @param {string} [options.varPrefix=--color-] - CSS变量前缀
+ * @param {AnyColor} [options.primaryColor=DEFAULT_COLOR] - 主色
+ * @param {string} [options.varPrefix='--color-'] - CSS变量前缀
  * @param {string} [options.varSuffix] - CSS变量后缀
  * @param {string} [options.attribute=theme] - HTML属性名
  * @returns {void}
@@ -69,7 +70,7 @@ export function theme<OutColorTag extends ColorTag, CustomKeys extends string>(
   options?: ThemePluginOptions<OutColorTag, CustomKeys>
 ): void {
   if (typeof app?.provide === 'function') {
-    const { primaryColor = '#1677ff', ...config } = options || {}
+    const { primaryColor = DEFAULT_COLOR, ...config } = options || {}
     const theme = new VitarxTheme(primaryColor, config)
     // 注入到应用中
     app.provide('theme', theme)

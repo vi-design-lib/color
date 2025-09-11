@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import type { AnyColor, ColorTag } from '../types.js'
 import { WebTheme, type WebThemeOptions } from './web-theme.js'
 import type { ThemePluginOptions } from './vitarx-theme.js'
+import { DEFAULT_COLOR } from '../constant.js'
 
 /**
  * Vue框架主题管理类
@@ -42,8 +43,8 @@ export class VueTheme<
  * @template CustomKeys - 自定义颜色键类型
  * @param {Object} app - Vue应用实例
  * @param {ThemePluginOptions<OutColorTag, CustomKeys>} [options] - 配置选项
- * @param {AnyColor} [options.mainColor=#1677ff] - 主色
- * @param {string} [options.varPrefix=--color-] - CSS变量前缀
+ * @param {AnyColor} [options.mainColor=DEFAULT_COLOR] - 主色
+ * @param {string} [options.varPrefix='--color-'] - CSS变量前缀
  * @param {string} [options.varSuffix] - CSS变量后缀
  * @param {string} [options.attribute=theme] - HTML属性名
  * @returns {void}
@@ -54,7 +55,7 @@ export function theme<OutColorTag extends ColorTag, CustomKeys extends string>(
   options?: ThemePluginOptions<OutColorTag, CustomKeys>
 ): void {
   if (typeof app?.provide === 'function') {
-    const { primaryColor = '#1677ff', ...config } = options || {}
+    const { primaryColor = DEFAULT_COLOR, ...config } = options || {}
     if (!primaryColor) throw new Error('primaryColor is required')
     const theme = new VueTheme(primaryColor, config)
     // 注入到应用中
@@ -62,6 +63,7 @@ export function theme<OutColorTag extends ColorTag, CustomKeys extends string>(
     app.config.globalProperties.$theme = theme
   }
 }
+
 export { theme as ThemePlugin }
 
 /**

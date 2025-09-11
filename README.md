@@ -298,21 +298,21 @@ theme.changeColorScheme('#ff5500', {
 
 适用于 `StaticThemeManager`：
 
-| 配置项           | 类型                           | 默认值                   | 描述                  |
-|---------------|------------------------------|-----------------------|---------------------|
-| `attribute`   | `string`                     | `'theme'`             | HTML根元素用于记录主题亮度的属性名 |
-| `cacheKey`    | `string`                     | `'_CACHE_THEME_MODE'` | 缓存主题模式的key          |
-| `defaultMode` | `ThemeMode`                  | `'system'`            | 默认主题模式              |
-| `refFactory`  | `RefFactory`                 | `ref`                 | ref工厂函数，用于创建响应式数据   |
-| `ssr`         | `'light' \| 'dark' \| false` | `false`               | 服务端渲染时的系统主题亮度       |
+| 配置项           | 类型                           | 默认值                | 描述                  |
+|---------------|------------------------------|--------------------|---------------------|
+| `attribute`   | `string`                     | `'theme'`          | HTML根元素用于记录主题亮度的属性名 |
+| `cacheKey`    | `string`                     | `CACHE_THEME_MODE` | 缓存主题模式的key          |
+| `defaultMode` | `ThemeMode`                  | `'system'`         | 默认主题模式              |
+| `refFactory`  | `RefFactory`                 | `ref`              | ref工厂函数，用于创建响应式数据   |
+| `ssr`         | `'light' \| 'dark' \| false` | `false`            | 服务端渲染时的系统主题亮度       |
 
 ### 插件配置选项
 
 适用于 Vue 和 Vitarx 插件方式：
 
-| 配置项            | 类型         | 默认值         | 描述               |
-|----------------|------------|-------------|------------------|
-| `primaryColor` | `AnyColor` | `'#1677ff'` | 主色，作为整个配色方案的基础颜色 |
+| 配置项            | 类型         | 默认值             | 描述               |
+|----------------|------------|-----------------|------------------|
+| `primaryColor` | `AnyColor` | `DEFAULT_COLOR` | 主色，作为整个配色方案的基础颜色 |
 
 ### 配置示例
 
