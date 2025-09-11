@@ -202,23 +202,30 @@ export function hslObjectToRgbColor(hsl: HSLObject): RgbColor {
 /**
  * rgb字符串转为rgb对象
  *
- * @param { RgbColor } rgbString
+ * @param { RgbColor | string } rgbString
  * @returns { RGBObject } - RGB对象
  */
 export function rgbColorToObj(rgbString: string): RGBObject {
-  // 正则表达式匹配 rgb(r, g, b) 格式的字符串
-  const match = rgbString.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/)
+  // 正则表达式匹配 rgb(r, g, b) 或 rgba(r, g, b, a) 格式的字符串
+  const rgbMatch = rgbString.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/)
 
-  if (!match) {
-    throw new Error('Invalid RGB string format')
+  if (rgbMatch) {
+    // 提取匹配的数字并转换为整数
+    const r = parseInt(rgbMatch[1], 10)
+    const g = parseInt(rgbMatch[2], 10)
+    const b = parseInt(rgbMatch[3], 10)
+    return { r, g, b }
+  } else {
+    const rgbaMatch = rgbString.match(/^rgba\((\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)$/)
+    if (rgbaMatch) {
+      // 对于RGBA格式，我们只提取RGB值，忽略alpha通道
+      const r = parseInt(rgbaMatch[1], 10)
+      const g = parseInt(rgbaMatch[2], 10)
+      const b = parseInt(rgbaMatch[3], 10)
+      return { r, g, b }
+    }
   }
-
-  // 提取匹配的数字并转换为整数
-  const r = parseInt(match[1], 10)
-  const g = parseInt(match[2], 10)
-  const b = parseInt(match[3], 10)
-
-  return { r, g, b }
+  throw new Error('Invalid RGB or RGBA string format')
 }
 
 /**
