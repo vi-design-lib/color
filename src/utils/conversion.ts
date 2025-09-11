@@ -402,7 +402,7 @@ export function anyColorToTargetColor<T extends ColorTag>(
  * @param opacity - 透明度值，范围从0到1
  * @returns 返回RGBA格式的颜色字符串，例如 "rgba(255, 255, 255, 0.5)"
  */
-export function anyColorToArgb(
+export function argbFromAnyColor(
   color: AnyColor,
   opacity: number
 ): `rgba(${number}, ${number}, ${number}, ${number})` {
