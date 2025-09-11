@@ -48,12 +48,16 @@ const getImageBytes = async (
 /**
  * 从图片元素中获取颜色
  *
- * 如果图片是纯黑色或纯白色会返回 `#1677ff` 做为默认颜色
+ * 如果图片是纯黑色或纯白色会返回 `defaultColor` 做为默认颜色
  *
  * @param {HTMLImageElement} image - 图片元素
+ * @param {HexColor} [defaultColor='#1677ff'] - 默认颜色，当图片为纯白色或纯黑色会返回此颜色
  * @returns {Promise<HexColor>} - 16进制颜色
  */
-export async function colorFromImageElement(image: HTMLImageElement): Promise<HexColor> {
+export async function colorFromImageElement(
+  image: HTMLImageElement,
+  defaultColor: HexColor = '#1677ff'
+): Promise<HexColor> {
   const canvas = document.createElement('canvas')
   const context = canvas.getContext('2d')
   if (!context) throw new Error('Failed to get canvas context')
@@ -88,7 +92,7 @@ export async function colorFromImageElement(image: HTMLImageElement): Promise<He
   }
 
   // 如果是纯黑色或纯白色图片，则返回默认颜色
-  if (colorMap.size === 0) return '#1677ff'
+  if (colorMap.size === 0) return defaultColor
   // 将像素数据转换为 RGBObject 数组，同时保留频率信息
   const pixels: RGBObject[] = Array.from(colorMap.values()).map((pixel) => ({
     r: pixel.r,
@@ -115,18 +119,21 @@ export async function colorFromImageElement(image: HTMLImageElement): Promise<He
 /**
  * 从图片元素中获取颜色
  *
+ * @remarks 只能运行在浏览器环境
+ * @alias colorFromImageSrc
  * @param {string} src - 任意可以使用`img`加载的图片src
+ * @param {HexColor} [defaultColor='#1677ff'] - 默认颜色，当图片为纯白色或纯黑色会返回此颜色
  * @returns {Promise<HexColor>} 16进制颜色值
  */
-export function colorFromImage(src: string): Promise<HexColor> {
-  return new Promise((resolve, reject) => {
+export function colorFromImage(src: string, defaultColor: HexColor = '#1677ff'): Promise<HexColor> {
+  return new Promise<HexColor>((resolve, reject) => {
     const img = new Image()
     img.onload = () => {
-      resolve(colorFromImageElement(img))
+      resolve(colorFromImageElement(img, defaultColor))
     }
-    img.onerror = () => {
-      reject(new Error('Failed to load image'))
-    }
+    img.onerror = reject
     img.src = src
   })
 }
+
+export { colorFromImage as colorFromImageSrc }
