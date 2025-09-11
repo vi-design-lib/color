@@ -1,7 +1,8 @@
 // @ts-ignore
 import { ref } from 'vue'
 import { BaseTheme, type BaseThemeOptions, type Brightness, type ThemeMode } from './base-theme.js'
-import type { AnyColor, ColorTag } from '../types.js'
+import type { AnyColor, ColorTag, HexColor } from '../types.js'
+import { colorFromImageBytes } from '../utils/image-utils.js'
 
 /**
  * uni-app主题管理类
@@ -46,6 +47,9 @@ export class UniAppTheme<OutColorTag extends ColorTag, CustomKeys extends string
    */
   constructor(mainColor: AnyColor, options: BaseThemeOptions<OutColorTag, CustomKeys> = {}) {
     options.refFactory ??= ref
+    if (!options.refFactory) {
+      options.refFactory = ref
+    }
     super(mainColor, options)
     uni.onThemeChange(({ theme }) => {
       // 如果是system模式，则切换主题
@@ -54,16 +58,23 @@ export class UniAppTheme<OutColorTag extends ColorTag, CustomKeys extends string
   }
 
   /**
-   * 缓存主题模式
-   *
-   * @description 将当前主题模式保存到uni-app的Storage中
    * @inheritDoc
    * @override
-   * @param {ThemeMode} mode - 要缓存的主题模式
-   * @returns {void}
+   * @returns {Brightness} 系统的亮度模式，如果获取失败则返回`light`
    */
-  protected override setCacheThemeMode(mode: ThemeMode): void {
-    uni.setStorageSync(this.cacheKey, mode)
+  override get systemBright(): Brightness {
+    return (uni.getSystemInfoSync().theme as Brightness) || 'light'
+  }
+
+  /**
+   * 获取缓存的主题模式
+   *
+   * @description 从uni-app的Storage中获取之前缓存的主题模式
+   * @override
+   * @returns {ThemeMode | undefined | null} 缓存的主题模式
+   */
+  override getCacheThemeMode(): ThemeMode | undefined | null {
+    return uni.getStorageSync(this.cacheKey)
   }
 
   /**
@@ -79,34 +90,23 @@ export class UniAppTheme<OutColorTag extends ColorTag, CustomKeys extends string
   }
 
   /**
-   * 获取缓存的主题模式
+   * 缓存主题模式
    *
-   * @description 从uni-app的Storage中获取之前缓存的主题模式
+   * @description 将当前主题模式保存到uni-app的Storage中
    * @inheritDoc
    * @override
-   * @returns {ThemeMode | undefined | null} 缓存的主题模式
+   * @param {ThemeMode} mode - 要缓存的主题模式
+   * @returns {void}
    */
-  override getCacheThemeMode() {
-    return uni.getStorageSync(this.cacheKey)
-  }
-
-  /**
-   * 获取系统亮度
-   *
-   * @description 获取当前uni-app环境下系统的亮度模式设置
-   * @inheritDoc
-   * @override
-   * @returns {Brightness} 系统的亮度模式，如果获取失败则返回'light'
-   */
-  override get systemBright(): Brightness {
-    return (uni.getSystemInfoSync().theme as Brightness) || 'light'
+  protected override setCacheThemeMode(mode: ThemeMode): void {
+    uni.setStorageSync(this.cacheKey, mode)
   }
 }
 
 /**
  * 创建UniApp主题实例
  *
- * @description 创建一个uni-app环境下的主题管理实例，仅支持vue3模式，兼容微信小程序和App
+ * @description 创建一个uni-app环境下的主题管理实例，仅支持vue3模式(依赖vue.ref)，兼容微信小程序和App
  *
  * @template OutColorTag - 输出的颜色标签类型
  * @template CustomKeys - 自定义颜色键类型
@@ -124,4 +124,76 @@ export function createUniTheme<OutColorTag extends ColorTag, CustomKeys extends 
   options?: BaseThemeOptions<OutColorTag, CustomKeys>
 ): UniAppTheme<OutColorTag, CustomKeys> {
   return new UniAppTheme(mainColor, options as BaseThemeOptions<OutColorTag, CustomKeys>)
+}
+
+/**
+ * 从图片中提取主要颜色
+ *
+ * @example
+ * import { colorFromImage } from '@vi-design/color/theme/uniapp'
+ * // 获取canvas上下文对象
+ * const context = uni.createCanvasContext('canvas')
+ * const src = 'https://example.com/image.png'
+ * // 获取图片主要颜色
+ * colorFromImage(src, context).then(color => {
+ *   console.log(color) // "#xxxxxx" 十六进制颜色值
+ * }).catch(error => {
+ *   console.error(error) // 错误信息
+ * })
+ *
+ * @param src 图片路径
+ * @param context canvas上下文对象，通过uni.createCanvasContext创建
+ * @param defaultColor 默认颜色，当无法提取颜色时使用
+ * @returns {Promise<HexColor>} 返回一个Promise，解析为提取到的十六进制颜色值
+ */
+export function colorFromImage(
+  src: string, // 图片源路径
+  context: UniNamespace.CanvasContext, // canvas上下文对象
+  defaultColor: HexColor = '#1677ff' // 默认颜色值，默认为'#1677ff'
+): Promise<HexColor> {
+  return new Promise((resolve1, reject1) => {
+    // 使用uni.getImageInfo获取图片信息
+    uni.getImageInfo({
+      src: src, // 图片源路径
+      success: async (res) => {
+        // 构建图片信息对象
+        const imageInfo = {
+          width: res.width, // 图片宽度
+          height: res.height, // 图片高度
+          path: res.path // 图片临时路径
+        }
+        // 将图像数据转换为像素数组
+        const imageBytes: Uint8ClampedArray<ArrayBufferLike> = await new Promise<
+          Uint8ClampedArray<ArrayBufferLike>
+        >((resolve, reject) => {
+          // 检查canvas上下文是否存在
+          if (!context) return reject(new Error('Could not get canvas context'))
+          // 在canvas上绘制图片
+          context.drawImage(imageInfo.path, 0, 0, imageInfo.width, imageInfo.height)
+          // 定义图片矩形区域
+          let rect = [0, 0, imageInfo.width, imageInfo.height]
+          const [sx, sy, sw, sh] = rect // 解构矩形坐标和尺寸
+          // @ts-ignore
+          const contextId: string = context.id || context['canvasId'] // 获取canvas ID
+          // 获取canvas图像数据
+          uni.canvasGetImageData({
+            canvasId: contextId, // canvas ID
+            x: sx, // 起始x坐标
+            y: sy, // 起始y坐标
+            width: sw, // 宽度
+            height: sh, // 高度
+            success: (res) => {
+              resolve(res.data as unknown as Uint8ClampedArray<ArrayBufferLike>) // 解析图像数据
+              // 清空画布
+              context.clearRect(0, 0, sw, sh)
+            },
+            fail: reject // 失败回调
+          })
+        })
+        // 从图像字节数组中提取颜色
+        resolve1(colorFromImageBytes(imageBytes, defaultColor))
+      },
+      fail: reject1 // 失败回调
+    })
+  })
 }
