@@ -25,9 +25,9 @@ describe('配色方案：基础行为', () => {
   it('支持 outType 配置（输出 HSL 对象）', () => {
     const s = createScheme('#7c3aed', { outType: 'HSL' })
     const color = s.colors.primary
-    expect(typeof (color as any).h).toBe('number')
-    expect(typeof (color as any).s).toBe('number')
-    expect(typeof (color as any).l).toBe('number')
+    expect(typeof color.h).toBe('number')
+    expect(typeof color.s).toBe('number')
+    expect(typeof color.l).toBe('number')
   })
 
   it('自定义规则合并与对比度调整不报错', () => {
@@ -37,6 +37,12 @@ describe('配色方案：基础行为', () => {
     expect(s.light.roles.primary).toBeTruthy()
     expect(s.light.roles.onPrimary).toBeTruthy()
     expect(s.light.roles.surface).toBeTruthy()
+  })
+  it('tonal调色板测试', () => {
+    const scheme = createScheme('#7c3aed')
+    expect(scheme.tonalPalettes.primary.size).toBe(10)
+    expect(scheme.tonalPalettes.primary.all().length).toBe(10)
+    expect(scheme.tonalPalettes.primary.get(11)).toBe(scheme.tonalPalettes.primary.get(10))
   })
 })
 
