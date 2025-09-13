@@ -73,10 +73,10 @@ export class Scheme<OutColorTag extends ColorTag = 'hex', CustomKeys extends str
    * 亮色模式调色板取色规则
    */
   static readonly lightRoleRule: PaletteExtractionColorRules = {
-    source: 44,
+    source: 50,
     sourceShadow: 10,
     onSource: 100,
-    sourceHover: 54,
+    sourceHover: 60,
     onSourceHover: 100,
     sourceActive: 40,
     onSourceActive: 98,
