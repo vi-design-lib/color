@@ -76,7 +76,7 @@ export function score(colors: RGBObject[], frequencies?: Map<string, number>): R
  * @param {number} [frequency=0] - 颜色在图像中出现的频率（0-1）
  * @returns {number} 颜色的重要性分数
  */
-function calculateColorScore(color: RGBObject, frequency: number = 0): number {
+export function calculateColorScore(color: RGBObject, frequency: number = 0): number {
   const { r, g, b } = color
 
   // 计算饱和度 - 使用HSV/HSB模型中的饱和度计算方法
