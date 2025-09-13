@@ -367,12 +367,12 @@ export class Scheme<OutColorTag extends ColorTag = 'hex', CustomKeys extends str
     rules: PaletteExtractionColorRules
   ): ColorSchemeRoles<CustomKeys, OutColorTag> {
     const roles: Record<string, any> = {}
+    const neutral = palettes.neutral
 
     // 优化：预计算所有需要的键名和操作，减少重复计算
     const createRoles = (key: string, palette: any) => {
       const capitalizedKey = capitalize(key)
       const onKey = `on${capitalizedKey}`
-
       // 批量获取颜色，减少方法调用
       const colors = {
         source: palette.get(rules.source),
@@ -382,7 +382,7 @@ export class Scheme<OutColorTag extends ColorTag = 'hex', CustomKeys extends str
         sourceActive: palette.get(rules.sourceActive),
         onSourceActive: palette.get(rules.onSourceActive),
         sourceDisabled: palette.get(rules.sourceDisabled),
-        onSourceDisabled: palette.get(rules.onSourceDisabled),
+        onSourceDisabled: neutral.get(rules.onSourceDisabled),
         container: palette.get(rules.container),
         onContainer: palette.get(rules.onContainer)
       }
@@ -414,7 +414,6 @@ export class Scheme<OutColorTag extends ColorTag = 'hex', CustomKeys extends str
     }
 
     // 优化：批量处理中性色基础角色
-    const neutral = palettes.neutral
     const baseRoles = {} as Record<string, any>
     for (const [key, value] of Object.entries(rules.base)) {
       baseRoles[key] = neutral.get(value)
