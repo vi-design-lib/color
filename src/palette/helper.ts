@@ -28,18 +28,38 @@ export function getPaletteColor<OutColorTag extends ColorTag = 'hex'>(
 
   const type: OutColorTag = options?.outType ?? ('hex' as OutColorTag)
 
-  const { h, s } = anyColorToHslObject(sourceColor)
+  const { h, s, l } = anyColorToHslObject(sourceColor)
 
   // 调整亮度的范围，使最暗和最亮的颜色不会完全是黑白
   const minL = options?.min ?? 0 // 最暗亮度值
   const maxL = options?.max ?? 1 // 最亮亮度值
-
-  const factor = i / (size - 1)
-
-  // 通过插值计算亮度，并确保亮度在 minL 和 maxL 之间
-  const l = minL + factor * (maxL - minL)
-
-  return anyColorToTargetColor({ h, s, l }, type)
+  if (minL !== 0 || maxL !== 1) {
+    const factor = i / (size - 1)
+    // 通过插值计算亮度，并确保亮度在 minL 和 maxL 之间
+    const newL = minL + factor * (maxL - minL)
+    return anyColorToTargetColor({ h, s, l: newL }, type)
+  } else {
+    const halfSteps = Math.floor(size / 2)
+    let newL: number
+    // 对于单数色阶，黑色到源色，再从源色到白色
+    if (size % 2 !== 0) {
+      if (i < halfSteps) {
+        // 从黑色到源色的过渡
+        const factor = i / halfSteps
+        newL = Math.round(l * factor * 100) / 100 // 调整亮度
+      } else {
+        // 从源色到白色的过渡
+        const reverseIndex = i - halfSteps
+        const factor = reverseIndex / halfSteps
+        newL = Math.round((l * (1 - factor) + factor) * 100) / 100 // 调整亮度
+      }
+    } else {
+      // 对于双数色阶，使用平滑过渡：黑色到白色的过渡
+      const factor = i / (size - 1)
+      newL = Math.round(factor * 100) / 100 // 亮度从 0 到 1 均匀变化
+    }
+    return anyColorToTargetColor({ h, s, l: newL }, type)
+  }
 }
 
 /**
