@@ -73,18 +73,6 @@ export function schemeContrastRation(
     const onRoleColor = scheme[`on${caseRole}`]
     result[role] = contrastRatio(roleColor, onRoleColor)
 
-    const roleHoverColor = scheme[`${role}Hover`]
-    const onRoleHoverColor = scheme[`on${caseRole}Hover`]
-    result[`${role}Hover`] = contrastRatio(roleHoverColor, onRoleHoverColor)
-
-    const roleActiveColor = scheme[`${role}Active`]
-    const onRoleActiveColor = scheme[`on${caseRole}Active`]
-    result[`${role}Active`] = contrastRatio(roleActiveColor, onRoleActiveColor)
-
-    const roleDisabledColor = scheme[`${role}Disabled`]
-    const onRoleDisabledColor = scheme[`on${caseRole}Disabled`]
-    result[`${role}Disabled`] = contrastRatio(roleDisabledColor, onRoleDisabledColor)
-
     const containerColor = scheme[`${role}Container`]
     const onContainerColor = scheme[`on${caseRole}Container`]
     result[`${role}Container`] = contrastRatio(containerColor, onContainerColor)
