@@ -10,3 +10,7 @@ colors.forEach((color, index) => {
 })
 
 logColorsWithLabels(colorObject)
+
+const m3Platte = Palette.create('#3463eb', 101)
+const cssVariables = m3Platte.all().map((color, i) => `--color-${i}: ${color}`)
+console.log(cssVariables.join(';\n'))
