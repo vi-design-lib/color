@@ -1,4 +1,15 @@
-# [2.1.0-alpha.2](https://gitee.com/vi-design/color/compare/v2.1.0-alpha.1...v2.1.0-alpha.2) (2025-09-13)
+# [2.1.0-alpha.3](https://gitee.com/vi-design/color/compare/v2.1.0-alpha.2...v2.1.0-alpha.3) (2025-09-13)
+
+
+### Features
+
+* **example:** 添加 CSS 变量生成示例 ([21b1ae9](https://gitee.com/vi-design/color/commits/21b1ae9d0399e415f74d06751b0a8ad6281b5bda))
+* **palette:** 优化色彩阶生成逻辑 ([55c9202](https://gitee.com/vi-design/color/commits/55c9202f203fb42f0e9cbc5f6cd6bab17d4259db))
+* **scheme:** 调整暗色模式主色和强调色 ([b521119](https://gitee.com/vi-design/color/commits/b521119daf11acc5a108dc243a7da6c98c6f1d03))
+
+
+
+# [2.1.0-alpha.1](https://gitee.com/vi-design/color/compare/v2.1.0-alpha.0...v2.1.0-alpha.1) (2025-09-11)
 
 
 
