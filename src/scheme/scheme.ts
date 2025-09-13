@@ -36,15 +36,15 @@ export class Scheme<OutColorTag extends ColorTag = 'hex', CustomKeys extends str
    * 暗色模式调色板取色规则
    */
   static readonly darkRoleRule: PaletteExtractionColorRules = {
-    source: 70,
-    onSource: 10,
+    source: 54,
+    onSource: 96,
     sourceShadow: 30,
-    sourceHover: 80,
-    onSourceHover: 20,
-    sourceActive: 64,
-    onSourceActive: 10,
-    sourceDisabled: 26,
-    onSourceDisabled: 70,
+    sourceHover: 60,
+    onSourceHover: 100,
+    sourceActive: 44,
+    onSourceActive: 94,
+    sourceDisabled: 30,
+    onSourceDisabled: 68,
     container: 30,
     onContainer: 90,
     base: {
@@ -80,7 +80,7 @@ export class Scheme<OutColorTag extends ColorTag = 'hex', CustomKeys extends str
     onSourceHover: 100,
     sourceActive: 40,
     onSourceActive: 98,
-    sourceDisabled: 36,
+    sourceDisabled: 40,
     onSourceDisabled: 80,
     container: 90,
     onContainer: 30,
