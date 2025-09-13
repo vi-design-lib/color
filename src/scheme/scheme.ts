@@ -344,7 +344,7 @@ export class Scheme<OutColorTag extends ColorTag = 'hex', CustomKeys extends str
     return Object.fromEntries(
       Object.entries(colors).map(([key, value]) => [
         key,
-        Palette.create(value, 10, { min: 0.1, max: 0.9 })
+        Palette.create(value, 10, { min: 0.14, max: 0.86 })
       ])
     ) as unknown as ColorSchemePalettes<CustomKeys, OutColorTag>
   }
