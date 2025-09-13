@@ -38,13 +38,6 @@ export class Scheme<OutColorTag extends ColorTag = 'hex', CustomKeys extends str
   static readonly darkRoleRule: PaletteExtractionColorRules = {
     source: 54,
     onSource: 96,
-    sourceShadow: 30,
-    sourceHover: 60,
-    onSourceHover: 100,
-    sourceActive: 44,
-    onSourceActive: 94,
-    sourceDisabled: 30,
-    onSourceDisabled: 68,
     container: 30,
     onContainer: 90,
     base: {
@@ -73,15 +66,8 @@ export class Scheme<OutColorTag extends ColorTag = 'hex', CustomKeys extends str
    * 亮色模式调色板取色规则
    */
   static readonly lightRoleRule: PaletteExtractionColorRules = {
-    source: 50,
-    sourceShadow: 10,
+    source: 40,
     onSource: 100,
-    sourceHover: 60,
-    onSourceHover: 100,
-    sourceActive: 40,
-    onSourceActive: 98,
-    sourceDisabled: 40,
-    onSourceDisabled: 80,
     container: 90,
     onContainer: 30,
     base: {
@@ -377,12 +363,6 @@ export class Scheme<OutColorTag extends ColorTag = 'hex', CustomKeys extends str
       const colors = {
         source: palette.get(rules.source),
         onSource: palette.get(rules.onSource),
-        sourceHover: palette.get(rules.sourceHover),
-        onSourceHover: palette.get(rules.onSourceHover),
-        sourceActive: palette.get(rules.sourceActive),
-        onSourceActive: palette.get(rules.onSourceActive),
-        sourceDisabled: palette.get(rules.sourceDisabled),
-        onSourceDisabled: neutral.get(rules.onSourceDisabled),
         container: palette.get(rules.container),
         onContainer: palette.get(rules.onContainer)
       }
@@ -390,9 +370,6 @@ export class Scheme<OutColorTag extends ColorTag = 'hex', CustomKeys extends str
       // 角色定义配置，统一处理逻辑
       const roleConfigs = [
         { suffix: '', bg: colors.source, text: colors.onSource },
-        { suffix: 'Hover', bg: colors.sourceHover, text: colors.onSourceHover },
-        { suffix: 'Active', bg: colors.sourceActive, text: colors.onSourceActive },
-        { suffix: 'Disabled', bg: colors.sourceDisabled, text: colors.onSourceDisabled },
         { suffix: 'Container', bg: colors.container, text: colors.onContainer }
       ]
 
