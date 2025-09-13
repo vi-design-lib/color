@@ -163,7 +163,7 @@ export class HslFormula {
   static smartFunctionalHue(type: 'success' | 'warning' | 'error', primaryHue: number): number {
     // 基础功能色色相值范围
     const baseHues = {
-      success: { min: 85, max: 110, default: 95 }, // 绿色范围
+      success: { min: 110, max: 140, default: 120 }, // 绿色范围
       warning: { min: 25, max: 45, default: 35 }, // 黄色范围
       error: { min: 355, max: 10, default: 0 } // 红色范围
     }
