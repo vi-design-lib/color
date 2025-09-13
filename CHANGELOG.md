@@ -1,4 +1,8 @@
-# [2.1.0-alpha.1](https://gitee.com/vi-design/color/compare/v2.1.0-alpha.0...v2.1.0-alpha.1) (2025-09-11)
+# [2.1.0-alpha.2](https://gitee.com/vi-design/color/compare/v2.1.0-alpha.1...v2.1.0-alpha.2) (2025-09-13)
+
+
+
+# [2.1.0-alpha.0](https://gitee.com/vi-design/color/compare/v2.0.0-beta.9...v2.1.0-alpha.0) (2025-09-11)
 
 
 ### Features
