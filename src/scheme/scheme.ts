@@ -36,8 +36,8 @@ export class Scheme<OutColorTag extends ColorTag = 'hex', CustomKeys extends str
    * 暗色模式调色板取色规则
    */
   static readonly darkRoleRule: PaletteExtractionColorRules = {
-    source: 54,
-    onSource: 96,
+    source: 80,
+    onSource: 20,
     container: 30,
     onContainer: 90,
     base: {
