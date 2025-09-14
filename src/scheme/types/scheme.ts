@@ -7,10 +7,22 @@ import type { ComputeFormula } from '../../utils/index.js'
  * 调色板提取颜色规则
  */
 export type PaletteExtractionColorRules = {
-  /** 亮度和饱和度调整 */
+  /** 源色 */
   source: number
+  /** 悬停状态下的源色 */
+  sourceHover: number
+  /** 激活状态下的源色 */
+  sourceActive: number
+  /** 禁用状态下的源色 */
+  sourceDisabled: number
   /** 背景上的文本颜色 */
   onSource: number
+  /** 悬停状态上的文本颜色 */
+  onSourceHover: number
+  /** 激活状态上的文本颜色 */
+  onSourceActive: number
+  /** 禁用状态上的文本颜色 */
+  onSourceDisabled: number
   /** 容器背景 */
   container: number
   /** 容器上的文本颜色 */
