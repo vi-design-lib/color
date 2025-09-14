@@ -62,7 +62,7 @@ export class Scheme<OutColorTag extends ColorTag = 'hex', CustomKeys extends str
       surfaceContainerHighest: 24,
       outline: 40,
       outlineVariant: 20,
-      shadow: 30,
+      shadow: 94,
       scrim: 0,
       background: 6,
       onBackground: 90
