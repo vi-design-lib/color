@@ -131,24 +131,84 @@ export class WebTheme<
   }
 
   /**
+   * @inheritDoc
+   */
+  override get systemBright(): Brightness {
+    if (!this._isBrowser) return this.ssr === 'dark' ? 'dark' : 'light'
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  }
+
+  /**
+   * @inheritDoc
+   */
+  public override setMode(mode: ThemeMode): boolean {
+    const result = super.setMode(mode)
+    if (result && this._isBrowser) {
+      document.documentElement.setAttribute(this.attribute, this.bright)
+      this.updateStyles()
+    }
+    return result
+  }
+
+  /**
+   * 动态切换颜色方案
+   *
+   * @description 根据新的主色和选项重新创建颜色方案，并更新CSS变量
+   * @inheritDoc
+   * @override
+   * @param {AnyColor} mainColor - 新的主色
+   * @param {SchemeOptions<OutColorTag, CustomKeys>} [options] - 可选的配色选项
+   */
+  public override changeColorScheme(
+    mainColor: AnyColor,
+    options?: SchemeOptions<OutColorTag, CustomKeys>
+  ) {
+    super.changeColorScheme(mainColor, options)
+    this.updateStyles()
+  }
+
+  /**
+   * @inheritDoc
+   */
+  public override getCacheThemeMode(): ThemeMode | null {
+    if (!this._isBrowser) return null
+    return localStorage.getItem(this.cacheKey) as ThemeMode
+  }
+
+  /**
+   * @inheritDoc
+   */
+  public override clearCache() {
+    if (!this._isBrowser) return
+    localStorage.removeItem(this.cacheKey)
+  }
+
+  /**
+   * @inheritDoc
+   */
+  protected override setCacheThemeMode(mode: ThemeMode) {
+    if (!this._isBrowser) return
+    localStorage.setItem(this.cacheKey, mode)
+  }
+
+  /**
    * 创建一个样式表
    *
    * @returns {CSSStyleSheet} - CSSStyleSheet。
    */
   public static createStyleSheet(): CSSStyleSheet {
-    let cssSheet: CSSStyleSheet
-    if ('CSSStyleSheet' in window && 'adoptedStyleSheets' in document) {
-      cssSheet = new CSSStyleSheet()
+    try {
+      const cssSheet = new CSSStyleSheet()
       document.adoptedStyleSheets.push(cssSheet)
-    } else {
+      return cssSheet
+    } catch {
       const style = document.createElement('style')
       style.appendChild(
         document.createComment('此样式表由@vi-design/color注入与管理，请勿外部变更。')
       )
       document.head.append(style)
-      cssSheet = style.sheet!
+      return style.sheet!
     }
-    return cssSheet
   }
 
   /**
@@ -177,67 +237,6 @@ export class WebTheme<
    */
   varName(key: string): `--${string}` {
     return `${this.varPrefix}${camelToKebab(key)}${this.varSuffix}` as `--${string}`
-  }
-
-  /**
-   * @inheritDoc
-   */
-  public override setMode(mode: ThemeMode): boolean {
-    const result = super.setMode(mode)
-    if (result && this._isBrowser) {
-      document.documentElement.setAttribute(this.attribute, this.bright)
-      this.updateStyles()
-    }
-    return result
-  }
-
-  /**
-   * @inheritDoc
-   */
-  protected override setCacheThemeMode(mode: ThemeMode) {
-    if (!this._isBrowser) return
-    localStorage.setItem(this.cacheKey, mode)
-  }
-
-  /**
-   * 动态切换颜色方案
-   *
-   * @description 根据新的主色和选项重新创建颜色方案，并更新CSS变量
-   * @inheritDoc
-   * @override
-   * @param {AnyColor} mainColor - 新的主色
-   * @param {SchemeOptions<OutColorTag, CustomKeys>} [options] - 可选的配色选项
-   */
-  public override changeColorScheme(
-    mainColor: AnyColor,
-    options?: SchemeOptions<OutColorTag, CustomKeys>
-  ) {
-    super.changeColorScheme(mainColor, options)
-    this.updateStyles()
-  }
-
-  /**
-   * @inheritDoc
-   */
-  override get systemBright(): Brightness {
-    if (!this._isBrowser) return this.ssr === 'dark' ? 'dark' : 'light'
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-  }
-
-  /**
-   * @inheritDoc
-   */
-  public override getCacheThemeMode(): ThemeMode | null {
-    if (!this._isBrowser) return null
-    return localStorage.getItem(this.cacheKey) as ThemeMode
-  }
-
-  /**
-   * @inheritDoc
-   */
-  public override clearCache() {
-    if (!this._isBrowser) return
-    localStorage.removeItem(this.cacheKey)
   }
 
   /**
