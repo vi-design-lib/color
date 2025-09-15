@@ -371,13 +371,8 @@ body {
 
 ```html
 <!-- 防止主题初始化时的样式闪烁 -->
-<script>
-  document.documentElement.setAttribute(
-    'theme',
-    localStorage.getItem('_CACHE_THEME_MODE') ||
-    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
-  )
-</script>
+<script>const cache = localStorage.getItem('_CACHE_THEME_MODE')
+document.documentElement.setAttribute('theme', cache === 'system' || !cache ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : cache)</script>
 ```
 
 ### 静态主题管理
