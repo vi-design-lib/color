@@ -370,8 +370,8 @@ body {
 在 `Vue` 和 `Vitarx` 中使用时，为了避免首页黑白闪烁，在 `index.html` 中加入预设脚本：
 
 ```html
-<!-- 防止主题初始化时的样式闪烁 -->
-<script>const cache = localStorage.getItem('_CACHE_THEME_MODE')
+<!-- 防止主题初始化时的样式闪烁，提前设置主题亮度 ，_VI_COLOR_THEME_ 是cacheKey的默认值 -->
+<script>const cache = localStorage.getItem('_VI_COLOR_THEME_MODE')
 document.documentElement.setAttribute('theme', cache === 'system' || !cache ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : cache)</script>
 ```
 
@@ -863,11 +863,10 @@ const debouncedThemeChange = debounce((color: string) => {
 function updateThemeBatch(updates: {
   mode?: ThemeMode
   color?: string
-  customColors?: Record<string, string>
 }) {
   // 将多个操作合并为一次更新
   if (updates.color) {
-    theme.changeColorScheme(updates.color, updates.customColors)
+    theme.changeColorScheme(updates.color)
   }
   if (updates.mode) {
     theme.mode = updates.mode
