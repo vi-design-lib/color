@@ -48,7 +48,7 @@ export class VueTheme<
  * @param {string} [options.varSuffix] - CSS变量后缀
  * @param {string} [options.attribute=theme] - HTML属性名
  * @returns {void}
- * @throws {Error} 如果未提供mainColor或非浏览器环境调用，则会抛出异常
+ * @throws {Error} 如果未提供primaryColor或非浏览器环境调用，则会抛出异常
  */
 export function theme<OutColorTag extends ColorTag, CustomKeys extends string>(
   app: any,
