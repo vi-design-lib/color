@@ -61,6 +61,12 @@ export class WebTheme<
   CustomKeys extends string = never
 > extends BaseTheme<OutColorTag, CustomKeys> {
   /**
+   * 是否为浏览器环境
+   *
+   * @private
+   */
+  protected static readonly _isBrowser = typeof window === 'object' && typeof document === 'object'
+  /**
    * css变量后缀
    *
    * @default ''
@@ -78,12 +84,6 @@ export class WebTheme<
    * @private
    */
   public readonly attribute: string
-  /**
-   * 是否为浏览器环境
-   *
-   * @private
-   */
-  protected _isBrowser = typeof window === 'object' && typeof document === 'object'
   /**
    * 服务端渲染时的系统主题亮度
    */
@@ -118,7 +118,7 @@ export class WebTheme<
     this.varPrefix = varPrefix
     this.varSuffix = varSuffix
     this.ssr = ssr
-    if (this._isBrowser) {
+    if (WebTheme._isBrowser) {
       document.documentElement.setAttribute(options?.attribute || 'theme', this.bright)
       this._sheet = WebTheme.createStyleSheet()
       this.updateStyles()
@@ -134,7 +134,7 @@ export class WebTheme<
    * @inheritDoc
    */
   override get systemBright(): Brightness {
-    if (!this._isBrowser) return this.ssr === 'dark' ? 'dark' : 'light'
+    if (!WebTheme._isBrowser) return this.ssr === 'dark' ? 'dark' : 'light'
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
   }
 
@@ -143,7 +143,7 @@ export class WebTheme<
    */
   public override setMode(mode: ThemeMode): boolean {
     const result = super.setMode(mode)
-    if (result && this._isBrowser) {
+    if (result && WebTheme._isBrowser) {
       document.documentElement.setAttribute(this.attribute, this.bright)
       this.updateStyles()
     }
@@ -171,24 +171,28 @@ export class WebTheme<
    * @inheritDoc
    */
   public override getCacheThemeMode(): ThemeMode | null {
-    if (!this._isBrowser) return null
-    return localStorage.getItem(this.cacheKey) as ThemeMode
+    if (typeof localStorage === 'object') {
+      return localStorage.getItem(this.cacheKey) as ThemeMode
+    }
+    return null
   }
 
   /**
    * @inheritDoc
    */
   public override clearCache() {
-    if (!this._isBrowser) return
-    localStorage.removeItem(this.cacheKey)
+    if (typeof localStorage === 'object') {
+      localStorage.removeItem(this.cacheKey)
+    }
   }
 
   /**
    * @inheritDoc
    */
   protected override setCacheThemeMode(mode: ThemeMode) {
-    if (!this._isBrowser) return
-    localStorage.setItem(this.cacheKey, mode)
+    if (typeof localStorage === 'object') {
+      localStorage.setItem(this.cacheKey, mode)
+    }
   }
 
   /**
