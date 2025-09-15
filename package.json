@@ -44,7 +44,6 @@
   },
   "scripts": {
     "build": "rimraf dist && pnpm run test && tsc -p tsconfig.app.json && tsx script/replace_version.ts && vite build",
-    "prepublishOnly": "npm run build",
     "push": "release-cli",
     "test": "vitest run"
   },
