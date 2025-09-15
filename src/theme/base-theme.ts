@@ -8,7 +8,7 @@ import {
   type Tone
 } from '../scheme/index.js'
 import { hashStringTo32Bit, ref, type Ref, type RefFactory } from './common.js'
-import { CACHE_THEME_MODE } from '../constant.js'
+import { CACHE_THEME_MODE, VERSION } from '../constant.js'
 
 /**
  * 亮度模式
@@ -370,6 +370,8 @@ export abstract class BaseTheme<OutColorTag extends ColorTag, CustomKeys extends
     schemeOptions: SchemeOptions<OutColorTag, CustomKeys> | undefined // 配色方案选项，可能包含自定义键和输出颜色标签，也可以是undefined
   ): string {
     // 将主色调和配色方案选项序列化为JSON字符串后拼接，并生成32位哈希值
-    return hashStringTo32Bit(JSON.stringify(primaryColor) + JSON.stringify(schemeOptions))
+    return hashStringTo32Bit(
+      JSON.stringify(primaryColor) + JSON.stringify(schemeOptions) + '_' + VERSION
+    )
   }
 }
