@@ -160,7 +160,7 @@ export abstract class BaseTheme<OutColorTag extends ColorTag, CustomKeys extends
     let scheme = this.getCacheScheme()
     if (!scheme) {
       scheme = createScheme(primaryColor, schemeOptions).bright
-      this.setCache(this.cacheSchemeKey, JSON.stringify(scheme))
+      this.saveCacheScheme(scheme)
     }
     // 初始化配色方案
     this.brightScheme = refFactory(scheme)
@@ -259,7 +259,7 @@ export abstract class BaseTheme<OutColorTag extends ColorTag, CustomKeys extends
     this._schemeHash = this.createSchemeHash(primaryColor, options)
     // 更新配色方案
     this.brightScheme.value = scheme
-    this.setCache(this.cacheSchemeKey, JSON.stringify(scheme))
+    this.saveCacheScheme(scheme)
   }
 
   /**
@@ -314,6 +314,21 @@ export abstract class BaseTheme<OutColorTag extends ColorTag, CustomKeys extends
     this.removeCache(`${this.cacheKey}MODE`)
     // 清除缓存方案键对应的缓存
     this.removeCache(this.cacheSchemeKey)
+    // 清除最后一次应用的方案
+    this.removeCache(`${this.cacheKey}LAST_SCHEME`)
+  }
+
+  /**
+   * 保存缓存方案的方法
+   * 将当前方案对象转换为JSON字符串并保存到缓存中
+   * 使用缓存键值 cacheSchemeKey 作为标识
+   */
+  protected saveCacheScheme(scheme?: BrightnessScheme<CustomKeys, OutColorTag>) {
+    const key = this.cacheSchemeKey
+    // 将当前方案对象转换为JSON字符串并设置到缓存中
+    this.setCache(key, JSON.stringify(scheme ?? this.scheme))
+    // 保存当前方案名称到缓存中
+    this.setCache(`${this.cacheKey}LAST_SCHEME`, key)
   }
 
   /**
