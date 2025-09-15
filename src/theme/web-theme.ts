@@ -170,16 +170,6 @@ export class WebTheme<
   /**
    * @inheritDoc
    */
-  public override getCacheThemeMode(): ThemeMode | null {
-    if (typeof localStorage === 'object') {
-      return localStorage.getItem(this.cacheKey) as ThemeMode
-    }
-    return null
-  }
-
-  /**
-   * @inheritDoc
-   */
   protected override removeCache(name: string): void {
     if (typeof localStorage === 'object') {
       localStorage.removeItem(name)

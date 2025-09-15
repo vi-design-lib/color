@@ -1,6 +1,6 @@
 // @ts-ignore
 import { ref } from 'vue'
-import { BaseTheme, type BaseThemeOptions, type Brightness, type ThemeMode } from './base-theme.js'
+import { BaseTheme, type BaseThemeOptions, type Brightness } from './base-theme.js'
 import type { AnyColor, ColorTag, HexColor } from '../types.js'
 import { colorFromImageBytes } from '../utils/index.js'
 import { DEFAULT_COLOR } from '../constant.js'
@@ -65,17 +65,6 @@ export class UniAppTheme<OutColorTag extends ColorTag, CustomKeys extends string
    */
   override get systemBright(): Brightness {
     return (uni.getSystemInfoSync().theme as Brightness) || 'light'
-  }
-
-  /**
-   * 获取缓存的主题模式
-   *
-   * @description 从uni-app的Storage中获取之前缓存的主题模式
-   * @override
-   * @returns {ThemeMode | undefined | null} 缓存的主题模式
-   */
-  override getCacheThemeMode(): ThemeMode | undefined | null {
-    return uni.getStorageSync(this.cacheKey)
   }
 
   /**

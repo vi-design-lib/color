@@ -239,7 +239,7 @@ export abstract class BaseTheme<OutColorTag extends ColorTag, CustomKeys extends
     this._mode.value = mode
     if (this.bright === oldBright) return false
     // 缓存主题模式
-    this.setCache(this.cacheKey, mode)
+    this.setCache(`${this.cacheKey}MODE`, mode)
     return true
   }
 
@@ -298,10 +298,11 @@ export abstract class BaseTheme<OutColorTag extends ColorTag, CustomKeys extends
    * 获取缓存的主题模式
    *
    * @description 从持久化存储中获取之前缓存的主题模式
-   * @returns {ThemeMode | undefined | null} 缓存的主题模式，如果没有缓存则返回null或undefined
-   * @abstract
+   * @returns {ThemeMode | undefined | null} 缓存的主题模式，如果没有缓存则返回null
    */
-  public abstract getCacheThemeMode(): ThemeMode | undefined | null
+  public getCacheThemeMode(): ThemeMode | null {
+    return (this.getCache(`${this.cacheKey}MODE`) || null) as ThemeMode | null
+  }
 
   /**
    * 清除缓存的方法
@@ -310,7 +311,7 @@ export abstract class BaseTheme<OutColorTag extends ColorTag, CustomKeys extends
    */
   public clearCache(): void {
     // 清除主缓存键对应的缓存
-    this.removeCache(this.cacheKey)
+    this.removeCache(`${this.cacheKey}MODE`)
     // 清除缓存方案键对应的缓存
     this.removeCache(this.cacheSchemeKey)
   }
