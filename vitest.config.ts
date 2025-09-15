@@ -4,6 +4,7 @@
 import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
+  define: { __VERSION__: JSON.stringify(process.env.npm_package_version) },
   test: {
     environment: 'jsdom',
     globals: true,

@@ -43,7 +43,7 @@
     "./jsdelivr": "./dist/color.umd.js"
   },
   "scripts": {
-    "build": "rimraf dist && pnpm run test && tsc -p tsconfig.app.json && vite build",
+    "build": "rimraf dist && pnpm run test && tsc -p tsconfig.app.json && tsx script/replace_version.ts && vite build",
     "prepublishOnly": "npm run build",
     "push": "release-cli",
     "test": "vitest run"
@@ -60,7 +60,7 @@
     "jsdom": "^26.1.0",
     "prettier": "^3.3.3",
     "typescript": "^5.5.3",
-    "vite": "6.3.4",
+    "vite": "7.1.5",
     "vitest": "^3.2.4"
   },
   "files": [
