@@ -1,6 +1,6 @@
 import {
+  type BrightnessScheme,
   type ColorSchemeRoles,
-  Scheme,
   type SchemeOptions,
   type TonalKeys
 } from '../scheme/index.js'
@@ -180,19 +180,29 @@ export class WebTheme<
   /**
    * @inheritDoc
    */
-  public override clearCache() {
+  protected override removeCache(name: string): void {
     if (typeof localStorage === 'object') {
-      localStorage.removeItem(this.cacheKey)
+      localStorage.removeItem(name)
     }
   }
 
   /**
    * @inheritDoc
    */
-  protected override setCacheThemeMode(mode: ThemeMode) {
+  protected override setCache(name: string, value: string): void {
     if (typeof localStorage === 'object') {
-      localStorage.setItem(this.cacheKey, mode)
+      localStorage.setItem(name, value)
     }
+  }
+
+  /**
+   * @inheritDoc
+   */
+  protected override getCache(name: string): string | null {
+    if (typeof localStorage === 'object') {
+      return localStorage.getItem(name)
+    }
+    return null
   }
 
   /**
@@ -254,7 +264,7 @@ export class WebTheme<
       this._sheet.deleteRule(0)
     }
     const generateRoleStyles = (
-      scheme: Scheme<OutColorTag, CustomKeys>,
+      scheme: BrightnessScheme<CustomKeys, OutColorTag>,
       theme: 'dark' | 'light'
     ) => {
       return Object.keys(scheme[theme].roles)
@@ -266,7 +276,7 @@ export class WebTheme<
     }
 
     const generateTonalStyles = (
-      scheme: Scheme<OutColorTag, CustomKeys>,
+      scheme: BrightnessScheme<CustomKeys, OutColorTag>,
       theme: 'dark' | 'light'
     ) => {
       return Object.entries(scheme[theme].tonal)

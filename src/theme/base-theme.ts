@@ -1,14 +1,13 @@
 import type { AnyColor, ColorTag, ColorTagToColorType } from '../types.js'
-import type { ColorSchemeRoles } from '../scheme/index.js'
+import type { BrightnessScheme, ColorSchemeRoles } from '../scheme/index.js'
 import {
   createScheme,
   type InherentColorKeys,
-  Scheme,
   type SchemeOptions,
   type TonalKeys,
   type Tone
 } from '../scheme/index.js'
-import { ref, type Ref, type RefFactory } from './common.js'
+import { hashStringTo32Bit, ref, type Ref, type RefFactory } from './common.js'
 import { CACHE_THEME_MODE } from '../constant.js'
 
 /**
@@ -59,17 +58,54 @@ export interface BaseThemeOptions<OutColorTag extends ColorTag, CustomKeys exten
 }
 
 /**
- * 主题管理抽象基类
+ * 主题管理的基础抽象类，提供主题模式切换和颜色方案管理的核心功能。
  *
- * @description 提供主题管理的核心功能，包括主题模式切换、颜色方案管理等
- * 子类需实现以下抽象方法：
- * - getCacheThemeMode - 获取缓存的主题模式
- * - setCacheThemeMode - 缓存主题模式
- * - clearCache - 清除缓存
- * - getSystemBright - 获取系统亮度
+ * 该类实现了主题系统的基本架构，包括：
+ * - 主题模式管理（亮色/暗色/系统模式）
+ * - 颜色方案缓存和动态切换
+ * - 亮度方案的角色色和色调访问
+ * - 主题配置的持久化存储
  *
- * @template OutColorTag - 调色板输出的颜色标签类型
- * @template CustomKeys - 自定义颜色键类型，用于扩展基础配色方案
+ * @example
+ * // 继承BaseTheme实现自定义主题
+ * class CustomTheme extends BaseTheme<'hex', 'custom'> {
+ *   get systemBright() {
+ *     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+ *   }
+ *
+ *   protected getCache(name: string): string | null {
+ *     return localStorage.getItem(name);
+ *   }
+ *
+ *   protected setCache(name: string, value: string): void {
+ *     localStorage.setItem(name, value);
+ *   }
+ *
+ *   protected removeCache(name: string): void {
+ *     localStorage.removeItem(name);
+ *   }
+ *
+ *   public getCacheThemeMode(): ThemeMode | undefined | null {
+ *     return localStorage.getItem('theme') as ThemeMode;
+ *   }
+ * }
+ *
+ * // 使用主题
+ * const theme = new CustomTheme('#ff0000');
+ * theme.mode = 'dark';
+ * const primaryColor = theme.role('primary');
+ *
+ * @constructor
+ * @param {AnyColor} primaryColor - 主色，作为整个配色方案的基础颜色
+ * @param {BaseThemeOptions<OutColorTag, CustomKeys>} [options] - 配置选项，包含：
+ *   - refFactory: 响应式引用工厂函数（可选）
+ *   - cacheKey: 缓存键名（可选，默认为CACHE_THEME_MODE）
+ *   - defaultMode: 默认主题模式（可选，默认为'system'）
+ *   - 其他方案配置选项
+ *
+ * @abstract
+ * @template OutColorTag - 输出颜色标签类型
+ * @template CustomKeys - 自定义键名类型
  */
 export abstract class BaseTheme<OutColorTag extends ColorTag, CustomKeys extends string> {
   /**
@@ -82,7 +118,17 @@ export abstract class BaseTheme<OutColorTag extends ColorTag, CustomKeys extends
    * @private
    */
   public readonly defaultMode: 'system'
-  private schemeOptionsString: string
+  /**
+   * 方案
+   * @protected
+   */
+  protected brightScheme: Ref<BrightnessScheme<CustomKeys, OutColorTag>>
+  /**
+   * 配色方案的hash值
+   *
+   * @private
+   */
+  private _schemeHash: string
 
   /**
    * Theme构造函数
@@ -102,11 +148,22 @@ export abstract class BaseTheme<OutColorTag extends ColorTag, CustomKeys extends
       defaultMode = 'system',
       ...schemeOptions
     } = options || {}
+    // 初始化缓存key
     this.cacheKey = cacheKey
+    // 初始化主题模式
     this.defaultMode = defaultMode
+    // 初始化主题模式
     this._mode = refFactory(this.getCacheThemeMode() || this.defaultMode)
-    this.schemeOptionsString = JSON.stringify(schemeOptions)
-    this._scheme = refFactory(createScheme(primaryColor, schemeOptions))
+    // 初始化配色方案hash
+    this._schemeHash = this.createSchemeHash(primaryColor, options)
+    // 获取缓存的配色方案
+    let scheme = this.getCacheScheme()
+    if (!scheme) {
+      scheme = createScheme(primaryColor, schemeOptions).bright
+      this.setCache(this.cacheSchemeKey, JSON.stringify(scheme))
+    }
+    // 初始化配色方案
+    this.brightScheme = refFactory(scheme)
   }
 
   // 主题模式
@@ -132,17 +189,13 @@ export abstract class BaseTheme<OutColorTag extends ColorTag, CustomKeys extends
     this.setMode(mode)
   }
 
-  // 颜色方案
-  private _scheme: Ref<Scheme<OutColorTag, CustomKeys>>
-
   /**
-   * 配色方案实例
+   * 亮度配色方案对象
    *
-   * @description 获取当前主题的配色方案实例
-   * @returns {Readonly<Scheme<OutColorTag, CustomKeys>>} 只读的配色方案实例
+   * @returns {Readonly<BrightnessScheme<OutColorTag, CustomKeys>>} 只读的配色方案实例
    */
-  get scheme(): Readonly<Scheme<OutColorTag, CustomKeys>> {
-    return this._scheme.value
+  get scheme(): Readonly<BrightnessScheme<CustomKeys, OutColorTag>> {
+    return this.brightScheme.value
   }
 
   /**
@@ -166,6 +219,15 @@ export abstract class BaseTheme<OutColorTag extends ColorTag, CustomKeys extends
   abstract get systemBright(): Brightness
 
   /**
+   * 获取缓存方案的键值
+   * 该属性用于生成一个特定的缓存键，用于标识不同的缓存方案
+   * @returns {string} 返回一个由基础缓存键、方案标识和方案哈希值组成的字符串
+   */
+  protected get cacheSchemeKey(): string {
+    return `${this.cacheKey}_SCHEME_${this._schemeHash}`
+  }
+
+  /**
    * 设置主题模式
    *
    * @description 设置当前主题的模式，并在必要时更新缓存
@@ -176,8 +238,8 @@ export abstract class BaseTheme<OutColorTag extends ColorTag, CustomKeys extends
     const oldBright = this.bright
     this._mode.value = mode
     if (this.bright === oldBright) return false
-    // 缓存主题
-    this.setCacheThemeMode(mode)
+    // 缓存主题模式
+    this.setCache(this.cacheKey, mode)
     return true
   }
 
@@ -192,9 +254,12 @@ export abstract class BaseTheme<OutColorTag extends ColorTag, CustomKeys extends
     primaryColor: AnyColor,
     options?: SchemeOptions<OutColorTag, CustomKeys>
   ) {
-    this._scheme.value = createScheme(primaryColor, options)
-    // 更新配色方案选项字符串
-    this.schemeOptionsString = JSON.stringify(options ?? {})
+    const scheme = createScheme(primaryColor, options).bright
+    // 更新配色方案hash
+    this._schemeHash = this.createSchemeHash(primaryColor, options)
+    // 更新配色方案
+    this.brightScheme.value = scheme
+    this.setCache(this.cacheSchemeKey, JSON.stringify(scheme))
   }
 
   /**
@@ -239,19 +304,72 @@ export abstract class BaseTheme<OutColorTag extends ColorTag, CustomKeys extends
   public abstract getCacheThemeMode(): ThemeMode | undefined | null
 
   /**
-   * 清除缓存
+   * 清除缓存的方法
    *
-   * @description 清除持久化存储中的主题模式缓存
-   * @abstract
+   * 该方法会清除当前保存的亮度模式和配色方案
    */
-  public abstract clearCache(): void
+  public clearCache(): void {
+    // 清除主缓存键对应的缓存
+    this.removeCache(this.cacheKey)
+    // 清除缓存方案键对应的缓存
+    this.removeCache(this.cacheSchemeKey)
+  }
 
   /**
-   * 缓存主题模式
+   * 删除缓存
    *
-   * @description 将当前主题模式保存到持久化存储中
-   * @param {ThemeMode} mode - 要缓存的主题模式
-   * @protected
+   * 这是一个抽象方法，需要在子类中实现具体逻辑
+   *
+   * @param {string} name - 要删除的缓存名称
    */
-  protected abstract setCacheThemeMode(mode: ThemeMode): void
+  protected abstract removeCache(name: string): void
+
+  /**
+   * 设置缓存值
+   *
+   * 这是一个抽象方法，需要在子类中实现具体逻辑
+   *
+   * @param name 缓存名称
+   * @param value 缓存值
+   */
+  protected abstract setCache(name: string, value: string): void
+
+  /**
+   * 获取指定名称的缓存值
+   *
+   * 这是一个抽象方法，需要在子类中实现具体逻辑
+   *
+   * @param name 缓存的名称/键
+   * @returns {string|null} 返回缓存的值，如果不存在则返回null
+   */
+  protected abstract getCache(name: string): string | null
+
+  /**
+   * 获取缓存中的亮度方案
+   *
+   * @returns {null | BrightnessScheme<CustomKeys, OutColorTag>} 返回解析后的亮度方案对象，如果缓存中不存在则返回null
+   */
+  protected getCacheScheme(): null | BrightnessScheme<CustomKeys, OutColorTag> {
+    // 尝试从缓存中获取方案数据
+    const scheme = this.getCache(this.cacheSchemeKey)
+    // 如果缓存中没有找到方案，则返回null
+    if (!scheme) return null
+    // 将缓存中的JSON字符串解析为BrightnessScheme对象并返回
+    return JSON.parse(scheme) as BrightnessScheme<CustomKeys, OutColorTag>
+  }
+
+  /**
+   * 创建配色方案哈希值
+   *
+   * @param primaryColor 主色调颜色值
+   * @param schemeOptions 配色方案选项，包含自定义键和输出颜色标签
+   * @returns {string} 返回一个32位的哈希值
+   */
+  private createSchemeHash(
+    primaryColor: AnyColor, // 主色调，可以是任意颜色类型
+    schemeOptions: SchemeOptions<OutColorTag, CustomKeys> | undefined // 配色方案选项，可能包含自定义键和输出颜色标签，也可以是undefined
+  ): string {
+    // 将主色调和配色方案选项序列化为JSON字符串后拼接，并生成32位哈希值
+    return hashStringTo32Bit(JSON.stringify(primaryColor) + JSON.stringify(schemeOptions))
+  }
 }

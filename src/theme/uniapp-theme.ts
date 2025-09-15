@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import { BaseTheme, type BaseThemeOptions, type Brightness, type ThemeMode } from './base-theme.js'
 import type { AnyColor, ColorTag, HexColor } from '../types.js'
-import { colorFromImageBytes } from '../utils/image-utils.js'
+import { colorFromImageBytes } from '../utils/index.js'
 import { DEFAULT_COLOR } from '../constant.js'
 
 /**
@@ -79,28 +79,24 @@ export class UniAppTheme<OutColorTag extends ColorTag, CustomKeys extends string
   }
 
   /**
-   * 清除缓存
-   *
-   * @description 清除uni-app的Storage中的主题模式缓存
    * @inheritDoc
-   * @override
-   * @returns {void}
    */
-  override clearCache(): void {
-    uni.removeStorageSync(this.cacheKey)
+  protected removeCache(name: string): void {
+    uni.removeStorageSync(name)
   }
 
   /**
-   * 缓存主题模式
-   *
-   * @description 将当前主题模式保存到uni-app的Storage中
    * @inheritDoc
-   * @override
-   * @param {ThemeMode} mode - 要缓存的主题模式
-   * @returns {void}
    */
-  protected override setCacheThemeMode(mode: ThemeMode): void {
-    uni.setStorageSync(this.cacheKey, mode)
+  protected setCache(name: string, value: string): void {
+    uni.setStorageSync(name, value)
+  }
+
+  /**
+   * @inheritDoc
+   */
+  protected getCache(name: string): string | null {
+    return uni.getStorageSync(name)
   }
 }
 
