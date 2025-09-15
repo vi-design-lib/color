@@ -10,7 +10,7 @@ import type { SchemeOptions } from './types/index.js'
  *
  * @template OutColorTag - 输出的颜色标签类型，默认为'hex'
  * @template CustomKeys - 自定义颜色键类型，用于扩展基础配色方案
- * @param {AnyColor} mainColor - 主色，作为整个配色方案的基础
+ * @param {AnyColor} primaryColor - 主色，作为整个配色方案的基础
  * @param {SchemeOptions<OutColorTag, CustomKeys>} [options] - 配置选项
  * @param {DeepPartial<PaletteExtractionColorRules>} [options.darkRoleRule=Scheme.darkRoleRule] - 暗色模式调色板取色规则
  * @param {DeepPartial<PaletteExtractionColorRules>} [options.lightRoleRule=Scheme.lightRoleRule] - 亮色模式调色板取色规则
@@ -24,8 +24,8 @@ export function createScheme<
   OutColorTag extends ColorTag = 'hex',
   CustomKeys extends string = string
 >(
-  mainColor: AnyColor,
+  primaryColor: AnyColor,
   options?: SchemeOptions<OutColorTag, CustomKeys>
 ): Scheme<OutColorTag, CustomKeys> {
-  return new Scheme(mainColor, options)
+  return new Scheme(primaryColor, options)
 }

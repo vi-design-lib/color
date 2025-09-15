@@ -82,16 +82,20 @@ export abstract class BaseTheme<OutColorTag extends ColorTag, CustomKeys extends
    * @private
    */
   public readonly defaultMode: 'system'
+  private schemeOptionsString: string
 
   /**
    * Theme构造函数
    *
    * @description 创建一个主题管理实例，初始化主题模式和颜色方案
    * @constructor
-   * @param {AnyColor} mainColor - 主色，作为整个配色方案的基础
+   * @param {AnyColor} primaryColor - 主色，作为整个配色方案的基础
    * @param {BaseThemeOptions<OutColorTag, CustomKeys>} [options] - 配置选项，用于自定义主题行为
    */
-  protected constructor(mainColor: AnyColor, options?: BaseThemeOptions<OutColorTag, CustomKeys>) {
+  protected constructor(
+    primaryColor: AnyColor,
+    options?: BaseThemeOptions<OutColorTag, CustomKeys>
+  ) {
     const {
       refFactory = ref,
       cacheKey = CACHE_THEME_MODE,
@@ -101,7 +105,8 @@ export abstract class BaseTheme<OutColorTag extends ColorTag, CustomKeys extends
     this.cacheKey = cacheKey
     this.defaultMode = defaultMode
     this._mode = refFactory(this.getCacheThemeMode() || this.defaultMode)
-    this._scheme = refFactory(createScheme(mainColor, schemeOptions))
+    this.schemeOptionsString = JSON.stringify(schemeOptions)
+    this._scheme = refFactory(createScheme(primaryColor, schemeOptions))
   }
 
   // 主题模式
@@ -180,11 +185,16 @@ export abstract class BaseTheme<OutColorTag extends ColorTag, CustomKeys extends
    * 动态切换颜色方案
    *
    * @description 根据新的主色和选项重新创建颜色方案
-   * @param {AnyColor} mainColor - 新的主色
+   * @param {AnyColor} primaryColor - 新的主色
    * @param {SchemeOptions<OutColorTag, CustomKeys>} [options] - 可选的配色选项
    */
-  public changeColorScheme(mainColor: AnyColor, options?: SchemeOptions<OutColorTag, CustomKeys>) {
-    this._scheme.value = createScheme(mainColor, options)
+  public changeColorScheme(
+    primaryColor: AnyColor,
+    options?: SchemeOptions<OutColorTag, CustomKeys>
+  ) {
+    this._scheme.value = createScheme(primaryColor, options)
+    // 更新配色方案选项字符串
+    this.schemeOptionsString = JSON.stringify(options ?? {})
   }
 
   /**

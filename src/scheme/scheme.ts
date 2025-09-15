@@ -223,7 +223,7 @@ export class Scheme<OutColorTag extends ColorTag = 'hex', CustomKeys extends str
    *
    * @template OutColorTag - 输出的颜色标签类型，默认为'hex'
    * @template CustomKeys - 自定义颜色键类型
-   * @param {AnyColor} mainColor - 主色，作为整个配色方案的基础
+   * @param {AnyColor} primaryColor - 主色，作为整个配色方案的基础
    * @param {BaseSchemeOptions<OutColorTag, CustomKeys>} [options] - 基准配色方案选项
    * @param {ComputeFormula} [options.formula='triadic'] - 计算辅助色的公式
    * @param {number} [options.angle] - 色相偏移角度
@@ -235,7 +235,7 @@ export class Scheme<OutColorTag extends ColorTag = 'hex', CustomKeys extends str
     OutColorTag extends ColorTag = 'hex',
     CustomKeys extends string = never
   >(
-    mainColor: AnyColor,
+    primaryColor: AnyColor,
     options?: BaseSchemeOptions<OutColorTag, CustomKeys>
   ): BaseColorScheme<CustomKeys, OutColorTag> {
     const { angle, formula = 'triadic', outType = 'hex', customColor = {} } = options ?? {}
@@ -245,7 +245,7 @@ export class Scheme<OutColorTag extends ColorTag = 'hex', CustomKeys extends str
       colorScheme[colorSchemeKey as CustomKeys] = anyColorToHslObject(color)
     }
     // 获取主色的 HSL 对象
-    const primaryHsl = colorScheme.primary || anyColorToHslObject(mainColor)
+    const primaryHsl = colorScheme.primary || anyColorToHslObject(primaryColor)
     // 获取调整后的 HSL 值
     const { h, s, l } = primaryHsl
 

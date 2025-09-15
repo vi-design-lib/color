@@ -43,15 +43,15 @@ export class UniAppTheme<OutColorTag extends ColorTag, CustomKeys extends string
    * @description 创建一个uni-app主题管理实例，初始化主题模式和颜色方案，并监听系统主题变化
    * @constructor
    * @inheritDoc
-   * @param {AnyColor} mainColor - 主色，作为整个配色方案的基础
+   * @param {AnyColor} primaryColor - 主色，作为整个配色方案的基础
    * @param {BaseThemeOptions<OutColorTag, CustomKeys>} [options] - 配置选项，用于自定义主题行为
    */
-  constructor(mainColor: AnyColor, options: BaseThemeOptions<OutColorTag, CustomKeys> = {}) {
+  constructor(primaryColor: AnyColor, options: BaseThemeOptions<OutColorTag, CustomKeys> = {}) {
     options.refFactory ??= ref
     if (!options.refFactory) {
       options.refFactory = ref
     }
-    super(mainColor, options)
+    super(primaryColor, options)
     uni.onThemeChange(({ theme }) => {
       // 如果是system模式，则切换主题
       if (this.mode === 'system') this.setMode(theme as Brightness)
@@ -111,7 +111,7 @@ export class UniAppTheme<OutColorTag extends ColorTag, CustomKeys extends string
  *
  * @template OutColorTag - 输出的颜色标签类型
  * @template CustomKeys - 自定义颜色键类型
- * @param {AnyColor} mainColor - 主色，作为整个配色方案的基础
+ * @param {AnyColor} primaryColor - 主色，作为整个配色方案的基础
  * @param {BaseThemeOptions<OutColorTag, CustomKeys>} [options] - 配置选项
  * @param {Record<CustomKeys, AnyColor>} [options.customColor] - 自定义基准配色
  * @param {string} [options.cacheKey=_CACHE_THEME_MODE] - 自定义缓存名称
@@ -121,10 +121,10 @@ export class UniAppTheme<OutColorTag extends ColorTag, CustomKeys extends string
  * @returns {UniAppTheme<OutColorTag, CustomKeys>} 主题实例
  */
 export function createUniTheme<OutColorTag extends ColorTag, CustomKeys extends string>(
-  mainColor: AnyColor,
+  primaryColor: AnyColor,
   options?: BaseThemeOptions<OutColorTag, CustomKeys>
 ): UniAppTheme<OutColorTag, CustomKeys> {
-  return new UniAppTheme(mainColor, options as BaseThemeOptions<OutColorTag, CustomKeys>)
+  return new UniAppTheme(primaryColor, options as BaseThemeOptions<OutColorTag, CustomKeys>)
 }
 
 /**

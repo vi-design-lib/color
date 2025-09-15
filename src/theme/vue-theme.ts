@@ -23,12 +23,12 @@ export class VueTheme<
    * @description 创建一个Vue主题管理实例，使用Vue的ref函数实现响应式
    * @constructor
    * @inheritDoc
-   * @param {AnyColor} mainColor - 主色，作为整个配色方案的基础
+   * @param {AnyColor} primaryColor - 主色，作为整个配色方案的基础
    * @param {WebThemeOptions<OutColorTag, CustomKeys>} [options] - 配置选项，用于自定义主题行为
    */
-  constructor(mainColor: AnyColor, options: WebThemeOptions<OutColorTag, CustomKeys> = {}) {
+  constructor(primaryColor: AnyColor, options: WebThemeOptions<OutColorTag, CustomKeys> = {}) {
     options.refFactory ??= ref
-    super(mainColor, options)
+    super(primaryColor, options)
   }
 }
 
@@ -43,7 +43,7 @@ export class VueTheme<
  * @template CustomKeys - 自定义颜色键类型
  * @param {Object} app - Vue应用实例
  * @param {ThemePluginOptions<OutColorTag, CustomKeys>} [options] - 配置选项
- * @param {AnyColor} [options.mainColor=DEFAULT_COLOR] - 主色
+ * @param {AnyColor} [options.primaryColor=DEFAULT_COLOR] - 主色
  * @param {string} [options.varPrefix='--color-'] - CSS变量前缀
  * @param {string} [options.varSuffix] - CSS变量后缀
  * @param {string} [options.attribute=theme] - HTML属性名
@@ -73,7 +73,7 @@ export { theme as ThemePlugin }
  *
  * @template OutColorTag - 输出的颜色标签类型
  * @template CustomKeys - 自定义颜色键类型
- * @param {AnyColor} mainColor - 主色，作为整个配色方案的基础
+ * @param {AnyColor} primaryColor - 主色，作为整个配色方案的基础
  * @param {ThemePluginOptions<OutColorTag, CustomKeys>} [options] - 配置选项
  * @param {string} [options.varPrefix=--color-] - CSS变量前缀
  * @param {string} [options.varSuffix] - CSS变量后缀
@@ -85,8 +85,8 @@ export { theme as ThemePlugin }
  * @returns {VueTheme<OutColorTag, CustomKeys>} 主题实例
  */
 export function createVueTheme<OutColorTag extends ColorTag, CustomKeys extends string>(
-  mainColor: AnyColor,
+  primaryColor: AnyColor,
   options?: ThemePluginOptions<OutColorTag, CustomKeys>
 ): VueTheme<OutColorTag, CustomKeys> {
-  return new VueTheme(mainColor, options)
+  return new VueTheme(primaryColor, options)
 }

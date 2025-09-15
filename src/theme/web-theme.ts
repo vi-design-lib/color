@@ -95,7 +95,7 @@ export class WebTheme<
    * Theme构造函数
    *
    * @constructor
-   * @param { AnyColor } mainColor - 主色
+   * @param { AnyColor } primaryColor - 主色
    * @param { WebThemeOptions } options - 选项
    * @param { Object } options.customColorScheme - 自定义基准配色
    * @param { string } [options.varPrefix=--color-] - css变量前缀，仅浏览器端有效
@@ -105,7 +105,7 @@ export class WebTheme<
    * @param { ComputeFormula } [options.formula=triadic] - 配色方案算法
    * @param { number } [options.angle] - 色相偏移角度
    */
-  constructor(mainColor: AnyColor, options?: WebThemeOptions<OutColorTag, CustomKeys>) {
+  constructor(primaryColor: AnyColor, options?: WebThemeOptions<OutColorTag, CustomKeys>) {
     const {
       attribute = 'theme',
       varPrefix = '--color-',
@@ -113,7 +113,7 @@ export class WebTheme<
       ssr = false,
       ...rest
     } = options || {}
-    super(mainColor, rest)
+    super(primaryColor, rest)
     this.attribute = attribute
     this.varPrefix = varPrefix
     this.varSuffix = varSuffix
@@ -156,14 +156,14 @@ export class WebTheme<
    * @description 根据新的主色和选项重新创建颜色方案，并更新CSS变量
    * @inheritDoc
    * @override
-   * @param {AnyColor} mainColor - 新的主色
+   * @param {AnyColor} primaryColor - 新的主色
    * @param {SchemeOptions<OutColorTag, CustomKeys>} [options] - 可选的配色选项
    */
   public override changeColorScheme(
-    mainColor: AnyColor,
+    primaryColor: AnyColor,
     options?: SchemeOptions<OutColorTag, CustomKeys>
   ) {
-    super.changeColorScheme(mainColor, options)
+    super.changeColorScheme(primaryColor, options)
     this.updateStyles()
   }
 
@@ -294,7 +294,7 @@ export class WebTheme<
  *
  * @template OutColorTag - 输出的颜色类型
  * @template CustomKeys - 自定义配色角色key
- * @param {AnyColor} mainColor - 主色
+ * @param {AnyColor} primaryColor - 主色
  * @param {WebThemeOptions<OutColorTag, CustomKeys>} [options] - 配置选项
  * @param {Record<CustomKeys, AnyColor>} [options.customColor] - 自定义基准配色
  * @param {string} [options.varPrefix=--color-] - CSS变量前缀
@@ -307,8 +307,8 @@ export class WebTheme<
  * @returns {WebTheme<OutColorTag, CustomKeys>} 主题实例
  */
 export function createWebTheme<OutColorTag extends ColorTag, CustomKeys extends string>(
-  mainColor: AnyColor,
+  primaryColor: AnyColor,
   options?: WebThemeOptions<OutColorTag, CustomKeys>
 ): WebTheme<OutColorTag, CustomKeys> {
-  return new WebTheme(mainColor, options)
+  return new WebTheme(primaryColor, options)
 }
