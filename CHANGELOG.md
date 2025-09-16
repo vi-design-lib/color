@@ -1,4 +1,4 @@
-# [2.1.0-alpha.4](https://gitee.com/vi-design/color/compare/v2.1.0-alpha.3...v2.1.0-alpha.4) (2025-09-15)
+# [2.1.0-alpha.5](https://gitee.com/vi-design/color/compare/v2.1.0-alpha.4...v2.1.0-alpha.5) (2025-09-16)
 
 
 ### Bug Fixes
@@ -10,11 +10,20 @@
 ### Features
 
 * **constant:** 添加版本号并更新全局声明 ([0f8660d](https://gitee.com/vi-design/color/commits/0f8660d0946ace90e2ba17b1d6c91494cdc21de1))
+* **scheme:** 添加控件状态颜色支持 ([7901def](https://gitee.com/vi-design/color/commits/7901deff4886292e5cd445008d33ff091f906fed))
+* **theme:** 优化主题管理并添加配色方案缓存功能 ([660d547](https://gitee.com/vi-design/color/commits/660d547547a654c3d0a04e802f616a124567876e))
+* **theme:** 添加 toggleBright 方法实现亮色/暗色模式切换 ([d71a214](https://gitee.com/vi-design/color/commits/d71a21445bd3c71982fe898a5da745df6a6dd25b))
+
+
+
+# [2.1.0-alpha.3](https://gitee.com/vi-design/color/compare/v2.1.0-alpha.2...v2.1.0-alpha.3) (2025-09-13)
+
+
+### Features
+
 * **example:** 添加 CSS 变量生成示例 ([21b1ae9](https://gitee.com/vi-design/color/commits/21b1ae9d0399e415f74d06751b0a8ad6281b5bda))
 * **palette:** 优化色彩阶生成逻辑 ([55c9202](https://gitee.com/vi-design/color/commits/55c9202f203fb42f0e9cbc5f6cd6bab17d4259db))
-* **scheme:** 添加控件状态颜色支持 ([7901def](https://gitee.com/vi-design/color/commits/7901deff4886292e5cd445008d33ff091f906fed))
 * **scheme:** 调整暗色模式主色和强调色 ([b521119](https://gitee.com/vi-design/color/commits/b521119daf11acc5a108dc243a7da6c98c6f1d03))
-* **theme:** 优化主题管理并添加配色方案缓存功能 ([660d547](https://gitee.com/vi-design/color/commits/660d547547a654c3d0a04e802f616a124567876e))
 
 
 
