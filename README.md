@@ -267,11 +267,8 @@ document.body.style.backgroundColor = theme.role('background')
   // 设置初始主题
   document.body.style.backgroundColor = theme.cssVar('background')
   document.body.style.color = theme.cssVar('onBackground')
-
-  // 动态切换主题
-  function toggleTheme() {
-    theme.mode = theme.mode === 'light' ? 'dark' : 'light'
-  }
+  // 动态切换亮度
+  theme.toggleBright()
 </script>
 </body>
 </html>
@@ -330,7 +327,7 @@ body {
 
 /* 带默认值的变量使用 */
 .custom-element {
-  background-color: var(--color-custom-brand, #ff5500);
+  background-color: var(--color-custom, #ff5500);
 }
 ```
 

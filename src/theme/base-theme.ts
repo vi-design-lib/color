@@ -319,6 +319,17 @@ export abstract class BaseTheme<OutColorTag extends ColorTag, CustomKeys extends
   }
 
   /**
+   * 切换亮色/暗色模式的方法
+   * 根据当前模式切换到另一种模式
+   */
+  public toggleBright() {
+    // 使用三元运算符判断当前模式，并进行切换
+    // 如果当前是亮色模式(light)，则切换为暗色模式(dark)
+    // 如果当前是暗色模式(dark)，则切换为亮色模式(light)
+    this.mode = this.bright === 'light' ? 'dark' : 'light'
+  }
+
+  /**
    * 保存缓存方案的方法
    * 将当前方案对象转换为JSON字符串并保存到缓存中
    * 使用缓存键值 cacheSchemeKey 作为标识
