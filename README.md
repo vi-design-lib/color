@@ -94,6 +94,8 @@ import { colorFromImageElement } from '@vi-design/color'
 const img = document.querySelector('img')
 const dominantColor = await colorFromImageElement(img)
 const theme = createWebTheme(dominantColor)
+// 直接给定src
+await colorFromImage('path/to/image.png')
 ```
 
 ## 🔧 框架集成
@@ -104,7 +106,7 @@ const theme = createWebTheme(dominantColor)
 
 ```typescript
 // main.ts
-import { theme } from '@vi-design/color/theme/vue'
+import { theme } from '@vi-design/theme/vue'
 import { createApp } from 'vue'
 import App from './App.vue'
 
@@ -120,53 +122,21 @@ const app = createApp(App)
 
 **模块化方式：**
 
-```vue
+```ts
+// theme.ts
+import { createVitarxTheme } from '@vi-design/theme/vue'
 
-<script setup>
-  import { createVueTheme } from '@vi-design/color/theme/vue'
-  import { ref, computed } from 'vue'
-
-  const theme = createVueTheme('#1677ff')
-  const isDark = ref(false)
-
-  const currentRoles = computed(() =>
-    isDark.value ? theme.scheme.darkRoles : theme.scheme.lightRoles
-  )
-
-  function toggleTheme() {
-    theme.mode = theme.mode === 'light' ? 'dark' : 'light'
-  }
-</script>
-
-<template>
-  <div class="app">
-    <button @click="toggleTheme">切换主题</button>
-    <div
-      class="card"
-      :style="{ 
-        backgroundColor: theme.role('primary'),
-        color: theme.role('onPrimary') 
-      }"
-    >
-      响应式主题卡片
-    </div>
-  </div>
-</template>
-
-<style>
-  .app {
-    background-color: var(--color-background);
-    color: var(--color-on-background);
-    transition: all 0.3s ease;
-  }
-</style>
+const theme = createVitarxTheme('#1677ff')
+export default theme
 ```
 
 ### Vitarx 框架
 
+**插件方式（推荐）：**
+
 ```typescript
 // main.js
-import { theme } from '@vi-design/color/theme/vitarx'
+import { theme } from '@vi-design/theme/vitarx'
 import { createApp } from 'vitarx'
 import App from './App.js'
 
@@ -175,32 +145,12 @@ const app = createApp('#root')
   .render(App)
 ```
 
-```jsx
-// 组件中使用
-import { createVitarxTheme } from '@vi-design/color/theme/vitarx'
-
-const theme = createVitarxTheme('#1677ff')
-
-function App() {
-  return (
-    <div style={{ color: theme.role('primary') }}>
-      <button onClick={() => theme.mode = 'dark'}>
-        切换暗色模式
-      </button>
-      <div style={{ backgroundColor: theme.cssVar('surface') }}>
-        自动响应主题变化
-      </div>
-    </div>
-  )
-}
-```
-
 ### UniApp 小程序
 
 ```vue
 <!-- App.vue -->
 <script>
-  import { createUniTheme } from '@vi-design/color/theme/uniapp'
+  import { createUniTheme, colorFromImage } from '@vi-design/theme/uniapp'
 
   export default {
     onLaunch() {
@@ -210,10 +160,11 @@ function App() {
           brand: '#ff5500'
         }
       })
-
-      // 支持从图片提取颜色
-      uni.$theme.colorFromImage('/static/logo.png').then(color => {
-        console.log('提取的主色调:', color)
+      // 获取画布上下文，参考：https://uniapp.dcloud.net.cn/api/canvas/createCanvasContext.html
+      const context = uni.createCanvasContext(canvasId, componentInstance)
+      // 从图片中获取颜色
+      colorFromImage('path/to/image.png', context).then((color) => {
+        console.log(color)
       })
     }
   }
@@ -223,7 +174,7 @@ function App() {
 ```typescript
 // 类型定义 types.d.ts
 interface Uni {
-  $theme: import('@vi-design/color/theme/uniapp').UniAppTheme<'hex', string>
+  $theme: import('@vi-design/theme/uniapp').UniAppTheme<'hex', string>
 }
 ```
 
