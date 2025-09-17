@@ -132,7 +132,7 @@ export async function colorFromImageElement(
 }
 
 /**
- * 从图片元素中获取颜色
+ * 从图片中获取颜色
  *
  * @remarks 只能运行在浏览器环境
  * @alias colorFromImageSrc
