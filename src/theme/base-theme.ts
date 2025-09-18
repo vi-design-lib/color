@@ -58,6 +58,11 @@ export interface BaseThemeOptions<OutColorTag extends ColorTag, CustomKeys exten
 }
 
 /**
+ * 监听函数
+ */
+export type Observer = (newMode: ThemeMode, oldMode: ThemeMode) => void
+
+/**
  * 主题管理的基础抽象类，提供主题模式切换和颜色方案管理的核心功能。
  *
  * 该类实现了主题系统的基本架构，包括：
@@ -129,6 +134,7 @@ export abstract class BaseTheme<OutColorTag extends ColorTag, CustomKeys extends
    * @private
    */
   private _schemeHash: string
+  private readonly _observer = new Set<Observer>()
 
   /**
    * Theme构造函数
@@ -235,12 +241,33 @@ export abstract class BaseTheme<OutColorTag extends ColorTag, CustomKeys extends
    * @return {boolean} - 是否成功更新了主题模式（亮度发生变化返回true）
    */
   public setMode(mode: ThemeMode): boolean {
+    if (mode === this._mode.value) return false
+    this._observer.forEach((fn) => fn(mode, this._mode.value))
     const oldBright = this.bright
     this._mode.value = mode
     if (this.bright === oldBright) return false
     // 缓存主题模式
     this.setCache(`${this.cacheKey}MODE`, mode)
     return true
+  }
+
+  /**
+   * 注册观察者模式中的观察者对象
+   *
+   * 当模式发生变化时，所有注册的观察者都会收到通知
+   *
+   * @param observer - 需要添加到观察者列表的观察者函数
+   */
+  public onModeChange(observer: Observer): void {
+    this._observer.add(observer) // 将回调函数添加到观察者列表中
+  }
+
+  /**
+   * 停止监听模式变化
+   * @param observer - 需要移除的观察者函数
+   */
+  public offModeChange(observer: Observer): void {
+    this._observer.delete(observer) // 将回调函数从观察者列表中删除
   }
 
   /**

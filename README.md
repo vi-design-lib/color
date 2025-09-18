@@ -83,6 +83,12 @@ console.log(scheme.darkRoles.background)  // 暗色模式背景色
 const theme = createWebTheme('#1677ff')
 console.log(theme.role('primary'))        // 获取当前主色
 console.log(theme.cssVar('background'))   // 获取CSS变量：var(--color-background)
+const callback = (newMode, oldMode) => {
+  console.log(newMode, oldMode)
+}
+theme.onModeChange(callback) // 注册主题模式变化事件
+theme.setMode('dark')      // 设置主题模式
+theme.offModeChange(callback) // 取消注册主题模式变化事件
 ```
 
 ### 🖼️ 从图片提取颜色
@@ -227,7 +233,7 @@ document.body.style.backgroundColor = theme.role('background')
 
 ### CSS 主题变量使用
 
-> **注意**：仅 `WebTheme`、`VueTheme` 和 `VitarxTheme` 支持CSS变量，`UniAppTheme` 不支持！
+> **注意**：仅 `WebTheme`、`VueTheme` 和 `VitarxTheme` 支持全局CSS变量，`UniAppTheme` 不支持！
 
 **1. 设置 HTML 主题属性：**
 
