@@ -160,6 +160,8 @@ export interface NeutralColorRoles<T> {
 type BaseColorRole<KS extends string, ColorType extends AnyColor> = {
   [K in KS]: ColorType
 } & {
+  [K in `${KS}Fixed`]: ColorType
+} & {
   [K in `on${Capitalize<KS>}`]: ColorType
 } & {
   [K in `${KS}Hover`]: ColorType
