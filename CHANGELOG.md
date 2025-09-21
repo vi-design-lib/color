@@ -1,4 +1,24 @@
+# [2.1.0-alpha.6](https://gitee.com/vi-design/color/compare/v2.1.0-alpha.5...v2.1.0-alpha.6) (2025-09-21)
+
+
+### Features
+
+* **scheme:** 扩展角色类型支持固定样式后缀 ([c0bdb22](https://gitee.com/vi-design/color/commits/c0bdb2295ee074103183cdf3efc553ec18fe0254))
+* **theme:** 更新主题集成方式并优化 README 文档 ([8d40a94](https://gitee.com/vi-design/color/commits/8d40a94d96f69298c01d4138ad313f4b9df39963))
+* **theme:** 添加主题模式变化观察者机制 ([dacb7c6](https://gitee.com/vi-design/color/commits/dacb7c6ef33092d14837f1102650d08461f3acb9))
+
+
+
 # [2.1.0-alpha.5](https://gitee.com/vi-design/color/compare/v2.1.0-alpha.4...v2.1.0-alpha.5) (2025-09-16)
+
+
+### Features
+
+* **theme:** 添加 toggleBright 方法实现亮色/暗色模式切换 ([d71a214](https://gitee.com/vi-design/color/commits/d71a21445bd3c71982fe898a5da745df6a6dd25b))
+
+
+
+# [2.1.0-alpha.4](https://gitee.com/vi-design/color/compare/v2.1.0-alpha.3...v2.1.0-alpha.4) (2025-09-15)
 
 
 ### Bug Fixes
@@ -12,7 +32,6 @@
 * **constant:** 添加版本号并更新全局声明 ([0f8660d](https://gitee.com/vi-design/color/commits/0f8660d0946ace90e2ba17b1d6c91494cdc21de1))
 * **scheme:** 添加控件状态颜色支持 ([7901def](https://gitee.com/vi-design/color/commits/7901deff4886292e5cd445008d33ff091f906fed))
 * **theme:** 优化主题管理并添加配色方案缓存功能 ([660d547](https://gitee.com/vi-design/color/commits/660d547547a654c3d0a04e802f616a124567876e))
-* **theme:** 添加 toggleBright 方法实现亮色/暗色模式切换 ([d71a214](https://gitee.com/vi-design/color/commits/d71a21445bd3c71982fe898a5da745df6a6dd25b))
 
 
 
