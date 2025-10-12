@@ -40,10 +40,10 @@ export class Scheme<OutColorTag extends ColorTag = 'hex', CustomKeys extends str
     onSource: 20,
     sourceHover: 90,
     onSourceHover: 30,
-    sourceActive: 74,
-    onSourceActive: 16,
-    sourceDisabled: 26,
-    onSourceDisabled: 70,
+    sourceActive: 70,
+    onSourceActive: 10,
+    sourceDisabled: 20,
+    onSourceDisabled: 35,
     container: 30,
     onContainer: 90,
     base: {
@@ -72,14 +72,14 @@ export class Scheme<OutColorTag extends ColorTag = 'hex', CustomKeys extends str
    * 亮色模式调色板取色规则
    */
   static readonly lightRoleRule: PaletteExtractionColorRules = {
-    source: 40,
+    source: 45,
     onSource: 100,
     sourceHover: 60,
     onSourceHover: 100,
-    sourceActive: 30,
+    sourceActive: 40,
     onSourceActive: 90,
-    sourceDisabled: 36,
-    onSourceDisabled: 80,
+    sourceDisabled: 80,
+    onSourceDisabled: 100,
     container: 90,
     onContainer: 30,
     base: {
@@ -384,7 +384,7 @@ export class Scheme<OutColorTag extends ColorTag = 'hex', CustomKeys extends str
         sourceActive: palette.get(rules.sourceActive),
         onSourceActive: palette.get(rules.onSourceActive),
         sourceDisabled: palette.get(rules.sourceDisabled),
-        onSourceDisabled: neutral.get(rules.onSourceDisabled),
+        onSourceDisabled: palette.get(rules.onSourceDisabled),
         container: palette.get(rules.container),
         onContainer: palette.get(rules.onContainer)
       }
