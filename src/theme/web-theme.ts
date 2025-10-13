@@ -261,7 +261,7 @@ export class WebTheme<
         .map((rule) => {
           const color = scheme[theme].roles[rule as 'primary']
           const rgb = Object.values(anyColorToRgbObject(color)).join(', ')
-          return `${this.varName(rule)}: ${color};\n${this.varName(rule)}-rgb: ${rgb}`
+          return `${this.varName(rule)}: ${color};\n${this.varName(rule)}-rgb: ${rgb};`
         })
         .join('\n')
     }
