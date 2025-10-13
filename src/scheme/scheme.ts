@@ -404,9 +404,7 @@ export class Scheme<OutColorTag extends ColorTag = 'hex', CustomKeys extends str
         const bgKey = suffix ? `${key}${suffix}` : key
         const textKey = suffix ? `${onKey}${suffix}` : onKey
         roles[bgKey] = bg
-        roles[`${bgKey}Rgb`] = Object.values(anyColorToRgbObject(bg)).join(', ')
         roles[textKey] = text
-        roles[`${textKey}Rgb`] = Object.values(anyColorToRgbObject(text)).join(', ')
       }
     }
 
