@@ -189,16 +189,6 @@ type ColorSchemeRole<CustomKeys extends string, OutColorTag extends ColorTag> = 
   NeutralColorRoles<ColorTagToColorType<OutColorTag>>
 
 /**
- * 配色方案对应的RGB颜色角色
- *
- * 将自定义颜色和固有颜色扩展rgb角色
- *
- * @template T - 自定义颜色键类型
- */
-type ColorSchemeRgbRole<T extends string> = {
-  [K in `${T}Rgb`]: string
-}
-/**
  * 配色方案对应的颜色角色
  *
  * 将自定义颜色和固有颜色扩展为完整的UI角色颜色系统，包括中性色角色。
@@ -209,5 +199,4 @@ type ColorSchemeRgbRole<T extends string> = {
 export type ColorSchemeRoles<
   CustomKeys extends string,
   OutColorTag extends ColorTag
-> = ColorSchemeRole<CustomKeys, OutColorTag> &
-  ColorSchemeRgbRole<keyof ColorSchemeRole<CustomKeys, OutColorTag>>
+> = ColorSchemeRole<CustomKeys, OutColorTag>
