@@ -1,7 +1,6 @@
 import type { AnyColor, ColorTag, DeepPartial, HSLObject } from '../types.js'
 import {
   anyColorToHslObject,
-  anyColorToRgbObject,
   anyColorToTargetColor,
   capitalize,
   type ComputeFormula,
@@ -417,7 +416,6 @@ export class Scheme<OutColorTag extends ColorTag = 'hex', CustomKeys extends str
     const baseRoles = {} as Record<string, any>
     for (const [key, value] of Object.entries(rules.base)) {
       baseRoles[key] = neutral.get(value)
-      baseRoles[`${key}Rgb`] = Object.values(anyColorToRgbObject(neutral.get(value))).join(', ')
     }
 
     Object.assign(roles, baseRoles)
