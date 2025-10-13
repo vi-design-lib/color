@@ -1,10 +1,17 @@
-# [2.1.0-alpha.6](https://gitee.com/vi-design/color/compare/v2.1.0-alpha.5...v2.1.0-alpha.6) (2025-09-21)
+# [2.1.0-alpha.7](https://gitee.com/vi-design/color/compare/v2.1.0-alpha.6...v2.1.0-alpha.7) (2025-10-13)
+
+
+### Bug Fixes
+
+* **constant:** 将版本号常量改为字符串格式 ([7a560ef](https://gitee.com/vi-design/color/commits/7a560ef4d13a6d7169785f089ce42fa71f71761c))
+* **scheme:** 调整调色板颜色值以修复视觉问题 ([b0a2a65](https://gitee.com/vi-design/color/commits/b0a2a652428ac6193cbd4bcbaa1e204af6f6ee07))
 
 
 ### Features
 
 * **scheme:** 扩展角色类型支持固定样式后缀 ([c0bdb22](https://gitee.com/vi-design/color/commits/c0bdb2295ee074103183cdf3efc553ec18fe0254))
 * **theme:** 更新主题集成方式并优化 README 文档 ([8d40a94](https://gitee.com/vi-design/color/commits/8d40a94d96f69298c01d4138ad313f4b9df39963))
+* **theme:** 添加RGB颜色变量支持 ([3ea417f](https://gitee.com/vi-design/color/commits/3ea417fbae8a9b9ba6763dcdca267c2a075fbdf2))
 * **theme:** 添加主题模式变化观察者机制 ([dacb7c6](https://gitee.com/vi-design/color/commits/dacb7c6ef33092d14837f1102650d08461f3acb9))
 
 
