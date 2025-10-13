@@ -4,7 +4,7 @@ import {
   type SchemeOptions,
   type TonalKeys
 } from '../scheme/index.js'
-import { anyColorToHexColor, camelToKebab } from '../utils/index.js'
+import { anyColorToHexColor, anyColorToRgbObject, camelToKebab } from '../utils/index.js'
 import { BaseTheme, type BaseThemeOptions, type Brightness, type ThemeMode } from './base-theme.js'
 import type { AnyColor, ColorTag } from '../types.js'
 
@@ -260,7 +260,8 @@ export class WebTheme<
       return Object.keys(scheme[theme].roles)
         .map((rule) => {
           const color = scheme[theme].roles[rule as 'primary']
-          return `${this.varName(rule)}: ${color};`
+          const rgb = Object.values(anyColorToRgbObject(color)).join(', ')
+          return `${this.varName(rule)}: ${color};\n${this.varName(rule)}-rgb: ${rgb}`
         })
         .join('\n')
     }
