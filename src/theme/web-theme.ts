@@ -1,9 +1,4 @@
-import {
-  type BrightnessScheme,
-  type ColorSchemeRoles,
-  type SchemeOptions,
-  type TonalKeys
-} from '../scheme/index.js'
+import { type BrightnessScheme, type SchemeOptions } from '../scheme/index.js'
 import { anyColorToHexColor, anyColorToRgbObject, camelToKebab } from '../utils/index.js'
 import { BaseTheme, type BaseThemeOptions, type Brightness, type ThemeMode } from './base-theme.js'
 import type { AnyColor, ColorTag } from '../types.js'
@@ -11,100 +6,46 @@ import type { AnyColor, ColorTag } from '../types.js'
 export interface WebThemeOptions<OutColorTag extends ColorTag, CustomKeys extends string>
   extends BaseThemeOptions<OutColorTag, CustomKeys> {
   /**
-   * css变量前缀
-   *
-   * 默认是 `--color-`，生成的变量名会自动转换为`kebab-case`格式。
-   *
-   * 例如：`--color-primary: #ffffff;`
-   *
-   * > 注意：如果不需要前缀也必须传入`--`，因为css变量定义必须以`--`开头
-   *
-   * @default '--color-'
+   * CSS变量前缀，默认 `--color-`
+   * > 注意：必须以 `--` 开头
    */
   varPrefix?: string
   /**
-   * css变量后缀
-   *
-   * 通常以 `-` 开头，例如：`-color`
-   *
-   * @default ''
+   * CSS变量后缀，默认空字符串
    */
   varSuffix?: string
   /**
-   * HTML根元素用于记录主题亮度的属性名
-   *
+   * HTML根元素上记录主题亮度的属性名
    * @default 'theme'
    */
   attribute?: string
   /**
-   * 服务端渲染时的系统主题亮度
-   *
-   * 由于服务端不能调用浏览器端的api，所以需要设置一个默认的主题亮度，可以是`light`或`dark`
-   *
-   * 默认为false，代表着不在浏览器端渲染
-   *
+   * SSR 默认主题亮度（light/dark），false 表示禁用 SSR 模式
    * @default false
    */
   ssr?: Brightness | false
 }
 
 /**
- * 浏览器环境，主题管理类
+ * Web 环境主题管理类
  *
- * 依赖浏览器端`CSSStyleSheet`和`matchMedia`特性，自动生成css变量样式表，支持动态切换主题。
- *
- * @template OutColorTag - 输出颜色类型
- * @template CustomKeys - 自定义配色名称
+ * @template OutColorTag 输出颜色类型
+ * @template CustomKeys 自定义配色名称
  */
 export class WebTheme<
   OutColorTag extends ColorTag,
   CustomKeys extends string = never
 > extends BaseTheme<OutColorTag, CustomKeys> {
-  /**
-   * 是否为浏览器环境
-   *
-   * @private
-   */
-  protected static readonly _isBrowser = typeof window === 'object' && typeof document === 'object'
-  /**
-   * css变量后缀
-   *
-   * @default ''
-   */
-  public readonly varSuffix: string
-  /**
-   * css变量前缀
-   *
-   * @default '--color-'
-   */
-  public readonly varPrefix: string
-  /**
-   * HTML根元素用于记录主题亮度的属性名
-   *
-   * @private
-   */
-  public readonly attribute: string
-  /**
-   * 服务端渲染时的系统主题亮度
-   */
-  protected readonly ssr: Brightness | false
-  // 样式表
-  private readonly _sheet: CSSStyleSheet | undefined
+  /** 是否为浏览器环境 */
+  protected static readonly _isBrowser =
+    typeof window !== 'undefined' && typeof document !== 'undefined'
 
-  /**
-   * Theme构造函数
-   *
-   * @constructor
-   * @param { AnyColor } primaryColor - 主色
-   * @param { WebThemeOptions } options - 选项
-   * @param { Object } options.customColorScheme - 自定义基准配色
-   * @param { string } [options.varPrefix=--color-] - css变量前缀，仅浏览器端有效
-   * @param { string } [options.varSuffix] - css变量后缀，仅浏览器端有效
-   * @param { function } [options.refProxy] - 自定义ref函数
-   * @param { string } [options.cacheKey=_CACHE_THEME_MODE] - 自定义缓存名称
-   * @param { ComputeFormula } [options.formula=triadic] - 配色方案算法
-   * @param { number } [options.angle] - 色相偏移角度
-   */
+  public readonly varPrefix: string
+  public readonly varSuffix: string
+  public readonly attribute: string
+  protected readonly ssr: Brightness | false
+  private readonly _sheet?: CSSStyleSheet
+
   constructor(primaryColor: AnyColor, options?: WebThemeOptions<OutColorTag, CustomKeys>) {
     const {
       attribute = 'theme',
@@ -113,35 +54,40 @@ export class WebTheme<
       ssr = false,
       ...rest
     } = options || {}
+
     super(primaryColor, rest)
+
     this.attribute = attribute
     this.varPrefix = varPrefix
     this.varSuffix = varSuffix
     this.ssr = ssr
-    if (WebTheme._isBrowser) {
-      document.documentElement.setAttribute(options?.attribute || 'theme', this.bright)
-      this._sheet = WebTheme.createStyleSheet()
-      this.updateStyles()
-      // 监听系统主题变化
-      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-        // 如果是system模式，则切换主题
-        if (this.mode === 'system') this.setMode(e.matches ? 'dark' : 'light')
-      })
-    }
+
+    if (!WebTheme._isBrowser) return
+
+    // 初始化 DOM 属性
+    document.documentElement.setAttribute(this.attribute, this.bright)
+
+    // 创建样式表
+    this._sheet = WebTheme.createStyleSheet()
+
+    // 更新样式
+    this.updateStyles()
+
+    // 监听系统主题变化
+    const mq = window.matchMedia('(prefers-color-scheme: dark)')
+    mq.addEventListener('change', (e) => {
+      if (this.mode === 'system') this.setMode(e.matches ? 'dark' : 'light')
+    })
   }
 
-  /**
-   * @inheritDoc
-   */
+  /** @inheritDoc */
   override get systemBright(): Brightness {
     if (!WebTheme._isBrowser) return this.ssr === 'dark' ? 'dark' : 'light'
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
   }
 
-  /**
-   * @inheritDoc
-   */
-  public override setMode(mode: ThemeMode): boolean {
+  /** @inheritDoc */
+  override setMode(mode: ThemeMode): boolean {
     const result = super.setMode(mode)
     if (result && WebTheme._isBrowser) {
       document.documentElement.setAttribute(this.attribute, this.bright)
@@ -153,13 +99,12 @@ export class WebTheme<
   /**
    * 动态切换颜色方案
    *
-   * @description 根据新的主色和选项重新创建颜色方案，并更新CSS变量
-   * @inheritDoc
-   * @override
-   * @param {AnyColor} primaryColor - 新的主色
-   * @param {SchemeOptions<OutColorTag, CustomKeys>} [options] - 可选的配色选项
+   * 允许在运行时重新设置配置方案，并更新样式表。
+   *
+   * @param primaryColor - 主色
+   * @param options - 颜色方案配置
    */
-  public override changeColorScheme(
+  override changeColorScheme(
     primaryColor: AnyColor,
     options?: SchemeOptions<OutColorTag, CustomKeys>
   ) {
@@ -167,39 +112,25 @@ export class WebTheme<
     this.updateStyles()
   }
 
-  /**
-   * @inheritDoc
-   */
+  /** @inheritDoc */
   protected override removeCache(name: string): void {
-    if (typeof localStorage === 'object') {
-      localStorage.removeItem(name)
-    }
+    if (typeof localStorage !== 'object') return
+    localStorage.removeItem(name)
   }
 
-  /**
-   * @inheritDoc
-   */
+  /** @inheritDoc */
   protected override setCache(name: string, value: string): void {
-    if (typeof localStorage === 'object') {
-      localStorage.setItem(name, value)
-    }
+    if (typeof localStorage !== 'object') return
+    localStorage.setItem(name, value)
   }
 
-  /**
-   * @inheritDoc
-   */
+  /** @inheritDoc */
   protected override getCache(name: string): string | null {
-    if (typeof localStorage === 'object') {
-      return localStorage.getItem(name)
-    }
-    return null
+    if (typeof localStorage !== 'object') return null
+    return localStorage.getItem(name)
   }
 
-  /**
-   * 创建一个样式表
-   *
-   * @returns {CSSStyleSheet} - CSSStyleSheet。
-   */
+  /** 创建样式表 */
   public static createStyleSheet(): CSSStyleSheet {
     try {
       const cssSheet = new CSSStyleSheet()
@@ -207,82 +138,63 @@ export class WebTheme<
       return cssSheet
     } catch {
       const style = document.createElement('style')
-      style.appendChild(
-        document.createComment('此样式表由@vi-design/color注入与管理，请勿外部变更。')
-      )
+      style.appendChild(document.createComment('此样式表由 @vi-design/color 管理，请勿修改。'))
       document.head.append(style)
       return style.sheet!
     }
   }
 
-  /**
-   * 获取css变量
-   *
-   * 如果仅需要获取变量名，请使用`varName`方法
-   *
-   * @example
-   * theme.cssVar('primary')
-   * theme.cssVar('primary-10')
-   * theme.cssVar('customColor')
-   * theme.cssVar('customColor-10')
-   *
-   * @param {string} key - 配色角色key、调色板key
-   * @return {string} css变量，已包含var(...)
-   */
-  cssVar(key: keyof ColorSchemeRoles<CustomKeys, never> | TonalKeys<CustomKeys>): `var(${string})` {
+  /** 获取 CSS 变量（带 var() 包装） */
+  cssVar(key: string): `var(${string})` {
     return `var(${this.varName(key)})`
   }
 
-  /**
-   * 将配色方案key转换为css变量名
-   *
-   * @param {string} key - 配色方案key
-   * @returns {string} css变量名
-   */
+  /** 获取 CSS 变量名（不带 var()） */
   varName(key: string): `--${string}` {
     return `${this.varPrefix}${camelToKebab(key)}${this.varSuffix}` as `--${string}`
   }
 
-  /**
-   * 更新样式表
-   *
-   * 非浏览器环境，不会更新样式表！
-   */
-  protected updateStyles() {
+  /** 更新样式表 */
+  protected updateStyles(): void {
     if (!this._sheet) return
-    while (this._sheet.cssRules.length > 0) {
-      this._sheet.deleteRule(0)
-    }
-    const generateRoleStyles = (
+
+    // 清空旧样式
+    while (this._sheet.cssRules.length > 0) this._sheet.deleteRule(0)
+
+    const fixedRoles: string[] = []
+
+    const buildStyles = (
       scheme: BrightnessScheme<CustomKeys, OutColorTag>,
-      theme: 'dark' | 'light'
-    ) => {
-      return Object.keys(scheme[theme].roles)
-        .map((rule) => {
-          const color = scheme[theme].roles[rule as 'primary']
+      theme: Brightness
+    ): string => {
+      const roles = Object.entries(scheme[theme].roles)
+        .map(([key, color]) => {
           const rgb = Object.values(anyColorToRgbObject(color)).join(', ')
-          return `${this.varName(rule)}: ${color};\n${this.varName(rule)}-rgb: ${rgb};`
+          const name = this.varName(key)
+          if (theme === 'light')
+            fixedRoles.push(`${name}-fixed: ${color};\n${name}-fixed-rgb: ${rgb};`)
+          return `${name}: ${color};\n${name}-rgb: ${rgb};`
         })
         .join('\n')
-    }
 
-    const generateTonalStyles = (
-      scheme: BrightnessScheme<CustomKeys, OutColorTag>,
-      theme: 'dark' | 'light'
-    ) => {
-      return Object.entries(scheme[theme].tonal)
+      const tones = Object.entries(scheme[theme].tonal)
         .map(([key, value]) => {
-          return `${this.varName(key)}: ${anyColorToHexColor(value)};`
+          const name = this.varName(key)
+          const hex = anyColorToHexColor(value)
+          if (theme === 'light') fixedRoles.push(`${name}-fixed: ${hex};`)
+          return `${name}: ${hex};`
         })
         .join('\n')
+
+      return roles + tones
     }
 
-    const lightStyles =
-      generateRoleStyles(this.scheme, 'light') + generateTonalStyles(this.scheme, 'light')
-    const darkStyles =
-      generateRoleStyles(this.scheme, 'dark') + generateTonalStyles(this.scheme, 'dark')
+    const lightStyles = buildStyles(this.scheme, 'light')
+    const darkStyles = buildStyles(this.scheme, 'dark')
+    const fixedStyles = fixedRoles.join('\n')
     this._sheet.insertRule(`html[${this.attribute}="light"]{${lightStyles}}`, 0)
     this._sheet.insertRule(`html[${this.attribute}="dark"]{${darkStyles}}`, 1)
+    this._sheet.insertRule(`html{${fixedStyles}}`, 2)
   }
 }
 
