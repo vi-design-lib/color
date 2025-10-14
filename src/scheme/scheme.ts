@@ -154,7 +154,7 @@ export class Scheme<OutColorTag extends ColorTag = 'hex', CustomKeys extends str
         tonal: Scheme.createColorSchemeTonal(this.tonalPalettes, 'light')
       },
       dark: {
-        roles: Scheme.createColorSchemeRoles(this.palettes, mergedDarkRule, mergedLightRule),
+        roles: Scheme.createColorSchemeRoles(this.palettes, mergedDarkRule),
         tonal: Scheme.createColorSchemeTonal(this.tonalPalettes, 'dark')
       }
     }
@@ -357,13 +357,11 @@ export class Scheme<OutColorTag extends ColorTag = 'hex', CustomKeys extends str
    * @template OutColorTag - 输出的颜色标签类型
    * @param {ColorSchemePalettes<CustomKeys, OutColorTag>} palettes - 基准配色调色板集合
    * @param {PaletteExtractionColorRules} rules - 配色方案提取规则，定义从调色板中提取各角色颜色的亮度级别
-   * @param {PaletteExtractionColorRules} [lightRules=rules] - 亮色模式配色方案提取规则，用于Fixed角色取色
    * @returns {ColorSchemeRoles<CustomKeys, OutColorTag>} 生成的角色配色方案
    */
   static createColorSchemeRoles<CustomKeys extends string, OutColorTag extends ColorTag>(
     palettes: ColorSchemePalettes<CustomKeys, OutColorTag>,
-    rules: PaletteExtractionColorRules,
-    lightRules: PaletteExtractionColorRules = rules
+    rules: PaletteExtractionColorRules
   ): ColorSchemeRoles<CustomKeys, OutColorTag> {
     const roles: Record<string, any> = {}
     const neutral = palettes.neutral
@@ -375,9 +373,7 @@ export class Scheme<OutColorTag extends ColorTag = 'hex', CustomKeys extends str
       // 批量获取颜色，减少方法调用
       const colors = {
         source: palette.get(rules.source),
-        sourceFixed: palette.get(lightRules.source),
         onSource: palette.get(rules.onSource),
-        onSourceFixed: palette.get(lightRules.onSource),
         sourceHover: palette.get(rules.sourceHover),
         onSourceHover: palette.get(rules.onSourceHover),
         sourceActive: palette.get(rules.sourceActive),
@@ -391,7 +387,6 @@ export class Scheme<OutColorTag extends ColorTag = 'hex', CustomKeys extends str
       // 角色定义配置，统一处理逻辑
       const roleConfigs = [
         { suffix: '', bg: colors.source, text: colors.onSource },
-        { suffix: 'Fixed', bg: colors.sourceFixed, text: colors.onSourceFixed },
         { suffix: 'Hover', bg: colors.sourceHover, text: colors.onSourceHover },
         { suffix: 'Active', bg: colors.sourceActive, text: colors.onSourceActive },
         { suffix: 'Disabled', bg: colors.sourceDisabled, text: colors.onSourceDisabled },
